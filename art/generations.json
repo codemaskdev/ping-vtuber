@@ -23,6 +23,7 @@
         "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
       },
       "input": "art/reference/logo-5A.png",
+      "promptVersion": "current",
       "promptAsSent": "Turn the attached logo into an original mascot character called Ping. Keep the logo's design: the same square screen with rounded corners, the same thin neon cyan outline, the same very dark navy-black screen, the same small terminal prompt in the top-left corner of the screen (a dim cyan \">\" chevron followed by a small solid coral-red cursor block), the same two eye shapes and the same pixel-block smile, in the same places on the screen. No eyebrows. Do not copy any text.\n\nPing is a head only: this screen with a face. No body, no neck, no stand, no cables, no keyboard, no antenna, no hands.\n\nCanvas and framing: square 1:1 image. Pure flat black background (#000000) everywhere outside the character: no gradient, no vignette, no texture, no stars, no particles, no code symbols, no decorations, no text, no logo, no watermark, no border. Front view, perfectly straight, not tilted, no perspective. The screen is centred horizontally and vertically and is 70% of the image width; leave 15% empty black margin on every side.\n\nScreen: one continuous, unbroken, closed neon cyan outline around its outer edge. The inside of the screen is flat, solid, very dark navy-black, with no scanlines, no reflections, no gradient and no texture. Only this outer outline glows: a soft cyan glow surrounds it on the outside and fades to pure black well before the image edges.\n\nFace, as flat solid neon cyan shapes with crisp, sharp edges and no glow or halo around them:\n- Eyes: the logo's two eyes, solid four-sided shapes that mirror each other, flat at the bottom, their top edges sloping down toward the middle of the face, just below the middle of the screen.\n- Mouth: the logo's closed smile, built from square pixel blocks: a flat bar with one block raised at each end, centred below the eyes, in the lower third of the screen.\nThe red cursor block also has crisp edges and no glow. No face shape touches another shape, the prompt or the outline.\n\nStyle: flat vector-like neon on dark, clean shapes, high contrast, no shading, no highlights, no 3D, simple enough to stay readable at 64 x 64 pixels. Ping is an original character: not any existing character, mascot, brand or real person.",
       "promptAsSentVsOurs": "identical",
       "outputSize": "1254x1254",
@@ -46,6 +47,7 @@
         "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
       },
       "input": "art/raw/attempts/G1-01.png",
+      "promptVersion": "current",
       "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same outline, the same dim cyan \">\" chevron in the top-left corner, the same colours, the same glow, the same pure black background.\n\nChange only this: remove both eyes, the mouth and the red cursor block. The rest of the screen is empty: flat, solid, very dark navy-black, with no shapes, no marks, no text and no reflections. Keep the \">\" chevron. Do not add anything.",
       "promptAsSentVsOurs": "identical",
       "outputSize": "1254x1254",
@@ -68,6 +70,7 @@
         "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
       },
       "input": "art/raw/01-master.png",
+      "promptVersion": "current",
       "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same outline, the same dim cyan \">\" chevron in the top-left corner, the same colours, the same glow, the same pure black background.\n\nChange only this: remove both eyes, the mouth and the red cursor block. The rest of the screen is empty: flat, solid, very dark navy-black, with no shapes, no marks, no text and no reflections. Keep the \">\" chevron. Do not add anything.",
       "promptAsSentVsOurs": "identical",
       "outputSize": "1254x1254",
@@ -90,6 +93,7 @@
         "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
       },
       "input": "art/raw/01-master.png",
+      "promptVersion": "G3 text used for attempt 1 (G3-01)",
       "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same mouth, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only this: add two eyebrows. Each is one thin, straight, level neon cyan bar, half a pixel block tall, as wide as the eye below it, with a clear dark gap of one pixel block between the brow and the highest point of its eye. The brows are neutral, not angled, and stay well below the red cursor. Crisp edges, no glow or halo.",
       "promptAsSentVsOurs": "identical",
       "outputSize": "1254x1254",
@@ -97,6 +101,29 @@
       "sha256": "96692f5f64c4f2fc2e0c9c8f9333073ea2d8b5b92271031d1a1a85b928ba9049",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G3-01.json",
+      "metadataApproved": false
+    },
+    "G3-02": {
+      "prompt": "G3",
+      "attempt": 2,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/01-master.png",
+      "promptVersion": "current",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same mouth, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only this: add two eyebrows. Each is one thin, straight, level neon cyan bar, half a pixel block tall and as wide as the eye below it. There is a clear dark gap of one full pixel block (the height of one raised end block of the smile) between each brow's bottom edge and the highest corner of its eye, and about the same dark gap between the brows and the bottom of the red cursor. The brows do not touch the eyes. Neutral, not angled. Crisp edges, no glow or halo.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G3-02.png",
+      "sha256": "fd4b12542ca890c4e284aa9120340c87a217781e14eb962c4197a688465ad4aa",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G3-02.json",
       "metadataApproved": false
     },
     "G4-01": {
@@ -112,6 +139,7 @@
         "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
       },
       "input": "art/raw/01-master.png",
+      "promptVersion": "current",
       "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same mouth, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the eyes: close both of them. Each closed eye is one short, straight, horizontal neon cyan bar, one pixel block tall, as wide as the open eye was, lying along the flat bottom edge of where the open eye was. Crisp edges, no glow or halo.",
       "promptAsSentVsOurs": "identical",
       "outputSize": "1254x1254",
@@ -134,6 +162,7 @@
         "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
       },
       "input": "art/raw/01-master.png",
+      "promptVersion": "current",
       "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: open it slightly. The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 3 blocks tall, so the dark inside is one block tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. Crisp edges, no glow or halo.",
       "promptAsSentVsOurs": "identical",
       "outputSize": "1254x1254",
@@ -156,6 +185,7 @@
         "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
       },
       "input": "art/raw/01-master.png",
+      "promptVersion": "G6 text used for attempt 1 (G6-01)",
       "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: open it wide, as if saying \"ah\". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is 4 blocks wide and 2 blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.",
       "promptAsSentVsOurs": "identical",
       "outputSize": "1254x1254",
@@ -163,6 +193,29 @@
       "sha256": "f2a395c77435ea68ad9a7d133778391a15aec18681844c936aed44700bca6a11",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G6-01.json",
+      "metadataApproved": false
+    },
+    "G6-02": {
+      "prompt": "G6",
+      "attempt": 2,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/01-master.png",
+      "promptVersion": "current",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: open it wide, as if saying \"ah\". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is 4 blocks wide and 2 blocks tall. The dark gap between the bottom edge of the eyes and the top of the mouth stays exactly as tall as it is now, two pixel blocks. The mouth grows downward only, toward the bottom outline: no part of it is higher than the top of the closed smile's two raised end blocks. It is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G6-02.png",
+      "sha256": "cdf47f23c3c994e6c4ae57601501b673e587784d57efd228194a1493b49bb056",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G6-02.json",
       "metadataApproved": false
     },
     "G7-01": {
@@ -178,6 +231,7 @@
         "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
       },
       "input": "art/raw/01-master.png",
+      "promptVersion": "G7 text used for attempt 1 (G7-01)",
       "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: make it round, as if saying \"oo\". The mouth becomes a pixel ring whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: 4 blocks wide and 4 blocks tall with the four corner blocks left out, so the dark inside is 2 by 2 blocks. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. Crisp edges, no glow or halo.",
       "promptAsSentVsOurs": "identical",
       "outputSize": "1254x1254",
@@ -185,6 +239,29 @@
       "sha256": "838825d9fcd3381cf1517c573fb72af87bd7f88e84c2a608105d4b88c1a24aa3",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G7-01.json",
+      "metadataApproved": false
+    },
+    "G7-02": {
+      "prompt": "G7",
+      "attempt": 2,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/01-master.png",
+      "promptVersion": "current",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: make it round, as if saying \"oo\". The mouth becomes a pixel ring whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: 4 blocks wide and 4 blocks tall with the four corner blocks left out, so the dark inside is 2 by 2 blocks. The dark gap between the bottom edge of the eyes and the top of the mouth stays exactly as tall as it is now, two pixel blocks. The mouth grows downward only, toward the bottom outline: no part of it is higher than the top of the closed smile's two raised end blocks. It is centred horizontally where the closed smile was. Crisp edges, no glow or halo.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G7-02.png",
+      "sha256": "b4e0670207a42737fabd9e05f418221f6b4e5e70583e03e88eedd80dbe46845a",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G7-02.json",
       "metadataApproved": false
     },
     "G8-01": {
@@ -200,6 +277,7 @@
         "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
       },
       "input": "art/raw/01-master.png",
+      "promptVersion": "current",
       "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: spread it wide, as if saying \"ee\". The mouth becomes a long, flat hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: one and a half times as wide as the closed smile and 3 blocks tall, so the dark inside is one block tall. Its top edge is where the top of the closed smile was, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.",
       "promptAsSentVsOurs": "identical",
       "outputSize": "1254x1254",

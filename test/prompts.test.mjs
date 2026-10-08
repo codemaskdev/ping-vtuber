@@ -29,11 +29,21 @@ test("face shapes and the cursor are crisp; only the outer outline glows", () =>
 });
 
 test("hollow mouths say their outline is one pixel block thick and open downward from the smile's top", () => {
-  for (const id of ["G5", "G6", "G7", "G8"]) {
-    const t = gen.find((g) => g.id === id).text;
-    assert.match(t, /outline is one pixel block thick/, id);
-    assert.match(t, /top edge is where the top of the closed smile was/, id);
+  for (const id of ["G5", "G6", "G7", "G8"]) assert.match(gen.find((g) => g.id === id).text, /outline is one pixel block thick/, id);
+  for (const id of ["G5", "G8"]) assert.match(gen.find((g) => g.id === id).text, /top edge is where the top of the closed smile was/, id);
+  for (const id of ["G6", "G7"]) {
+    const g = gen.find((x) => x.id === id);
+    assert.match(g.text, /The mouth grows downward only, toward the bottom outline: no part of it is higher than the top of the closed smile's two raised end blocks\./, id);
+    assert.match(g.previous[0].text, /top edge is where the top of the closed smile was/, id);
+    assert.deepEqual(g.previous[0].attempts, [1]);
   }
+});
+
+test("G3's corrected text keeps one block between brows and eyes, and the attempt-1 text next to it", () => {
+  const g = gen.find((x) => x.id === "G3");
+  assert.match(g.text, /a clear dark gap of one full pixel block \(the height of one raised end block of the smile\)/);
+  assert.match(g.text, /The brows do not touch the eyes\./);
+  assert.match(g.previous[0].text, /stay well below the red cursor/);
 });
 
 test("G2 removes the face and the cursor and keeps the chevron", () => {
@@ -51,10 +61,13 @@ test("each raw in layers.json is saved by exactly the prompt it names", () => {
   assert.equal(gen.length, spec.raws.length);
 });
 
-test("PROMPTS.md has every generator prompt verbatim, marked [GENERATOR]", () => {
+test("PROMPTS.md has every generator prompt verbatim, earlier versions included, marked [GENERATOR]", () => {
   const copies = parseGeneratorPrompts(promptsMd);
   assert.deepEqual(copies.map((c) => c.id), gen.map((g) => g.id));
-  for (const g of gen) assert.equal(copies.find((c) => c.id === g.id).text, g.text, g.id);
+  for (const g of gen) {
+    assert.equal(copies.find((c) => c.id === g.id).text, g.text, g.id);
+    assert.deepEqual(copies.find((c) => c.id === g.id).previous, g.previous, g.id);
+  }
   for (const m of promptsMd.matchAll(/^### (?:\[GENERATOR\] )?G\d+/gm)) assert.match(m[0], /\[GENERATOR\]/);
 });
 

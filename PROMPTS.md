@@ -323,6 +323,58 @@ Stage 1 review. I looked at both images and the logs myself.
 4. Report briefly and stop.
 ```
 
+## Prompt #9
+
+```text
+Stage 2 review. I looked at the attempts, the contact sheet and DEVLOG.
+
+Decisions
+
+1. Head: G2-02. Do not promote it yet.
+2. The frozen regions were measured against G2-01. Measure them again
+   with G2-02 as the base, without writing art/regions.json, and compare
+   with the frozen boxes. If every box is identical, record the new base
+   and its sha256 and go on. If anything differs, stop and report the
+   differences.
+3. G4-01, G5-01 and G8-01 are accepted as provisional sources. Their
+   stroke widths differ from one block; record the measured widths in
+   DEVLOG, do not regenerate.
+4. Run a second attempt of G3, G6 and G7 with corrected prompts. Keep the
+   old prompt texts next to the new ones in GENERATOR_PROMPTS.md and
+   PROMPTS.md, marked as used for attempt 1.
+
+   G3, replace the "Change only this" paragraph with:
+   Change only this: add two eyebrows. Each is one thin, straight, level
+   neon cyan bar, half a pixel block tall and as wide as the eye below
+   it. There is a clear dark gap of one full pixel block (the height of
+   one raised end block of the smile) between each brow's bottom edge
+   and the highest corner of its eye, and about the same dark gap
+   between the brows and the bottom of the red cursor. The brows do not
+   touch the eyes. Neutral, not angled. Crisp edges, no glow or halo.
+
+   G6 and G7, replace the sentence that starts "Its top edge is where"
+   with:
+   The dark gap between the bottom edge of the eyes and the top of the
+   mouth stays exactly as tall as it is now, two pixel blocks. The mouth
+   grows downward only, toward the bottom outline: no part of it is
+   higher than the top of the closed smile's two raised end blocks. It
+   is centred horizontally where the closed smile was.
+
+5. G6-01 passes the check, so it stays a candidate. G6-02 replaces it
+   only if its top edge is closer to y 788.
+
+Then
+
+1. Generate G3-02, G6-02, G7-02. Another size than the master is a
+   failed attempt. This is attempt 2 of 2 for each: no third attempt.
+2. Run the stage 2 calibration again with G2-02, G3-02, G4-01, G5-01,
+   the better G6, G7-02, G8-01. Set no limits. Promote nothing, commit
+   no raw file.
+3. Report briefly: the regions comparison, the table, each mouth's top
+   edge next to 788, the brows' box next to the brows region, and what
+   failed. Then stop.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.
@@ -349,7 +401,7 @@ END PROMPT
 
 ## Generator prompts
 
-The current version of each generator prompt, the same text as art/GENERATOR_PROMPTS.md. Drafts that were never run are only in git history. G1 and G2 were run on 2026-10-08 (art/attempts/). Once a prompt has been run, a corrected version is added next to it for the rerun instead of replacing it.
+The current version of each generator prompt, the same text as art/GENERATOR_PROMPTS.md. Drafts that were never run are only in git history. All eight were run on 2026-10-08 (art/attempts/). Once a prompt has been run, a corrected version replaces it as the current text and the text that was run stays next to it, marked with the attempts it was used for.
 
 ### [GENERATOR] G1 · master
 
@@ -390,6 +442,14 @@ Save as: `art/raw/03-brows.png`
 ```text
 Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same mouth, the same outline, the same colours, the same glow, the same pure black background.
 
+Change only this: add two eyebrows. Each is one thin, straight, level neon cyan bar, half a pixel block tall and as wide as the eye below it. There is a clear dark gap of one full pixel block (the height of one raised end block of the smile) between each brow's bottom edge and the highest corner of its eye, and about the same dark gap between the brows and the bottom of the red cursor. The brows do not touch the eyes. Neutral, not angled. Crisp edges, no glow or halo.
+```
+
+#### G3 text used for attempt 1 (G3-01)
+
+```text
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same mouth, the same outline, the same colours, the same glow, the same pure black background.
+
 Change only this: add two eyebrows. Each is one thin, straight, level neon cyan bar, half a pixel block tall, as wide as the eye below it, with a clear dark gap of one pixel block between the brow and the highest point of its eye. The brows are neutral, not angled, and stay well below the red cursor. Crisp edges, no glow or halo.
 ```
 
@@ -420,12 +480,28 @@ Save as: `art/raw/06-mouth_open.png`
 ```text
 Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
 
+Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is 4 blocks wide and 2 blocks tall. The dark gap between the bottom edge of the eyes and the top of the mouth stays exactly as tall as it is now, two pixel blocks. The mouth grows downward only, toward the bottom outline: no part of it is higher than the top of the closed smile's two raised end blocks. It is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
+```
+
+#### G6 text used for attempt 1 (G6-01)
+
+```text
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
+
 Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is 4 blocks wide and 2 blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
 ```
 
 ### [GENERATOR] G7 · mouth round
 
 Save as: `art/raw/07-mouth_round.png`
+
+```text
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
+
+Change only the mouth: make it round, as if saying "oo". The mouth becomes a pixel ring whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: 4 blocks wide and 4 blocks tall with the four corner blocks left out, so the dark inside is 2 by 2 blocks. The dark gap between the bottom edge of the eyes and the top of the mouth stays exactly as tall as it is now, two pixel blocks. The mouth grows downward only, toward the bottom outline: no part of it is higher than the top of the closed smile's two raised end blocks. It is centred horizontally where the closed smile was. Crisp edges, no glow or halo.
+```
+
+#### G7 text used for attempt 1 (G7-01)
 
 ```text
 Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.

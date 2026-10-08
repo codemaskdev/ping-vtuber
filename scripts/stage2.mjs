@@ -5,18 +5,21 @@
 //
 //   npm run stage2 -- regions G2-01     measure art/regions.json on the master with G2-01 as the provisional head,
 //                                       and draw out/master-review.png (freeze with npm run regions -- --freeze)
+//   npm run stage2 -- compare-regions G2-02  measure regions again with G2-02 as the base, in memory, and compare
 //   npm run stage2 -- calibrate G2-01 G3-01 G4-01 G5-01 G6-01 G7-01 G8-01
 //                                       process, check:layers (calibration), contact sheet, full-size composites
 import fs from "node:fs";
 import path from "node:path";
 import { checkLayers, formatTable, guardDirs, limitsLine, processAll } from "../lib/pipeline.mjs";
-import { sha256, writePng } from "../lib/png.mjs";
+import { flattenOnBlack } from "../lib/image.mjs";
+import { readPng, sha256, writePng } from "../lib/png.mjs";
+import { deriveRegions } from "../lib/regions.mjs";
 import { ROOT, loadSpec, rel } from "../lib/spec.mjs";
 import { buildSheet, writeComposites } from "./contact-sheet.mjs";
 import { buildReview } from "./master-review.mjs";
 import { measureRegions } from "./regions.mjs";
 
-const [mode, ...ids] = process.argv.slice(2);
+const [mode, ...ids] = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const spec = loadSpec();
 const OUT = path.join(ROOT, "out", "stage2");
 const RAW = path.join(OUT, "raw");
@@ -59,6 +62,39 @@ if (mode === "regions") {
   for (const [id, x] of Object.entries(regions.layers)) console.log(`  ${id.padEnd(12)} region ${x.region.join(",").padEnd(20)} pivot ${x.pivot.join(",")}`);
   const review = buildReview(spec, RAW, REGIONS, path.join(ROOT, "out", "master-review.png"), false);
   console.log(`\nout/master-review.png  ${review.width}x${review.height}  sha256 ${review.sha256}`);
+} else if (mode === "compare-regions") {
+  // Measures the regions again with another G2 attempt as the base, in memory only, and compares every box and
+  // pivot with the frozen art/regions.json.
+  if (ids.length !== 1 || !ids[0].startsWith("G2-")) fail("usage: npm run stage2 -- compare-regions G2-<nn>");
+  place(ids);
+  const frozen = JSON.parse(fs.readFileSync(REGIONS, "utf8"));
+  const master = flattenOnBlack(readPng(path.join(RAW, spec.processing.master)).img).img;
+  const base = flattenOnBlack(readPng(path.join(RAW, spec.processing.base)).img).img;
+  let fresh;
+  try { fresh = deriveRegions(spec, master, base); } catch (e) { console.log(`regions with ${ids[0]}: ${e.message}`); process.exit(1); }
+  const rows = [["margin", frozen.margin, fresh.margin]];
+  for (const k of ["screen", "interior", "cursor", "eyes", "mouth"]) rows.push([`measured.${k}`, frozen.measured[k], fresh.measured[k]]);
+  for (const id of Object.keys(frozen.layers)) {
+    rows.push([`${id}.region`, frozen.layers[id].region, fresh.layers[id].region]);
+    rows.push([`${id}.pivot`, frozen.layers[id].pivot, fresh.layers[id].pivot]);
+  }
+  let same = 0;
+  for (const [k, a, b] of rows) {
+    const eq = JSON.stringify(a) === JSON.stringify(b);
+    if (eq) same++;
+    console.log(`${eq ? "same" : "DIFF"}  ${k.padEnd(20)} frozen ${JSON.stringify(a)}  ${ids[0]} ${JSON.stringify(b)}`);
+  }
+  console.log(`${same} of ${rows.length} identical; ${ids[0]} offset ${fresh.baseOffset.dx},${fresh.baseOffset.dy}`);
+  if (same !== rows.length) process.exitCode = 1;
+  else if (process.argv.includes("--record")) {
+    // Only the base changes; every region and pivot stays as frozen.
+    const prev = frozen.base;
+    frozen.baseHistory = [...(frozen.baseHistory || []), { ...prev, replacedBy: ids[0], check: `npm run stage2 -- compare-regions ${ids[0]}: ${same} of ${rows.length} boxes and pivots identical` }];
+    frozen.base = { file: spec.processing.base, sha256: sha256(fs.readFileSync(path.join(RAW, spec.processing.base))), fromAttempt: ids[0] };
+    frozen.baseOffset = fresh.baseOffset;
+    fs.writeFileSync(REGIONS, JSON.stringify(frozen, null, 2) + "\n");
+    console.log(`${rel(REGIONS)}: base is now ${ids[0]} (sha256 ${frozen.base.sha256}); regions and pivots unchanged`);
+  }
 } else if (mode === "calibrate") {
   if (!ids.length) fail("usage: npm run stage2 -- calibrate <attempt ids>");
   place(ids);

@@ -20,7 +20,13 @@ const readJsonl = (f) => (fs.existsSync(f) ? fs.readFileSync(f, "utf8").split("\
 const run = JSON.parse(fs.readFileSync(`${base}.run.json`, "utf8"));
 const events = readJsonl(`${base}.events.jsonl`);
 const session = readJsonl(`${base}.session.jsonl`);
-const prompt = generatorPrompts().find((p) => p.id === run.prompt);
+// Our prompt for this attempt is the one inside the task Codex received (the current text, or an earlier version
+// kept in art/GENERATOR_PROMPTS.md), not whatever the file says today.
+const task = fs.readFileSync(`${base}.task.txt`, "utf8");
+const ourText = task.slice(task.indexOf("\nBEGIN PROMPT\n") + "\nBEGIN PROMPT\n".length, task.lastIndexOf("\nEND PROMPT\n"));
+const gp = generatorPrompts().find((p) => p.id === run.prompt);
+const promptVersion = !gp ? "unknown" : gp.text === ourText ? "current" : (gp.previous.find((v) => v.text === ourText)?.label || "not in art/GENERATOR_PROMPTS.md");
+const prompt = gp ? { ...gp, text: ourText } : null;
 
 const payloads = session.map((e) => ({ type: e.type, p: e.payload || {} }));
 const meta = payloads.find((x) => x.type === "session_meta")?.p || {};
@@ -77,6 +83,7 @@ const extract = sanitize({
   jsonEventsReportToolCall: events.some((e) => JSON.stringify(e).includes("image_gen")) ? "yes" : "no: the --json events show only thread, turn and agent messages; the tool call is read from Codex's session file",
   injectedByCodex: injected.length ? injected : "none",
   imageTool: call ? { name: call.name, namespace: call.namespace, calls: calls.length, argumentKeys: args ? Object.keys(args).sort() : NR, otherArguments: args ? Object.fromEntries(Object.entries(args).filter(([k]) => k !== "prompt")) : NR } : NR,
+  promptVersion,
   promptPassed: passed === null ? NR : passed,
   promptPassedVsOurs: prompt ? compareText(prompt.text, passed) : "our prompt not found",
   revisedPrompt: result?.revisedPrompt ?? NR,
@@ -108,6 +115,7 @@ g.attempts[id] = sanitize({
   imageTool: call ? `${call.namespace}.${call.name}` : NR,
   imageModel,
   input: run.input,
+  promptVersion,
   promptAsSent: passed === null ? NR : passed,
   promptAsSentVsOurs: extract.promptPassedVsOurs === "identical" ? "identical" : extract.promptPassedVsOurs,
   outputSize: output && output.width ? `${output.width}x${output.height}` : NR,

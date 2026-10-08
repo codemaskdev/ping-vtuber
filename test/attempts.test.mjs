@@ -91,7 +91,13 @@ test("every attempt has a full disclosure record and an extract", () => {
     assert.ok(tracked.includes(a.extract) || fs.existsSync(path.join(ROOT, a.extract)), `${id}: ${a.extract}`);
     const ex = JSON.parse(fs.readFileSync(path.join(ROOT, a.extract), "utf8"));
     assert.equal(ex.output.sha256AtSource, ex.output.sha256AtCopy, `${id}: copy differs from source`);
-    if (a.promptAsSentVsOurs === "identical") assert.equal(a.promptAsSent, prompts.find((p) => p.id === a.prompt).text);
+    const gp = prompts.find((p) => p.id === a.prompt);
+    const texts = [gp.text, ...gp.previous.map((v) => v.text)];
+    if (a.promptAsSentVsOurs === "identical") assert.ok(texts.includes(a.promptAsSent), `${id}: prompt as sent is no version of ${a.prompt}`);
+    if (a.promptVersion !== undefined && a.promptVersion !== "current") {
+      const v = gp.previous.find((x) => x.label === a.promptVersion);
+      assert.ok(v && v.attempts.includes(a.attempt), `${id}: ${a.promptVersion} does not list attempt ${a.attempt}`);
+    }
   }
 });
 

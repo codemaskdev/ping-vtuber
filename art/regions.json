@@ -7,7 +7,8 @@
   },
   "base": {
     "file": "02-head.png",
-    "sha256": "923936cdc85c7ff4b38d39426174b4e9f76a000d07e8ac9f03375e2ac837e7b4"
+    "sha256": "30bc8b270bccd1d9190a0ac5fb0fa68624074fc523f8f6a64c0fe67ab086fa89",
+    "fromAttempt": "G2-02"
   },
   "canvas": {
     "width": 1254,
@@ -251,5 +252,13 @@
         837
       ]
     }
-  }
+  },
+  "baseHistory": [
+    {
+      "file": "02-head.png",
+      "sha256": "923936cdc85c7ff4b38d39426174b4e9f76a000d07e8ac9f03375e2ac837e7b4",
+      "replacedBy": "G2-02",
+      "check": "npm run stage2 -- compare-regions G2-02: 28 of 28 boxes and pivots identical"
+    }
+  ]
 }

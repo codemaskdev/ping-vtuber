@@ -1,0 +1,93 @@
+{
+  "$comment": "Written by scripts/extract-attempt.mjs from Codex's logs. Local paths, account details and session, call and response ids are removed. Values Codex did not report are 'not reported'.",
+  "attempt": "G3-02",
+  "prompt": "G3",
+  "attemptNumber": 2,
+  "input": {
+    "file": "art/raw/01-master.png",
+    "sha256": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a",
+    "width": 1254,
+    "height": 1254
+  },
+  "command": [
+    "codex",
+    "exec",
+    "--json",
+    "--sandbox",
+    "read-only",
+    "-C",
+    ".",
+    "-i",
+    "art/raw/01-master.png"
+  ],
+  "exitStatus": 0,
+  "codexCliVersion": "codex-cli 0.161.0",
+  "sessionCliVersion": "0.161.0",
+  "date": "2026-10-08",
+  "dateSource": "Codex session file, session_meta.timestamp (UTC)",
+  "codexModel": "gpt-5.5",
+  "sandbox": "read-only",
+  "approvalPolicy": "never",
+  "jsonEventTypes": [
+    "thread.started",
+    "turn.started",
+    "item.completed",
+    "turn.completed"
+  ],
+  "jsonEventsReportToolCall": "no: the --json events show only thread, turn and agent messages; the tool call is read from Codex's session file",
+  "injectedByCodex": "none",
+  "imageTool": {
+    "name": "imagegen",
+    "namespace": "image_gen",
+    "calls": 1,
+    "argumentKeys": [
+      "prompt",
+      "referenced_image_paths",
+      "transparent_background"
+    ],
+    "otherArguments": {
+      "referenced_image_paths": [
+        "art/raw/01-master.png"
+      ],
+      "transparent_background": false
+    }
+  },
+  "promptVersion": "current",
+  "promptPassed": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same mouth, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only this: add two eyebrows. Each is one thin, straight, level neon cyan bar, half a pixel block tall and as wide as the eye below it. There is a clear dark gap of one full pixel block (the height of one raised end block of the smile) between each brow's bottom edge and the highest corner of its eye, and about the same dark gap between the brows and the bottom of the red cursor. The brows do not touch the eyes. Neutral, not angled. Crisp edges, no glow or halo.",
+  "promptPassedVsOurs": "identical",
+  "revisedPrompt": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same mouth, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only this: add two eyebrows. Each is one thin, straight, level neon cyan bar, half a pixel block tall and as wide as the eye below it. There is a clear dark gap of one full pixel block (the height of one raised end block of the smile) between each brow's bottom edge and the highest corner of its eye, and about the same dark gap between the brows and the bottom of the red cursor. The brows do not touch the eyes. Neutral, not angled. Crisp edges, no glow or halo.",
+  "revisedPromptVsOurs": "identical",
+  "imageResult": {
+    "status": "completed",
+    "failure": null,
+    "transparentBackground": false,
+    "saved": "under $CODEX_HOME/generated_images"
+  },
+  "imagesCreated": 1,
+  "imageModel": {
+    "value": "gpt-image",
+    "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+  },
+  "c2pa": {
+    "ActionsSoftwareAgentName": "ChatGPT",
+    "ActionsSoftwareAgentVersion": "gpt-image",
+    "Claim_Generator_InfoName": "OpenAI Media Service API",
+    "ActionsAction": [
+      "c2pa.created",
+      "c2pa.converted",
+      "c2pa.watermarked.unbound"
+    ],
+    "ActionsDigitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "output": {
+    "copy": "art/raw/attempts/G3-02.png",
+    "bytes": 1052764,
+    "sha256AtSource": "fd4b12542ca890c4e284aa9120340c87a217781e14eb962c4197a688465ad4aa",
+    "sha256AtCopy": "fd4b12542ca890c4e284aa9120340c87a217781e14eb962c4197a688465ad4aa",
+    "format": "png",
+    "width": 1254,
+    "height": 1254
+  },
+  "sizeCheck": "ok: 1254x1254, same as the input master",
+  "agentFinalMessage": "The image tool returned an image."
+}

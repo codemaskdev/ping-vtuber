@@ -105,6 +105,23 @@
       "extract": "art/attempts/G3-01.json"
     },
     {
+      "attempt": "G3-02",
+      "file": "art/raw/attempts/G3-02.png",
+      "sha256": "fd4b12542ca890c4e284aa9120340c87a217781e14eb962c4197a688465ad4aa",
+      "prompt": "G3",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G3-02.json"
+    },
+    {
       "attempt": "G4-01",
       "file": "art/raw/attempts/G4-01.png",
       "sha256": "795f27770cbdd97a71ce67c45644e2fbf9767da9fe86f8529ce835c46a4372e3",
@@ -156,6 +173,23 @@
       "extract": "art/attempts/G6-01.json"
     },
     {
+      "attempt": "G6-02",
+      "file": "art/raw/attempts/G6-02.png",
+      "sha256": "cdf47f23c3c994e6c4ae57601501b673e587784d57efd228194a1493b49bb056",
+      "prompt": "G6",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G6-02.json"
+    },
+    {
       "attempt": "G7-01",
       "file": "art/raw/attempts/G7-01.png",
       "sha256": "838825d9fcd3381cf1517c573fb72af87bd7f88e84c2a608105d4b88c1a24aa3",
@@ -171,6 +205,23 @@
       },
       "outputSize": "1254x1254",
       "extract": "art/attempts/G7-01.json"
+    },
+    {
+      "attempt": "G7-02",
+      "file": "art/raw/attempts/G7-02.png",
+      "sha256": "b4e0670207a42737fabd9e05f418221f6b4e5e70583e03e88eedd80dbe46845a",
+      "prompt": "G7",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G7-02.json"
     },
     {
       "attempt": "G8-01",
@@ -193,8 +244,8 @@
   "layers": [],
   "regions": {
     "file": "art/regions.json",
-    "sha256": "8a5944a47790e772e0720e84db7eacab72b4278ee3962d9ee8f2e560cd58bd46",
-    "bytes": 3887,
+    "sha256": "e6e22765249671ed52b685dc1da2c7b15c75871ca60cd8391bbca73bfc65eb02",
+    "bytes": 4187,
     "frozen": true
   },
   "processLog": null

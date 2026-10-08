@@ -57,6 +57,14 @@ Save as: `art/raw/03-brows.png`
 ```text
 Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same mouth, the same outline, the same colours, the same glow, the same pure black background.
 
+Change only this: add two eyebrows. Each is one thin, straight, level neon cyan bar, half a pixel block tall and as wide as the eye below it. There is a clear dark gap of one full pixel block (the height of one raised end block of the smile) between each brow's bottom edge and the highest corner of its eye, and about the same dark gap between the brows and the bottom of the red cursor. The brows do not touch the eyes. Neutral, not angled. Crisp edges, no glow or halo.
+```
+
+#### G3 text used for attempt 1 (G3-01)
+
+```text
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same mouth, the same outline, the same colours, the same glow, the same pure black background.
+
 Change only this: add two eyebrows. Each is one thin, straight, level neon cyan bar, half a pixel block tall, as wide as the eye below it, with a clear dark gap of one pixel block between the brow and the highest point of its eye. The brows are neutral, not angled, and stay well below the red cursor. Crisp edges, no glow or halo.
 ```
 
@@ -87,12 +95,28 @@ Save as: `art/raw/06-mouth_open.png`
 ```text
 Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
 
+Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is 4 blocks wide and 2 blocks tall. The dark gap between the bottom edge of the eyes and the top of the mouth stays exactly as tall as it is now, two pixel blocks. The mouth grows downward only, toward the bottom outline: no part of it is higher than the top of the closed smile's two raised end blocks. It is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
+```
+
+#### G6 text used for attempt 1 (G6-01)
+
+```text
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
+
 Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is 4 blocks wide and 2 blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
 ```
 
 ## G7 · mouth round
 
 Save as: `art/raw/07-mouth_round.png`
+
+```text
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
+
+Change only the mouth: make it round, as if saying "oo". The mouth becomes a pixel ring whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: 4 blocks wide and 4 blocks tall with the four corner blocks left out, so the dark inside is 2 by 2 blocks. The dark gap between the bottom edge of the eyes and the top of the mouth stays exactly as tall as it is now, two pixel blocks. The mouth grows downward only, toward the bottom outline: no part of it is higher than the top of the closed smile's two raised end blocks. It is centred horizontally where the closed smile was. Crisp edges, no glow or halo.
+```
+
+#### G7 text used for attempt 1 (G7-01)
 
 ```text
 Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.

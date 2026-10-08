@@ -205,3 +205,50 @@ What broke
 - G6-01 (mouth_open) also did not keep the smile's top edge: it starts at y 759/760, 28 px above 788, inside the
   region by 1 px. It passes.
 - `npm test`: tests 69, pass 67, fail 0, skipped 2 (reprocess vs committed layers, and the empty-art/raw CLI check, both waiting for promoted raws), duration_ms 43203.035.
+
+## 2026-10-08 · Stage 2 review applied: G2-02 as base, second attempts of G3, G6, G7, calibration again
+
+- Regions measured again with G2-02 as the base, in memory (`npm run stage2 -- compare-regions G2-02`): 28 of 28
+  boxes and pivots identical to the frozen ones, G2-02 offset 0,0. Recorded with `--record`: art/regions.json base is
+  now G2-02 (sha256 30bc8b270bccd1d9190a0ac5fb0fa68624074fc523f8f6a64c0fe67ab086fa89), G2-01 kept in baseHistory;
+  regions and pivots unchanged, still frozen.
+- Stroke widths of the accepted provisional sources (`npm run measure:shapes`; one block = 50 px, from
+  `npm run measure:master`): G4-01 closed-eye bars 41 px (left) and 42 px (right) tall; G5-01 strokes top 39, bottom
+  41, left 42, right 42 px; G8-01 strokes top 35, bottom 32, left 37, right 38 px. Not regenerated.
+- G3, G6, G7 corrected as the author wrote them (prompt #9); the attempt-1 texts stay next to them in
+  art/GENERATOR_PROMPTS.md and PROMPTS.md (`npm run prompts:copy`). Extracts now record promptVersion, compared with
+  the prompt inside the task Codex received, not with today's file.
+- G3-02, G6-02, G7-02: exit 0, one image each, 1254 x 1254, prompt passed identical (current text). Attempt 2 of 2
+  for each; no third attempt.
+- Shapes, uncut by regions (`npm run measure:shapes -- master G3-01 G3-02 G4-01 G5-01 G6-01 G6-02 G7-01 G7-02 G8-01`):
+  - mouth top edges next to the smile's 788: master 788; G5-01 788; G6-01 759 (-29); G6-02 776 (-12); G7-01 738
+    (-50); G7-02 743 (-45); G8-01 789 (+1). G6-02 is closer to 788 than G6-01, so G6-02 is the G6 candidate.
+  - brows: G3-01 box 345,477,564,41 (left brow reaches y 517); G3-02 box 356,470,543,20, bottom y 489; brows region
+    316,423,622,66, bottom y 488. Eyes top y 518, cursor bottom y 393.
+- Stage 2 calibration again (`npm run stage2 -- calibrate G2-02 G3-02 G4-01 G5-01 G6-02 G7-02 G8-01`), no limits:
+
+```
+| layer       | source             | canvas    | alpha bbox x,y,w,h | region x,y,w,h    | inside | changed blobs (outside) | corner alpha TL,TR,BL,BR | offset dx,dy | drift mean (sum/samples)             | screen w,h (master w,h) | status                                                                                |
+|-------------|--------------------|-----------|--------------------|-------------------|--------|-------------------------|--------------------------|--------------|--------------------------------------|-------------------------|---------------------------------------------------------------------------------------|
+| glow        | 02-head.png        | 1254x1254 | 137,141,980,971    | 0,0,1254,1254     | yes    | 4 (0)                   | 0,0,0,0                  | 0,0          | 1.2810288340375064 (4752649/3710025) | 957,948 (959,950)       | measured                                                                              |
+| head        | 02-head.png        | 1254x1254 | 148,153,957,948    | 118,123,1017,1008 | yes    | 4 (0)                   | 0,0,0,0                  | 0,0          | 1.2810288340375064 (4752649/3710025) | 957,948 (959,950)       | measured                                                                              |
+| cursor      | 01-master.png      | 1254x1254 | 350,291,88,103     | 350,262,117,161   | yes    | master                  | 0,0,0,0                  | master       | master                               | 959,950 (959,950)       | ok                                                                                    |
+| eyes_open   | 01-master.png      | 1254x1254 | 345,518,564,172    | 316,489,622,230   | yes    | master                  | 0,0,0,0                  | master       | master                               | 959,950 (959,950)       | ok                                                                                    |
+| eyes_closed | 04-eyes_closed.png | 1254x1254 | 354,625,547,42     | 316,489,622,230   | yes    | 2 (0)                   | 0,0,0,0                  | 0,0          | 1.5526169054191705 (6560266/4225296) | 955,947 (959,950)       | measured                                                                              |
+| brows       | 03-brows.png       | 1254x1254 | 355,470,544,19     | 316,423,622,66    | yes    | 2 (2)                   | 0,0,0,0                  | 0,0          | 1.3891085613260292 (6310898/4543128) | 957,947 (959,950)       | FAIL: changed outside its regions: [356,470,217,20] 4328 px, [681,470,217,20] 4322 px |
+| mouth_rest  | 01-master.png      | 1254x1254 | 480,788,294,99     | 377,759,500,254   | yes    | master                  | 0,0,0,0                  | master       | master                               | 959,950 (959,950)       | ok                                                                                    |
+| mouth_small | 05-mouth_small.png | 1254x1254 | 479,787,296,127    | 377,759,500,254   | yes    | 1 (0)                   | 0,0,0,0                  | 0,0          | 1.4959255064557395 (6403357/4280532) | 957,948 (959,950)       | measured                                                                              |
+| mouth_open  | 06-mouth_open.png  | 1254x1254 | 481,776,292,167    | 377,759,500,254   | yes    | 1 (0)                   | 0,0,0,0                  | 0,0          | 1.1349813527851211 (4858324/4280532) | 956,948 (959,950)       | measured                                                                              |
+| mouth_round | 07-mouth_round.png | 1254x1254 | 522,759,211,193    | 377,759,500,254   | yes    | 1 (1)                   | 0,0,0,0                  | 0,0          | 1.6750992633625914 (7170316/4280532) | 955,948 (959,950)       | FAIL: changed outside its regions: [480,743,294,209] 27008 px                         |
+| mouth_wide  | 08-mouth_wide.png  | 1254x1254 | 416,788,422,103    | 377,759,500,254   | yes    | 1 (0)                   | 0,0,0,0                  | 0,0          | 1.4159415231564674 (6060983/4280532) | 956,948 (959,950)       | measured                                                                              |
+```
+
+What failed
+- G3-02 (brows): 1 px past the brows region (bottom y 489 against 488). Both attempts of G3 are used.
+- G7-02 (mouth_round): the ring starts at y 743, 16 px above the mouth region (759) and 45 px above the smile's top.
+  Both attempts of G7 are used.
+- Not caught by a pass/fail check: with G2-02 as the base, the cursor layer (cut to its region, which reaches over
+  the chevron's tip) holds 97 non-red pixels besides 6076 red ones, box 350,298,30,96, alpha up to 133: the
+  chevron's tip, which G2-02 draws a little differently at its edge, and the cursor's own left edge. With G2-01 as
+  the base the cursor layer box started at x 378. (Counted from out/stage2/layers/cursor.png.)
+- `npm test`: tests 70, pass 68, fail 0, skipped 2 (both wait for promoted raws), duration_ms 43500.067.

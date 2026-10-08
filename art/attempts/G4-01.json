@@ -52,6 +52,7 @@
       "transparent_background": false
     }
   },
+  "promptVersion": "current",
   "promptPassed": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same mouth, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the eyes: close both of them. Each closed eye is one short, straight, horizontal neon cyan bar, one pixel block tall, as wide as the open eye was, lying along the flat bottom edge of where the open eye was. Crisp edges, no glow or halo.",
   "promptPassedVsOurs": "identical",
   "revisedPrompt": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same mouth, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the eyes: close both of them. Each closed eye is one short, straight, horizontal neon cyan bar, one pixel block tall, as wide as the open eye was, lying along the flat bottom edge of where the open eye was. Crisp edges, no glow or halo.",
