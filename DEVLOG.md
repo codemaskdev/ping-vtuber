@@ -104,3 +104,46 @@ What broke, and decisions it forced
 - `--partial` for process and check:layers, for Part D stage 1 when only 01-master.png and 02-head.png are in.
 - Identity check: the latest bug-driver commit and this repo's both print `CodeMask <codemask@users.noreply.github.com>`.
 - `npm test`: tests 58, pass 57, fail 0, skipped 1 (reprocess vs committed layers: no real art yet), duration_ms 31663.011834.
+
+## 2026-10-08 · Generator through Codex CLI; Part D stage 1 (G1, G2)
+
+What was done (prompt #7)
+- `scripts/generate.mjs` makes every generator call: `codex exec --json --sandbox read-only -C . -i <input>`, task on
+  stdin = fixed wrapper (lib/attempts.mjs, logged in PROMPTS.md) + the generator prompt byte for byte. Raw event
+  log, stderr, task and Codex's session file go to logs/codex/ (gitignored). `scripts/extract-attempt.mjs` writes
+  the committed extract art/attempts/<id>.json and the disclosure entry in art/generations.json.
+- Logo: art/reference/logo-5A.png sha256 05bb7b746c89d52a363db1a896708f4a0d291ba6e2c46badbb5faa7bcbc70e06, 29096
+  bytes, 1024 x 1024, chunks IHDR bKGD IDAT IEND, no text chunks, no C2PA (`npm run metadata --
+  art/reference/logo-5A.png`). Committed as reference.
+- G1-01 (input: the logo): `time node scripts/generate.mjs G1` 48.165 s total, exit 0, one image, 1254 x 1254,
+  sha256 c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a at source and copy.
+- G2-01 (input: G1-01, the stage 1 exception): exit 0, one image, 1254 x 1254, sha256
+  923936cdc85c7ff4b38d39426174b4e9f76a000d07e8ac9f03375e2ac837e7b4 at source and copy.
+- Both: Codex CLI 0.161.0, session model gpt-5.5, tool image_gen.imagegen called once, the prompt it received is
+  identical to ours (and so is the tool's revisedPrompt). The image model is not named in Codex's logs; the C2PA
+  manifest in each output names softwareAgent "ChatGPT" version "gpt-image", claim generator "OpenAI Media Service
+  API" (exiftool). Metadata dumps: art/attempts/G1-01.metadata.txt, G2-01.metadata.txt. No EXIF, no XMP.
+- Regions on G1-01 / G2-01 (`npm run stage1 -- art/raw/attempts/G1-01.png art/raw/attempts/G2-01.png`): REJECTED by
+  the region rule, so no partial check:layers table and no master-review.png. Diagnostic view: out/stage1/blobs.png.
+  02-head offset 0,0; margin 29; screen box 147,152,959,950; 12 blobs, 6 kept (>= 841 px):
+  - blob 1, box 162,165,924,238, 2880 px, diff max 152, 508 px > 72: thin rims along the top of the screen outline;
+  - blob 12, box 162,870,927,218, 3357 px, diff max 167, 1558 px > 72: the same along the bottom;
+  - blob 2, box 268,280,170,125, 10753 px, 6173 red: the cursor, joined with the chevron, which G2-01 redrew in a
+    different colour although G2 says to keep it;
+  - blobs 5, 6 (eyes, 28228 and 28254 px) and 11 (mouth, 14820 px) are as expected.
+
+What broke
+- `-i` takes several values, so the trailing "-" (meant as "task on stdin") was read as a second image in G1-01.
+  Codex put "Codex could not read the local image at `-`: No such file or directory (os error 2)" into the user
+  message; the task itself still came from stdin and the image tool got our prompt unchanged. Recorded in the G1-01
+  extract (injectedByCodex). Fixed before G2-01: no "-", and a test.
+- The --json event stream does not show the tool call (only thread, turn, agent message, usage). The prompt passed
+  to the tool and the session model are read from Codex's session file, kept in logs/ with the event log.
+- The first G2-01 extract still held a path under the home folder (the tool's referenced_image_paths). The sanitizer
+  now makes repository paths relative first; both extracts were rewritten before any commit.
+- The first per-blob diagnostics summed over each blob's box, and box 1 contains blob 2, so its numbers were wrong
+  (13629 pixels for a 2880-pixel blob). Now summed per blob label; the numbers above are from that version.
+- The extract hygiene test first matched the word "account" in the extracts' own $comment; it now checks JSON keys
+  (no account, e-mail, user, session, thread, auth or token keys) and strings for paths, e-mail addresses and ids.
+- `npm test`: tests 66, pass 65, fail 0, skipped 1 (reprocess vs committed layers: no approved raws yet),
+  duration_ms 31683.754583.

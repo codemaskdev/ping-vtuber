@@ -19,7 +19,14 @@ const fileEntry = (dir, f) => {
 
 export function buildSources() {
   const spec = loadSpec();
-  const gens = JSON.parse(fs.readFileSync(art("generations.json"), "utf8")).images || {};
+  const gfile = JSON.parse(fs.readFileSync(art("generations.json"), "utf8"));
+  const gens = gfile.images || {};
+  // Attempts: hashes as recorded at the copy (art/raw/attempts/ images are not committed before approval).
+  const attempts = Object.entries(gfile.attempts || {}).map(([id, a]) => ({
+    attempt: id, file: a.file, sha256: a.sha256, prompt: a.prompt, date: a.date, generator: a.generator,
+    codexCliVersion: a.codexCliVersion, codexModel: a.codexModel, imageTool: a.imageTool, imageModel: a.imageModel,
+    outputSize: a.outputSize, extract: a.extract,
+  }));
   const prompts = new Map(generatorPrompts().map((p) => [p.id, p]));
   const errors = [];
 
@@ -63,6 +70,7 @@ export function buildSources() {
       $comment: "Written by scripts/sources.mjs. Do not edit by hand. Prompt texts are copied from art/GENERATOR_PROMPTS.md.",
       reference,
       raw,
+      attempts,
       layers,
       regions,
       processLog,

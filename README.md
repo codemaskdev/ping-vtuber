@@ -8,7 +8,10 @@ episode 3: a VTuber made with AI. Character art comes from a text-to-image gener
 
 ```
 art/reference/logo-5A.svg    the channel logo; logo-5A.png is the copy given to the generator
-art/GENERATOR_PROMPTS.md     prompts G1…G8, run by hand in this order
+art/GENERATOR_PROMPTS.md     prompts G1…G8, run in this order by npm run generate (Codex CLI image tool)
+art/raw/attempts/            every generator attempt, copied unmodified (committed only once approved)
+art/attempts/                per attempt: extract of Codex's logs, metadata dump (committed)
+logs/                        raw Codex event logs and session files (never committed)
 art/raw/                     the generator's images, untouched
 art/generations.json         generator name, version, date, prompt and metadata approval per image
 art/layers.json              the layer spec: layers, parents, region and pivot rules, thresholds
@@ -29,6 +32,9 @@ Node 22 or newer (`.nvmrc`: 24.15.0). One dependency, `pngjs`, pinned. Part D al
 
 ```
 npm install
+npm run generate -- G1 one generator attempt through Codex CLI's image tool → art/raw/attempts/, logs/codex/
+npm run attempt:extract -- G1-01   committed extract art/attempts/G1-01.json + disclosure in art/generations.json
+npm run stage1 -- <G1 attempt> <G2 attempt>   regions, partial layers, check and review in out/stage1/
 npm run metadata       embedded metadata of every raw (EXIF, XMP, PNG chunks, C2PA yes/no); prints only
 npm run regions        art/regions.json from the master; -- --freeze once the master is approved
 npm run review         out/master-review.png: the master with its measured regions and pivots drawn on it

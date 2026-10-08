@@ -1,4 +1,50 @@
 {
-  "$comment": "One entry per file in art/raw/, filled in from what the author reports: generator name and version exactly as the generator UI shows them, the date (YYYY-MM-DD) and the prompt id from art/GENERATOR_PROMPTS.md. metadataApproved: true once the author has seen the file's embedded metadata (npm run metadata) and approved committing it; a test refuses a committed raw without it. Optional note, e.g. that an edit was run in a new chat. Example: \"01-master.png\": { \"generator\": \"...\", \"version\": \"...\", \"date\": \"2026-10-08\", \"prompt\": \"G1\", \"metadataApproved\": true }",
-  "images": {}
+  "$comment": "images: one entry per file in art/raw/ the author promoted from an attempt (fromAttempt), with metadataApproved: true once the author has seen its embedded metadata and approved committing it. attempts: one entry per generator attempt, written by scripts/extract-attempt.mjs from Codex's logs: Codex CLI version, the session's model, the image tool, the image model only where something reports it (otherwise 'not reported'), prompt id, the prompt as passed to the tool and how it compares with ours, date, attempt number, output size, the copy and its sha256. A test refuses any committed raw file without metadataApproved.",
+  "images": {},
+  "attempts": {
+    "G1-01": {
+      "prompt": "G1",
+      "attempt": 1,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/reference/logo-5A.png",
+      "promptAsSent": "Turn the attached logo into an original mascot character called Ping. Keep the logo's design: the same square screen with rounded corners, the same thin neon cyan outline, the same very dark navy-black screen, the same small terminal prompt in the top-left corner of the screen (a dim cyan \">\" chevron followed by a small solid coral-red cursor block), the same two eye shapes and the same pixel-block smile, in the same places on the screen. No eyebrows. Do not copy any text.\n\nPing is a head only: this screen with a face. No body, no neck, no stand, no cables, no keyboard, no antenna, no hands.\n\nCanvas and framing: square 1:1 image. Pure flat black background (#000000) everywhere outside the character: no gradient, no vignette, no texture, no stars, no particles, no code symbols, no decorations, no text, no logo, no watermark, no border. Front view, perfectly straight, not tilted, no perspective. The screen is centred horizontally and vertically and is 70% of the image width; leave 15% empty black margin on every side.\n\nScreen: one continuous, unbroken, closed neon cyan outline around its outer edge. The inside of the screen is flat, solid, very dark navy-black, with no scanlines, no reflections, no gradient and no texture. Only this outer outline glows: a soft cyan glow surrounds it on the outside and fades to pure black well before the image edges.\n\nFace, as flat solid neon cyan shapes with crisp, sharp edges and no glow or halo around them:\n- Eyes: the logo's two eyes, solid four-sided shapes that mirror each other, flat at the bottom, their top edges sloping down toward the middle of the face, just below the middle of the screen.\n- Mouth: the logo's closed smile, built from square pixel blocks: a flat bar with one block raised at each end, centred below the eyes, in the lower third of the screen.\nThe red cursor block also has crisp edges and no glow. No face shape touches another shape, the prompt or the outline.\n\nStyle: flat vector-like neon on dark, clean shapes, high contrast, no shading, no highlights, no 3D, simple enough to stay readable at 64 x 64 pixels. Ping is an original character: not any existing character, mascot, brand or real person.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G1-01.png",
+      "sha256": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a",
+      "sizeCheck": "1254x1254: a G1 attempt sets the canvas if the author makes it the master",
+      "extract": "art/attempts/G1-01.json",
+      "metadataApproved": false
+    },
+    "G2-01": {
+      "prompt": "G2",
+      "attempt": 1,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/attempts/G1-01.png",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same outline, the same dim cyan \">\" chevron in the top-left corner, the same colours, the same glow, the same pure black background.\n\nChange only this: remove both eyes, the mouth and the red cursor block. The rest of the screen is empty: flat, solid, very dark navy-black, with no shapes, no marks, no text and no reflections. Keep the \">\" chevron. Do not add anything.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G2-01.png",
+      "sha256": "923936cdc85c7ff4b38d39426174b4e9f76a000d07e8ac9f03375e2ac837e7b4",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G2-01.json",
+      "metadataApproved": false
+    }
+  }
 }

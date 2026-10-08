@@ -229,9 +229,91 @@ composites, report. Set no limits until I answer.
 Tables and exiftool output pasted as is, what broke, questions.
 ```
 
+## Prompt #6
+
+```text
+Do not generate anything yet. Check the Codex plugin: can it generate an image from a text prompt with an attached reference image, and can it edit an attached image? Which image model does it report, and what output sizes does it give? Answer from its documentation or a dry run that produces no character art.
+```
+
+## Prompt #7
+
+```text
+Change of pipeline: you now run the image generator yourself, through
+Codex CLI signed in with ChatGPT (its built-in image tool). Not the Codex
+plugin for Claude Code: it passes text only. No API key.
+
+The reviewer now reads this repository directly, so reports can be short:
+say what you did, what broke, and where the files are.
+art/reference/logo-5A.png is in place (not committed yet).
+
+## Rules (update CLAUDE.md; this replaces "run by me by hand")
+- One script in the repo makes every call, with `command codex exec`
+  (bypass the shell alias), a read-only sandbox, a fresh session per
+  call, and the input image attached with -i: the logo for G1,
+  art/raw/01-master.png for G2 to G8.
+- The task given to Codex is fixed wrapper text plus the generator prompt
+  from GENERATOR_PROMPTS.md, byte for byte. The wrapper tells Codex to
+  call its image tool once, pass the prompt unchanged, change nothing in
+  the result, and write no files in the repository. Log the wrapper in
+  PROMPTS.md too.
+- Run with --json and keep the event log. From it, record what Codex
+  really passed to the image tool and compare it with our prompt:
+  identical, or the exact difference. If the log does not show it, write
+  "not reported". Never guess.
+- Disclosure, per attempt, in generations.json: Codex CLI version, the
+  Codex model of the session, the image tool's name, the image model only
+  if something actually reports it (otherwise "not reported"), our
+  prompt id, the prompt as sent, date, attempt number, output pixel size.
+- Copy the generated file out of Codex's own folder unmodified into
+  art/raw/attempts/ with its attempt number. Record its sha256 at the
+  source and at the copy.
+- You never choose between attempts and never promote one to art/raw/:
+  I do. Exception for stage 1 below: attempt 1 of G1 is used as the input
+  for G2 so that I can review both together.
+- Raw event logs can contain local paths and account details: keep them
+  out of git, and commit only an extract with those removed. Add a
+  hygiene test for it.
+- At most 2 attempts per prompt without asking me.
+- The size rule stays: the canvas is the master's own size, and an
+  attempt of another size is a failed attempt, kept and logged.
+
+## Then run Part D, stage 1
+1. Check the logo PNG hash.
+2. Generate G1. If the call fails or returns no image, stop and report.
+3. Generate G2 from G1 attempt 1.
+4. Show the metadata of both files. Commit no raw files.
+5. Run regions without freezing, check:layers --partial, and the review
+   image.
+6. Report and stop. Do not run G3 to G8.
+```
+
+## [GENERATOR WRAPPER]
+
+The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.
+
+Before the prompt:
+
+```text
+You relay one request to your built-in image generation tool. Do exactly this:
+1. Call your image generation tool exactly once.
+2. Give it the prompt between the lines BEGIN PROMPT and END PROMPT below, character for character. Do not rewrite, shorten, extend, translate, restructure or add anything to it. The attached image is the input image for this call.
+3. Change nothing in the result: no cropping, resizing, conversion, retouching and no second call.
+4. Write, move or delete no file in the repository, and run no shell commands.
+5. Reply with one line saying whether the image tool returned an image.
+
+BEGIN PROMPT
+```
+
+After the prompt:
+
+```text
+
+END PROMPT
+```
+
 ## Generator prompts
 
-The current version of each generator prompt, the same text as art/GENERATOR_PROMPTS.md. None has been run yet; drafts that were never run are only in git history. Once a prompt has been run, a corrected version is added next to it for the rerun instead of replacing it.
+The current version of each generator prompt, the same text as art/GENERATOR_PROMPTS.md. Drafts that were never run are only in git history. G1 and G2 were run on 2026-10-08 (art/attempts/). Once a prompt has been run, a corrected version is added next to it for the rerun instead of replacing it.
 
 ### [GENERATOR] G1 · master
 

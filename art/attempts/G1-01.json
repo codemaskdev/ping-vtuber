@@ -1,0 +1,93 @@
+{
+  "$comment": "Written by scripts/extract-attempt.mjs from Codex's logs. Local paths, account details and session, call and response ids are removed. Values Codex did not report are 'not reported'.",
+  "attempt": "G1-01",
+  "prompt": "G1",
+  "attemptNumber": 1,
+  "input": {
+    "file": "art/reference/logo-5A.png",
+    "sha256": "05bb7b746c89d52a363db1a896708f4a0d291ba6e2c46badbb5faa7bcbc70e06",
+    "width": 1024,
+    "height": 1024
+  },
+  "command": [
+    "codex",
+    "exec",
+    "--json",
+    "--sandbox",
+    "read-only",
+    "-C",
+    ".",
+    "-i",
+    "art/reference/logo-5A.png",
+    "-"
+  ],
+  "exitStatus": 0,
+  "codexCliVersion": "codex-cli 0.161.0",
+  "sessionCliVersion": "0.161.0",
+  "date": "2026-10-08",
+  "dateSource": "Codex session file, session_meta.timestamp (UTC)",
+  "codexModel": "gpt-5.5",
+  "sandbox": "read-only",
+  "approvalPolicy": "never",
+  "jsonEventTypes": [
+    "thread.started",
+    "turn.started",
+    "item.completed",
+    "turn.completed"
+  ],
+  "jsonEventsReportToolCall": "no: the --json events show only thread, turn and agent messages; the tool call is read from Codex's session file",
+  "injectedByCodex": [
+    "Codex could not read the local image at `-`: No such file or directory (os error 2)"
+  ],
+  "imageTool": {
+    "name": "imagegen",
+    "namespace": "image_gen",
+    "calls": 1,
+    "argumentKeys": [
+      "num_last_images_to_include",
+      "prompt",
+      "transparent_background"
+    ],
+    "otherArguments": {
+      "num_last_images_to_include": 1,
+      "transparent_background": false
+    }
+  },
+  "promptPassed": "Turn the attached logo into an original mascot character called Ping. Keep the logo's design: the same square screen with rounded corners, the same thin neon cyan outline, the same very dark navy-black screen, the same small terminal prompt in the top-left corner of the screen (a dim cyan \">\" chevron followed by a small solid coral-red cursor block), the same two eye shapes and the same pixel-block smile, in the same places on the screen. No eyebrows. Do not copy any text.\n\nPing is a head only: this screen with a face. No body, no neck, no stand, no cables, no keyboard, no antenna, no hands.\n\nCanvas and framing: square 1:1 image. Pure flat black background (#000000) everywhere outside the character: no gradient, no vignette, no texture, no stars, no particles, no code symbols, no decorations, no text, no logo, no watermark, no border. Front view, perfectly straight, not tilted, no perspective. The screen is centred horizontally and vertically and is 70% of the image width; leave 15% empty black margin on every side.\n\nScreen: one continuous, unbroken, closed neon cyan outline around its outer edge. The inside of the screen is flat, solid, very dark navy-black, with no scanlines, no reflections, no gradient and no texture. Only this outer outline glows: a soft cyan glow surrounds it on the outside and fades to pure black well before the image edges.\n\nFace, as flat solid neon cyan shapes with crisp, sharp edges and no glow or halo around them:\n- Eyes: the logo's two eyes, solid four-sided shapes that mirror each other, flat at the bottom, their top edges sloping down toward the middle of the face, just below the middle of the screen.\n- Mouth: the logo's closed smile, built from square pixel blocks: a flat bar with one block raised at each end, centred below the eyes, in the lower third of the screen.\nThe red cursor block also has crisp edges and no glow. No face shape touches another shape, the prompt or the outline.\n\nStyle: flat vector-like neon on dark, clean shapes, high contrast, no shading, no highlights, no 3D, simple enough to stay readable at 64 x 64 pixels. Ping is an original character: not any existing character, mascot, brand or real person.",
+  "promptPassedVsOurs": "identical",
+  "revisedPrompt": "Turn the attached logo into an original mascot character called Ping. Keep the logo's design: the same square screen with rounded corners, the same thin neon cyan outline, the same very dark navy-black screen, the same small terminal prompt in the top-left corner of the screen (a dim cyan \">\" chevron followed by a small solid coral-red cursor block), the same two eye shapes and the same pixel-block smile, in the same places on the screen. No eyebrows. Do not copy any text.\n\nPing is a head only: this screen with a face. No body, no neck, no stand, no cables, no keyboard, no antenna, no hands.\n\nCanvas and framing: square 1:1 image. Pure flat black background (#000000) everywhere outside the character: no gradient, no vignette, no texture, no stars, no particles, no code symbols, no decorations, no text, no logo, no watermark, no border. Front view, perfectly straight, not tilted, no perspective. The screen is centred horizontally and vertically and is 70% of the image width; leave 15% empty black margin on every side.\n\nScreen: one continuous, unbroken, closed neon cyan outline around its outer edge. The inside of the screen is flat, solid, very dark navy-black, with no scanlines, no reflections, no gradient and no texture. Only this outer outline glows: a soft cyan glow surrounds it on the outside and fades to pure black well before the image edges.\n\nFace, as flat solid neon cyan shapes with crisp, sharp edges and no glow or halo around them:\n- Eyes: the logo's two eyes, solid four-sided shapes that mirror each other, flat at the bottom, their top edges sloping down toward the middle of the face, just below the middle of the screen.\n- Mouth: the logo's closed smile, built from square pixel blocks: a flat bar with one block raised at each end, centred below the eyes, in the lower third of the screen.\nThe red cursor block also has crisp edges and no glow. No face shape touches another shape, the prompt or the outline.\n\nStyle: flat vector-like neon on dark, clean shapes, high contrast, no shading, no highlights, no 3D, simple enough to stay readable at 64 x 64 pixels. Ping is an original character: not any existing character, mascot, brand or real person.",
+  "revisedPromptVsOurs": "identical",
+  "imageResult": {
+    "status": "completed",
+    "failure": null,
+    "transparentBackground": false,
+    "saved": "under $CODEX_HOME/generated_images"
+  },
+  "imagesCreated": 1,
+  "imageModel": {
+    "value": "gpt-image",
+    "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+  },
+  "c2pa": {
+    "ActionsSoftwareAgentName": "ChatGPT",
+    "ActionsSoftwareAgentVersion": "gpt-image",
+    "Claim_Generator_InfoName": "OpenAI Media Service API",
+    "ActionsAction": [
+      "c2pa.created",
+      "c2pa.converted",
+      "c2pa.watermarked.unbound"
+    ],
+    "ActionsDigitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "output": {
+    "copy": "art/raw/attempts/G1-01.png",
+    "bytes": 934841,
+    "sha256AtSource": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a",
+    "sha256AtCopy": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a",
+    "format": "png",
+    "width": 1254,
+    "height": 1254
+  },
+  "sizeCheck": "1254x1254: a G1 attempt sets the canvas if the author makes it the master",
+  "agentFinalMessage": "The image tool returned an image."
+}

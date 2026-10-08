@@ -3,3 +3,5 @@ node_modules/
 out/
 test/fixtures/raw/
 test/fixtures/build/
+logs/
+art/raw/attempts/*.png

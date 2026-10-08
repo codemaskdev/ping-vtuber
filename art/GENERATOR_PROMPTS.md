@@ -1,14 +1,14 @@
 # Generator prompts
 
-Run these in order. G1 makes the master from the reference logo; every later prompt is an edit of the master and
-changes one thing only. Attach `art/raw/01-master.png` to every edit message (G2 to G8). Download each result as
-PNG, at the generator's full size, and save it under the exact name given. Do not crop, resize or touch the files:
-processing is done by `npm run process`, and every raw must have exactly the master's pixel size.
+Run by `npm run generate -- G<n>` (`scripts/generate.mjs`) through Codex CLI's built-in image tool, one fresh
+session per call, the text below put byte for byte into the fixed wrapper in `lib/attempts.mjs`. G1 makes the
+master from the reference logo; every later prompt is an edit of the master and changes one thing only. The script
+attaches `art/reference/logo-5A.png` to G1 and `art/raw/01-master.png` to G2 to G8, and copies each result,
+unmodified, to `art/raw/attempts/<id>.png`. The author chooses between attempts and promotes one to the file name
+given under each prompt. Every raw must have exactly the master's pixel size.
 
-For each image, note the generator name and version exactly as its UI shows them, and the date. Those go into
-`art/generations.json` together with the prompt id (G1…G8).
-
-Reference: attach `art/reference/logo-5A.png` (a PNG of `logo-5A.svg`) to G1.
+Disclosure per attempt (`art/generations.json`, `art/attempts/<id>.json`): Codex CLI version, the session's model,
+the image tool, the image model where something reports it, the prompt as passed to the tool, date, pixel size.
 
 What the prompts aim for, from the logo: a square screen, centred, 70 % of the image wide; the prompt chevron and the
 red cursor in its top-left corner; the eyes just below the middle; the pixel-block smile in the lower third. Only the

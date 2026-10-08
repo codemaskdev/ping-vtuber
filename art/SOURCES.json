@@ -2,6 +2,12 @@
   "$comment": "Written by scripts/sources.mjs. Do not edit by hand. Prompt texts are copied from art/GENERATOR_PROMPTS.md.",
   "reference": [
     {
+      "file": "art/reference/logo-5A.png",
+      "sha256": "05bb7b746c89d52a363db1a896708f4a0d291ba6e2c46badbb5faa7bcbc70e06",
+      "bytes": 29096,
+      "role": "reference: the CodeMask channel logo, given to the generator with G1; not character art"
+    },
+    {
       "file": "art/reference/logo-5A.svg",
       "sha256": "0647760785308e9f15671161247cb78fc54add8c3a95ffbda965ebdc99bf2d33",
       "bytes": 642,
@@ -9,6 +15,42 @@
     }
   ],
   "raw": [],
+  "attempts": [
+    {
+      "attempt": "G1-01",
+      "file": "art/raw/attempts/G1-01.png",
+      "sha256": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a",
+      "prompt": "G1",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G1-01.json"
+    },
+    {
+      "attempt": "G2-01",
+      "file": "art/raw/attempts/G2-01.png",
+      "sha256": "923936cdc85c7ff4b38d39426174b4e9f76a000d07e8ac9f03375e2ac837e7b4",
+      "prompt": "G2",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G2-01.json"
+    }
+  ],
   "layers": [],
   "regions": null,
   "processLog": null

@@ -26,10 +26,11 @@ test("reference logos are the files the author named", () => {
   }
 });
 
-test("no raw file is committed before its metadata was shown and approved", () => {
-  const gens = JSON.parse(fs.readFileSync(art("generations.json"), "utf8")).images;
+test("no raw file or attempt is committed before its metadata was shown and approved", () => {
+  const g = JSON.parse(fs.readFileSync(art("generations.json"), "utf8"));
   for (const f of tracked.filter((t) => t.startsWith("art/raw/") && !t.endsWith(".gitkeep"))) {
-    assert.equal(gens[path.basename(f)]?.metadataApproved, true, `${f} is committed without metadataApproved`);
+    const rec = f.startsWith("art/raw/attempts/") ? g.attempts?.[path.basename(f).replace(/\.[a-z]+$/, "")] : g.images?.[path.basename(f)];
+    assert.equal(rec?.metadataApproved, true, `${f} is committed without metadataApproved`);
   }
 });
 
