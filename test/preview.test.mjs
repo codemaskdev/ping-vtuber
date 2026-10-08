@@ -44,3 +44,10 @@ test("the clip holds each pose for whole frames: framesPerEntry at fps, no easin
   assert.equal(c.framesPerEntry, 15);
   assert.equal(c.entries.length * c.framesPerEntry, 120);
 });
+
+test("the liveness clip is a final render of 10 s at 30 fps for one seed", async () => {
+  const { livenessSequence } = await import("../scripts/build-preview.mjs");
+  const s = livenessSequence(1);
+  assert.deepEqual([s.kind, s.seed, s.fps, s.frames, s.final], ["liveness", 1, 30, 300, true]);
+  assert.throws(() => livenessSequence(-1), /seed/);
+});

@@ -12,3 +12,6 @@ rig/preview/adapter.js
 rig/preview/art/
 rig/preview/renders/
 rig/preview/.hyperframes/
+rig/preview/rng.mjs
+rig/preview/liveness.mjs
+rig/preview/pose.mjs

@@ -367,11 +367,10 @@
       "y": 0
     },
     "eyes": "open",
-    "brows": {
-      "dy": -22
-    },
+    "brows": "hidden",
     "mouth": "rest",
     "cursor": true,
     "glow": 1
-  }
+  },
+  "neutralPoseNote": "Brows hidden, like the logo and the master (author's prompt #13); they appear only in emotions, at browsRest.browsRestDy when shown."
 }

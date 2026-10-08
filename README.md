@@ -100,3 +100,17 @@ A pose is `{ head: { tilt, x, y }, eyes, brows: { dy } | "hidden", mouth, cursor
 and anything outside `rig.json` limits is rejected. The draw list gives, per drawn layer in z order, its file, own
 offset (mouth anchorDy, brows dy), the head's rotation and centre, the head's translation, and opacity. The adapter
 draws `translate + rotate(p + offset)`; the rotation is done by the canvas, not by the rig.
+
+## Step 3: liveness
+
+```
+rig/liveness.json     chosen blink, breathing, micro drift and cursor values, each with why
+lib/liveness.mjs      livenessAt(config, seed, frame, fps) -> partial pose; same answer whatever was asked before
+lib/pose.mjs          combine(rig, base, ...partials): head adds up, eyes closed and cursor off win, limits checked
+```
+
+```
+npm run preview:build -- liveness --seed 1        10 s at 30 fps, rendered like the other sequences
+npm run liveness:report -- --seed 1 --seconds 60  numbers and out/liveness-timeline.png
+npm run liveness:strip -- --seed 1                out/liveness-strip.png, one blink from the render
+```

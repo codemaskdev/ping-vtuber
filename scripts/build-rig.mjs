@@ -100,7 +100,8 @@ export function buildRig() {
     },
     limits,
     fitCheck: { rule: "room = distance from each layer's alpha box corner to the canvas edge minus (r * theta + shift); must be >= 0", thetaRad: theta, shiftPx: shift, layers: fit },
-    neutralPose: { head: { tilt: 0, x: 0, y: 0 }, eyes: "open", brows: { dy: browsRestDy }, mouth: "rest", cursor: true, glow: 1 },
+    neutralPose: { head: { tilt: 0, x: 0, y: 0 }, eyes: "open", brows: "hidden", mouth: "rest", cursor: true, glow: 1 },
+    neutralPoseNote: "Brows hidden, like the logo and the master (author's prompt #13); they appear only in emotions, at browsRest.browsRestDy when shown.",
   };
   return { rig, brows, eyes, gapPx, blockPx, browsRestDy, limits, fit, W, H, headPivot };
 }

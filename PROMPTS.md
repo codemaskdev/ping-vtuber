@@ -519,6 +519,65 @@ the render times, test counts, what broke, questions. Do not start the
 liveness step.
 ```
 
+## Prompt #13
+
+```text
+Step 2 is accepted at dec91d1: I looked at the pose sheet, rig.mjs and
+the adapter. Answers: keep the tilt limit at 4 degrees for now (we come
+back to it at the webcam step); keep brows at -47 (above that the left
+brow runs into the cursor); the outline number is the redrawn outline of
+G2-02 and needs no new check.
+
+One change to step 2: the neutral pose has the brows hidden, like the
+logo and the master. Brows appear only in emotions (a later step).
+browsRestDy stays in rig.json as their rest position when shown.
+Update rig.json, the tests and the pose sheet.
+
+This prompt is step 3: liveness. No lip sync, no emotions, no webcam.
+
+## Part A: liveness core (plain JavaScript, runs in a browser too)
+1. lib/liveness.mjs: a pure function of (seed, frame number, fps) that
+   returns a partial pose. It must give the same answer for a frame no
+   matter which frames were asked before: HyperFrames seeks. Build a
+   schedule from the seed, then look frames up in it.
+2. What it drives:
+   - Blink: eyes closed for a few frames, at intervals drawn from the
+     seeded generator in lib/rng.mjs. Now and then a double blink.
+   - Breathing: a slow, small vertical head shift.
+   - Micro head movement: small tilt and shift targets drawn from the
+     seed, eased from one to the next.
+   - Cursor: blinks at a fixed terminal rate, on and off.
+3. Every range and period (blink interval, blink length, double-blink
+   chance, breathing period and depth, tilt and shift ranges, cursor
+   rate) goes in rig/liveness.json as chosen values, labelled so, with
+   one line each on why. Keep the amplitudes well inside the pose limits
+   so that lip sync and emotions can add to them later.
+4. Rule 5 of CLAUDE.md: no Math.sin and similar. Ease with a polynomial.
+5. lib/pose.mjs: combine(base pose, partial poses...) -> pose. Head
+   shifts and tilts add up; eyes closed wins over open; the result is
+   checked against the limits and rejected if outside. Lip sync and
+   emotions will plug in here.
+6. Tests: same seed and frame give the same partial pose in any call
+   order; another seed gives another schedule; blinks never overlap;
+   every frame of a 60 second run stays inside the pose limits; combine.
+
+## Part B: render and measure
+1. A 10 second clip at 30 fps, seed written in the file name and the
+   log. Render it twice and compare frame hashes.
+2. out/liveness-timeline.png, drawn by code: over 60 seconds, the blink
+   moments, the breathing curve, the tilt curve and the cursor state.
+   This is a chart for the video, not character art.
+3. Measured, with commands: blinks in 60 seconds and their shortest and
+   longest interval; the largest tilt and shift reached; render time.
+4. A still strip, out/liveness-strip.png: the frames of one blink, side
+   by side, labelled with frame numbers.
+
+## STOP here
+Commit, then report briefly: the chosen values, the measured numbers,
+the two frame-hash runs, render times, test counts, what broke,
+questions. Do not start lip sync.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

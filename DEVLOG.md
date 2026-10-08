@@ -384,3 +384,46 @@ Numbers (no limits yet)
 What broke
 - Nothing failed. Generated preview files (index.html, data.js, copies of rig.mjs, adapter.js and the layers) are
   gitignored; the committed project is package.json, hyperframes.json, meta.json and vendor/gsap.min.js.
+
+## 2026-10-08 · Step 3: liveness (prompt #13)
+
+Step 2 change
+- The neutral pose has the brows hidden, like the logo and the master (rig.json neutralPose, written by
+  scripts/build-rig.mjs); browsRestDy (-22) stays as their rest position when shown. Tests and the pose sheet
+  updated; out/pose-sheet.png re-rendered (15 frames, rendered in 5.0s, `time` 6.662 s). The step 2 test clip was
+  rendered with the old neutral pose (brows shown); it was not rendered again.
+
+What was done
+- rig/liveness.json: chosen values, each with its reason in the file: blink interval 2.0..6.0 s (from the end of one
+  blink to the start of the next), closed 0.10..0.15 s, double-blink chance 0.15 with 0.15..0.25 s between the two;
+  breathing period 4.0 s, depth 3 px (head y -1.5..+1.5); micro drift targets every 1.5..3.5 s within -0.8..0.8
+  degrees and -4..4 px on each axis; cursor 0.53 s on, 0.53 s off, starting on.
+- lib/liveness.mjs: livenessAt(config, seed, frame, fps) builds the seed's blink and drift schedules from time 0 up
+  to the frame and looks it up; nothing cached, so the answer does not depend on earlier calls. Separate generator
+  streams for blinks and drift (lib/rng.mjs mulberry32). Breathing is a smoothstep up and down, the drift eases with
+  smootherstep; no trigonometry.
+- lib/pose.mjs: combine(rig, base, ...partials): head tilt, x and y add up; eyes closed and cursor off win; brows,
+  mouth and glow take the last setter; the result goes through validatePose (rejected, never clamped).
+- The HyperFrames preview computes each frame of a liveness clip in the browser: combine(neutral, livenessAt(seed,
+  frame, 30)) → drawList → adapter.
+
+Numbers
+- `npm run liveness:report -- --seed 1 --seconds 60`: 16 blinks start in the 60 s (2 of them the second of a
+  double); 61 frames with the eyes closed; interval between blink starts shortest 0.3039843718172044 s (inside a
+  double), longest 6.126616161921994 s; not counting the second of a double, shortest 2.6431976171210394 s. The
+  longest start-to-start interval is above 6.0 because the configured interval runs from a blink's end, and blinks
+  last up to 0.15 s. Largest |tilt| 0.6771515524734805 degrees, |x| 3.908362841289338 px, |y| 5.231234531257524 px
+  (breathing included), against limits of 4 degrees and 30 px. Chart: out/liveness-timeline.png.
+- Clip: seed 1, 10 s at 30 fps, 300 frames (`node scripts/build-preview.mjs liveness --seed 1`, then
+  `(cd rig/preview && npx --yes hyperframes@0.8.134 render --format png-sequence -o ../../out/render/liveness-seed-1-run-N)`;
+  the seed is in the folder name and on the first line of each run's log). Run 1 rendered in 1m 0.9s (capture
+  58.3s), `time` 1:02.59; run 2 rendered in 1m 0.8s (capture 58.3s), `time` 1:02.52.
+  `npm run frame-hashes -- out/render/liveness-seed-1-run-1 out/render/liveness-seed-1-run-2`: 300 frames, 300
+  identical by sha256, 0 differ.
+- out/liveness-strip.png: the first blink of the clip, frames 83 to 86 closed (2.7666666666666666 s to 2.9 s), with
+  frames 82 and 87 open on either side; frame n is the render's frame_<n + 1>.png.
+- `npm test`: tests 100, pass 100, fail 0, skipped 0, duration_ms 65863.347208.
+
+What broke
+- The first timeline chart drew the row names over the scale labels ("BREATHING" over "1.5"); the names now sit
+  above each row.

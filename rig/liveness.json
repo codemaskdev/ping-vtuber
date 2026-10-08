@@ -1,0 +1,32 @@
+{
+  "$comment": "Liveness parameters for lib/liveness.mjs. Chosen values, not measurements (author's prompt #13), each with one line on why. Amplitudes are kept well inside rig/rig.json limits so lip sync and emotions can add to them later.",
+  "blink": {
+    "intervalS": [2.0, 6.0],
+    "intervalWhy": "Chosen: people at rest blink every few seconds; 2 to 6 s keeps a short clip alive without looking nervous.",
+    "closedS": [0.10, 0.15],
+    "closedWhy": "Chosen: 3 to 4 frames at 30 fps, long enough to read as a blink, short enough not to look sleepy.",
+    "doubleChance": 0.15,
+    "doubleWhy": "Chosen: about one blink in seven is a double, now and then, not a pattern.",
+    "doubleGapS": [0.15, 0.25],
+    "doubleGapWhy": "Chosen: eyes open again for 4 to 7 frames between the two closings of a double blink."
+  },
+  "breathing": {
+    "periodS": 4.0,
+    "periodWhy": "Chosen: about 15 breaths a minute, a calm rate at rest.",
+    "depthPx": 3,
+    "depthWhy": "Chosen: 3 px from top to bottom (head y from -1.5 to +1.5), felt more than seen; one tenth of the 30 px shift limit."
+  },
+  "micro": {
+    "segmentS": [1.5, 3.5],
+    "segmentWhy": "Chosen: a new small head target every 1.5 to 3.5 s, slow enough to read as drift, not as a twitch.",
+    "tiltDeg": 0.8,
+    "tiltWhy": "Chosen: targets within -0.8..0.8 degrees, a fifth of the 4 degree limit.",
+    "shiftPx": 4,
+    "shiftWhy": "Chosen: targets within -4..4 px on each axis, under a seventh of the 30 px limit."
+  },
+  "cursor": {
+    "onS": 0.53,
+    "offS": 0.53,
+    "why": "Chosen: the classic terminal cursor rate, 530 ms on and 530 ms off, starting on."
+  }
+}

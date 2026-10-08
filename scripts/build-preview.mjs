@@ -4,6 +4,7 @@
 // pose holds for its whole step.
 //
 //   node scripts/build-preview.mjs pose-sheet | clip | reconstruction
+//   node scripts/build-preview.mjs liveness --seed 1     10 s at 30 fps of the neutral pose plus liveness
 //
 // Sequences (rigSequences below): every entry is { label, pose, skeleton }. "clip" is a final render: it refuses
 // any entry with the debug skeleton on.
@@ -15,6 +16,7 @@ import { ROOT, rel } from "../lib/spec.mjs";
 
 export const PREVIEW = path.join(ROOT, "rig", "preview");
 export const rig = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "rig.json"), "utf8"));
+export const livenessConfig = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "liveness.json"), "utf8"));
 
 const pose = (change) => { const p = neutralPose(rig); change(p); return p; };
 const L = rig.limits;
@@ -28,7 +30,7 @@ export function rigSequences() {
         { label: "eyes closed", pose: pose((p) => { p.eyes = "closed"; }) },
         ...["rest", "small", "open", "round", "wide"].map((m) => ({ label: `mouth ${m}`, pose: pose((p) => { p.mouth = m; }) })),
         { label: "brows as drawn (dy 0)", pose: pose((p) => { p.brows = { dy: 0 }; }) },
-        { label: `brows at browsRestDy (${rig.browsRest.browsRestDy})`, pose: pose(() => {}) },
+        { label: `brows at browsRestDy (${rig.browsRest.browsRestDy})`, pose: pose((p) => { p.brows = { dy: rig.browsRest.browsRestDy }; }) },
         { label: `brows raised (dy ${L.browsDy[0]})`, pose: pose((p) => { p.brows = { dy: L.browsDy[0] }; }) },
         { label: `head tilt ${L.headTiltDeg[0]} deg`, pose: pose((p) => { p.head.tilt = L.headTiltDeg[0]; }) },
         { label: `head tilt ${L.headTiltDeg[1]} deg`, pose: pose((p) => { p.head.tilt = L.headTiltDeg[1]; }) },
@@ -65,19 +67,26 @@ export function checkSequence(name, seq) {
   }
 }
 
-export function buildPreview(name) {
-  const seq = rigSequences()[name];
+// A liveness clip: the neutral pose plus lib/liveness.mjs for the seed, computed per frame in the browser.
+export function livenessSequence(seed, seconds = 10, fps = 30) {
+  if (!Number.isInteger(seed) || seed < 0) throw new Error("seed must be a non-negative integer");
+  return { kind: "liveness", seed, fps, frames: seconds * fps, final: true, entries: [] };
+}
+
+export function buildPreview(name, seed) {
+  const seq = name === "liveness" ? livenessSequence(seed) : rigSequences()[name];
   if (!seq) throw new Error(`unknown sequence ${name}`);
   checkSequence(name, seq);
-  const frames = seq.entries.length * seq.framesPerEntry;
+  const frames = seq.kind === "liveness" ? seq.frames : seq.entries.length * seq.framesPerEntry;
   const duration = frames / seq.fps;
   for (const d of ["layers"]) fs.rmSync(path.join(PREVIEW, d), { recursive: true, force: true });
   fs.mkdirSync(path.join(PREVIEW, "art", "layers"), { recursive: true });
   for (const l of rig.layers) fs.copyFileSync(path.join(ROOT, l.file), path.join(PREVIEW, l.file));
-  fs.copyFileSync(path.join(ROOT, "lib", "rig.mjs"), path.join(PREVIEW, "rig.mjs"));
+  for (const f of ["rig.mjs", "rng.mjs", "liveness.mjs", "pose.mjs"]) fs.copyFileSync(path.join(ROOT, "lib", f), path.join(PREVIEW, f));
   fs.copyFileSync(path.join(ROOT, "rig", "adapter.js"), path.join(PREVIEW, "adapter.js"));
   fs.writeFileSync(path.join(PREVIEW, "data.js"),
     "// Written by scripts/build-preview.mjs. Do not edit by hand.\nwindow.PING_RIG = " + JSON.stringify(rig) +
+    ";\nwindow.PING_LIVENESS = " + JSON.stringify(livenessConfig) +
     ";\nwindow.PING_SEQUENCE = " + JSON.stringify({ name, ...seq, frames, duration }) + ";\n");
   const W = rig.canvas.width, H = rig.canvas.height;
   const imgs = rig.layers.map((l, i) => `      <img id="layer-${i}" data-file="${l.file}" src="${l.file}" alt="" />`).join("\n");
@@ -86,7 +95,7 @@ export function buildPreview(name) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=${W}, height=${H}" />
-    <!-- Written by scripts/build-preview.mjs (sequence "${name}"). Do not edit by hand. -->
+    <!-- Written by scripts/build-preview.mjs (sequence "${name}"${seq.kind === "liveness" ? `, seed ${seq.seed}` : ""}). Do not edit by hand. -->
     <script src="vendor/gsap.min.js"></script>
     <script src="adapter.js"></script>
     <script src="data.js"></script>
@@ -106,15 +115,21 @@ export function buildPreview(name) {
 ${imgs}
     </div>
     <script type="module">
-      import { drawList, skeleton } from "./rig.mjs";
-      const R = window.PING_RIG, S = window.PING_SEQUENCE;
+      import { drawList, neutralPose, skeleton } from "./rig.mjs";
+      import { livenessAt } from "./liveness.mjs";
+      import { combine } from "./pose.mjs";
+      const R = window.PING_RIG, S = window.PING_SEQUENCE, LC = window.PING_LIVENESS;
       const images = {};
       for (const img of document.querySelectorAll("#preload img")) images[img.dataset.file] = img;
       await Promise.all(Object.values(images).map((img) => img.decode()));
       const ctx = document.getElementById("rig").getContext("2d");
       // Pose for a time: the frame number is exact (t * fps rounds to an integer), each entry holds framesPerEntry frames.
       function show(t) {
-        const frame = Math.round(t * S.fps);
+        const frame = Math.min(S.frames - 1, Math.round(t * S.fps));
+        if (S.kind === "liveness") {
+          PingAdapter.draw(ctx, images, drawList(R, combine(R, neutralPose(R), livenessAt(LC, S.seed, frame, S.fps))));
+          return;
+        }
         const e = S.entries[Math.min(S.entries.length - 1, Math.floor(frame / S.framesPerEntry))];
         PingAdapter.draw(ctx, images, drawList(R, e.pose));
         if (e.skeleton) PingAdapter.drawSkeleton(ctx, skeleton(R, e.pose));
@@ -131,10 +146,11 @@ ${imgs}
 </html>
 `;
   fs.writeFileSync(path.join(PREVIEW, "index.html"), html);
-  return { name, frames, duration, fps: seq.fps, entries: seq.entries.map((e) => e.label) };
+  return { name, frames, duration, fps: seq.fps, seed: seq.seed, entries: seq.entries.map((e) => e.label) };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const r = buildPreview(process.argv[2]);
-  console.log(`${rel(PREVIEW)}: sequence ${r.name}, ${r.frames} frames at ${r.fps} fps (${r.duration} s): ${r.entries.join(" | ")}`);
+  const i = process.argv.indexOf("--seed");
+  const r = buildPreview(process.argv[2], i >= 0 ? Number(process.argv[i + 1]) : undefined);
+  console.log(`${rel(PREVIEW)}: sequence ${r.name}${r.seed !== undefined ? `, seed ${r.seed}` : ""}, ${r.frames} frames at ${r.fps} fps (${r.duration} s)${r.entries.length ? ": " + r.entries.join(" | ") : ""}`);
 }

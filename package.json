@@ -20,6 +20,8 @@
     "pose-sheet": "node scripts/pose-sheet.mjs",
     "reconstruction": "node scripts/reconstruction.mjs",
     "frame-hashes": "node scripts/frame-hashes.mjs",
+    "liveness:report": "node scripts/liveness-report.mjs",
+    "liveness:strip": "node scripts/liveness-strip.mjs",
     "review": "node scripts/master-review.mjs",
     "process": "node scripts/process.mjs",
     "metadata": "node scripts/metadata.mjs",

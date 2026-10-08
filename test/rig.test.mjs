@@ -24,17 +24,19 @@ test("rig.json comes from the frozen regions, the process log and art/layers.jso
   assert.ok(rig.fitCheck.layers.every((f) => f.smallestRoomPx >= 0));
 });
 
-test("neutral pose: every default layer once, in z order, nothing moved but the mouth anchor and the brows", () => {
+test("neutral pose: brows hidden like the logo and the master; every other default layer once, in z order", () => {
+  assert.equal(rig.neutralPose.brows, "hidden");
   const d = drawList(rig, N());
-  assert.deepEqual(ids(d), ["glow", "head", "cursor", "eyes_open", "brows", "mouth_rest"]);
+  assert.deepEqual(ids(d), ["glow", "head", "cursor", "eyes_open", "mouth_rest"]);
   for (let i = 1; i < d.length; i++) assert.ok(d[i].z >= d[i - 1].z);
   for (const x of d) {
     assert.deepEqual(x.rotate, { deg: 0, centre: rig.headPivot });
     assert.deepEqual(x.translate, [0, 0]);
     assert.equal(x.file, rig.layers.find((l) => l.id === x.id).file);
   }
-  assert.deepEqual(item(d, "brows").offset, [0, rig.browsRest.browsRestDy]);
   assert.deepEqual(item(d, "mouth_rest").offset, [0, 0]);
+  const shown = N(); shown.brows = { dy: rig.browsRest.browsRestDy };
+  assert.deepEqual(item(drawList(rig, shown), "brows").offset, [0, rig.browsRest.browsRestDy]);
   assert.equal(item(d, "glow").opacity, 1);
 });
 
