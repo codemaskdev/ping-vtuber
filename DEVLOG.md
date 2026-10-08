@@ -510,3 +510,10 @@ What broke
   stronger `highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22`.
   Levels (out/voice-candidates/round-2/levels.txt) are in the report; intelligibility was not judged by ear (no one
   listened in this run).
+
+### Task 2: step 5, lip sync v2 (character timings → mouth)
+- Rules first (rig/lipsync-text.json), committed before anything was rendered with them, as asked; this makes two
+  commits for task 2 (rules, then results), decided because the rule "commit the rules before rendering" outranks
+  "one commit per task" for this task.
+- Changed before any render: the silent final e rule first also silenced the e of "the" (seen in a unit test, not in
+  output); "the" and "she" are now exceptions.
