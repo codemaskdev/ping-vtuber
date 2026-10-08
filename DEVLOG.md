@@ -493,3 +493,20 @@ What broke
   one take per phrase and that take is the asset.
 - What broke: the "no Cyrillic" hygiene test read the new mp3 files as text and found Cyrillic code points in their
   bytes. Binary media (audio, video, wasm, model files) are now left out of the text checks.
+
+### Task 1: voice candidates, round 2
+- `npm run voice:round2` → out/voice-candidates/round-2/ (not committed) with candidates.txt. Four ElevenLabs calls:
+  1. library, Laura - Enthusiast, Quirky Attitude (FGY2WhTYpPnrIDTdsKH5), 2.414875 s, character-cost 39;
+  2. library, Liam - Energetic, Social Media Creator (TX3LPaxmHKxFdv7VOQHJ), 2.832834 s, character-cost 39;
+  3. voice design "d1-curious-dry" (description in audio/voice.json round2), first of 3 previews, 8.306917 s;
+  4. voice design "d2-crisp-deadpan", first of 3 previews, 9.273458 s.
+  The account can design voices (POST /text-to-voice/create-previews answered with 3 previews each); nothing was
+  saved to the account. The model and the credits used are not reported by that endpoint.
+- Decided without asking: the design endpoint needs 100 to 1000 characters of text, so the design previews say the
+  candidate line three times (119 characters); the library and processed ones say it once.
+- Processed (no ElevenLabs call): the round 1 River file (the most neutral of the first three) through two ffmpeg
+  chains, kept in audio/voice.json round2 and in candidates.txt with the full command (ffmpeg 8.1.1, libmp3lame
+  128 kbps): subtle `highpass=f=150,lowpass=f=7500,acrusher=bits=12:mode=log:aa=1:mix=0.2,aecho=0.8:0.5:9:0.12`;
+  stronger `highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22`.
+  Levels (out/voice-candidates/round-2/levels.txt) are in the report; intelligibility was not judged by ear (no one
+  listened in this run).

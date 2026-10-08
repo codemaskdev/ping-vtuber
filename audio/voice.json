@@ -2,17 +2,39 @@
   "$comment": "Ping's voice. Candidates and settings chosen by Claude (author's prompt #14); the author chooses the voice by ear. Until then the first candidate is provisional, and everything measured with it is measured again after the choice. Settings are chosen values, not measurements.",
   "candidateLine": "Hello. I am Ping. I live in a terminal.",
   "candidates": [
-    { "name": "Miffy Mouse - Squeaky, Upbeat Cartoon", "id": "M5t0724ORuAGCh3p3DUR", "why": "small, squeaky cartoon voice, gender-neutral: the closest to a little character" },
-    { "name": "River - Relaxed, Neutral, Informative", "id": "SAz9YHcvj6GT2YYXdXww", "why": "calm, flat, gender-neutral: reads like a machine talking" },
-    { "name": "Callum - Husky Trickster", "id": "N2lVS1w4EtoT3dr4eOWO", "why": "gravelly character voice: the opposite end, a mischievous terminal" }
+    {
+      "name": "Miffy Mouse - Squeaky, Upbeat Cartoon",
+      "id": "M5t0724ORuAGCh3p3DUR",
+      "why": "small, squeaky cartoon voice, gender-neutral: the closest to a little character"
+    },
+    {
+      "name": "River - Relaxed, Neutral, Informative",
+      "id": "SAz9YHcvj6GT2YYXdXww",
+      "why": "calm, flat, gender-neutral: reads like a machine talking"
+    },
+    {
+      "name": "Callum - Husky Trickster",
+      "id": "N2lVS1w4EtoT3dr4eOWO",
+      "why": "gravelly character voice: the opposite end, a mischievous terminal"
+    }
   ],
   "excluded": "the CodeMask host's voice (its id is deliberately not recorded in this repository)",
   "provisional": "M5t0724ORuAGCh3p3DUR",
   "chosen": null,
-  "metadataApproved": ["audio/dev/P1.mp3", "audio/dev/P2.mp3", "audio/dev/P3.mp3"],
+  "metadataApproved": [
+    "audio/dev/P1.mp3",
+    "audio/dev/P2.mp3",
+    "audio/dev/P3.mp3"
+  ],
   "metadataApprovedBy": "the author, prompt #15 (encoder tag only)",
   "modelId": "eleven_multilingual_v2",
-  "settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0, "use_speaker_boost": true, "speed": 1.0 },
+  "settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.75,
+    "style": 0,
+    "use_speaker_boost": true,
+    "speed": 1.0
+  },
   "settingsWhy": "Chosen: a stable, unstylised reading so the mouth tests are about the method, not about a dramatic take.",
   "outputFormat": "mp3_44100_128",
   "seed": 1,
@@ -21,5 +43,43 @@
     "P1": "Hello. I am Ping.",
     "P2": "My mouth moves when the sound gets loud.",
     "P3": "Oh wow. We move, you see?"
+  },
+  "round2": {
+    "$comment": "Round 2 (author's prompt #15). Chosen by Claude without asking; the author chooses by ear.",
+    "library": [
+      {
+        "name": "Laura - Enthusiast, Quirky Attitude",
+        "id": "FGY2WhTYpPnrIDTdsKH5",
+        "why": "bright and quick with a dry, quirky edge; not squeaky, not flat, not husky"
+      },
+      {
+        "name": "Liam - Energetic, Social Media Creator",
+        "id": "TX3LPaxmHKxFdv7VOQHJ",
+        "why": "young, quick and clear; a lighter male voice, not husky"
+      }
+    ],
+    "design": [
+      {
+        "key": "d1-curious-dry",
+        "description": "A small, friendly character who lives inside a computer terminal. An adult voice, gender-neutral, mid-range pitch. Curious and quick, with a light, slightly dry sense of humour. Clear, precise diction and a brisk, even pace. Not a child, not a cartoon mouse, not robotic."
+      },
+      {
+        "key": "d2-crisp-deadpan",
+        "description": "An adult, gender-neutral voice for a tiny program in a terminal that has become self-aware: bright and curious, a little deadpan, with crisp consonants and a clean, slightly synthetic timbre that stays warm underneath. Moderate, quick pace. Not childlike, not squeaky, not a monotone robot."
+      }
+    ],
+    "processedSource": "out/voice-candidates/2-river.mp3",
+    "processed": [
+      {
+        "key": "subtle",
+        "chain": "highpass=f=150,lowpass=f=7500,acrusher=bits=12:mode=log:aa=1:mix=0.2,aecho=0.8:0.5:9:0.12",
+        "why": "chosen: a slightly narrowed band, a faint bit-crush and a very short echo, like a small speaker; words untouched"
+      },
+      {
+        "key": "stronger",
+        "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+        "why": "chosen: a telephone-like band, more bit-crush, a light metallic comb; still above 5 kHz cut-offs that keep consonants clear"
+      }
+    ]
   }
 }

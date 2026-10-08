@@ -22,6 +22,7 @@
     "frame-hashes": "node scripts/frame-hashes.mjs",
     "liveness:report": "node scripts/liveness-report.mjs",
     "voice": "node scripts/voice.mjs",
+    "voice:round2": "node scripts/voice-round2.mjs",
     "decode": "node scripts/decode-audio.mjs",
     "lipsync:stats": "node scripts/lipsync-stats.mjs",
     "lipsync:clips": "node scripts/lipsync-clips.mjs",
