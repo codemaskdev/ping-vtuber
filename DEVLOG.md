@@ -87,3 +87,20 @@ What broke, and decisions it forced
   every channel measured 615 x 615 against the master's 613 x 613 with no change of scale
   (`npm run check:layers -- --fixtures`). Worth knowing when the scale limit is chosen.
 - `npm test`: tests 53, pass 52, fail 0, skipped 1 (reprocess vs committed layers: no real art yet), duration_ms 29234.18675.
+
+## 2026-10-08 · Review round 2: mouth_open 6 x 5, full-size composites, master review, partial runs
+
+- Prompts #3 and #4 were sent in Russian; PROMPTS.md holds them as English translations, marked as such, because
+  all repository text is English.
+- The author's first logo drop put `logo-5A.svg` (moved from art/reference/, sha256 unchanged) into art/raw/ and no
+  PNG. Moved back to art/reference/ on the author's word. `logo-5A.png` is not in yet.
+- mouth_open is now 6 x 5 blocks (dark inside 4 x 3): G6, the mouth region rule (depth max(h, ceil(5w / 6)) +
+  margin), the fixtures and the tests changed with it. The fixture label on the screen moved down by 3 px so it stays
+  between the open mouth and the outline.
+- `npm run sheet` also writes full-size, unscaled composites to out/composites/: glow + head + cursor + eyes_open
+  with each mouth, one with eyes_closed, one with brows.
+- `npm run review` writes out/master-review.png: the master at full size with the measured regions and pivots drawn
+  on it. It refuses any path in art/.
+- `--partial` for process and check:layers, for Part D stage 1 when only 01-master.png and 02-head.png are in.
+- Identity check: the latest bug-driver commit and this repo's both print `CodeMask <codemask@users.noreply.github.com>`.
+- `npm test`: tests 58, pass 57, fail 0, skipped 1 (reprocess vs committed layers: no real art yet), duration_ms 31663.011834.

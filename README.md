@@ -16,7 +16,7 @@ art/regions.json             canvas, regions and pivots measured on the approved
 art/layers/                  one transparent full-canvas PNG per layer (made by npm run process)
 art/process-log.json         every automatic step applied, with its numbers
 art/SOURCES.json             sha256 of every reference, raw and processed file, with its provenance
-out/contact-sheet.png        all layers and mouth composites (not committed)
+out/                         contact sheet, full-size composites, master review (views, never committed)
 ```
 
 Layers, back to front: `glow`, `head`, `cursor`, `eyes_open` / `eyes_closed`, `brows`, and one of five mouths:
@@ -31,15 +31,18 @@ Node 22 or newer (`.nvmrc`: 24.15.0). One dependency, `pngjs`, pinned. Part D al
 npm install
 npm run metadata       embedded metadata of every raw (EXIF, XMP, PNG chunks, C2PA yes/no); prints only
 npm run regions        art/regions.json from the master; -- --freeze once the master is approved
+npm run review         out/master-review.png: the master with its measured regions and pivots drawn on it
 npm run process        art/raw → art/layers + art/process-log.json
 npm run check:layers   the layer table; exit code 1 if a pass/fail check fails
-npm run sheet          out/contact-sheet.png
+npm run sheet          out/contact-sheet.png and full-size composites in out/composites/
 npm run sources        art/SOURCES.json
 npm test               everything, on generated test fixtures, plus the checks on the real art
 npm run fixtures       make, measure, process and sheet the fixtures (test/fixtures/build/)
 ```
 
-Add `-- --fixtures` to `regions`, `process`, `check:layers` or `sheet` to run them on the fixtures.
+Add `-- --fixtures` to `regions`, `review`, `process`, `check:layers` or `sheet` to run them on the fixtures, and
+`-- --partial` to `process` or `check:layers` to handle only the layers whose raw is in (the master and
+`02-head.png` are required).
 
 ## How the layers are cut
 

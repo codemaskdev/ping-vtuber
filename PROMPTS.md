@@ -172,6 +172,63 @@ Same format as before, plus the output of
 `git log --format='%h %an <%ae> %cn <%ce> %cI'` pasted as is.
 ```
 
+## Prompt #3
+
+Sent in Russian. English translation, because all repository text is English:
+
+```text
+done logo-5A.png in art/raw/.
+```
+
+## Prompt #4
+
+Sent in Russian. English translation, because all repository text is English:
+
+```text
+move the svg back to reference, I am putting the png in now
+```
+
+## Prompt #5
+
+```text
+Review of step 1, round 2: accepted. A few small changes, then Part D in
+two stages.
+
+## Answers
+1. Contact sheet: scaled-down tiles are fine, it is a view, not art. Also
+   write full-size composites with no scaling into out/: head + glow +
+   cursor + eyes_open with each mouth, one with eyes_closed, one with
+   brows.
+2. Mouths: sizes in blocks, opening downward, and mouth_wide without the
+   raised ends are accepted. One change: mouth_open is 6 x 5 blocks (dark
+   inside 4 x 3), so it differs more from mouth_small. Update G6, the
+   mouth region rule, the fixtures and the tests.
+3. PROMPTS.md: accepted. Once a generator prompt has been run, a
+   corrected one is added next to it and never replaces it.
+4. c2patool: leave it. exiftool plus your own chunk listing is enough.
+
+## One check
+Show the author line of the latest bug-driver commit next to this repo's,
+so I can see the identity is the same string. Do not print any path.
+
+## Part D, stage 1: when I say the logo, 01-master.png and 02-head.png are in
+- Check the logo PNG hash.
+- Show me the metadata of both raws. Commit nothing yet.
+- Run `npm run regions` without freezing, and check:layers for what
+  exists.
+- Write out/master-review.png: a full-size copy of the master with the
+  measured regions and pivots drawn on it. Review only, never in art/.
+- Report and stop. I approve the master or ask for a rerun. You freeze
+  the regions only after I approve.
+
+## Part D, stage 2: after the freeze, when I say 03 to 08 are in
+Metadata, processing, check:layers as calibration, contact sheet,
+composites, report. Set no limits until I answer.
+
+## Report for each stage
+Tables and exiftool output pasted as is, what broke, questions.
+```
+
 ## Generator prompts
 
 The current version of each generator prompt, the same text as art/GENERATOR_PROMPTS.md. None has been run yet; drafts that were never run are only in git history. Once a prompt has been run, a corrected version is added next to it for the rerun instead of replacing it.
@@ -245,7 +302,7 @@ Save as: `art/raw/06-mouth_open.png`
 ```text
 Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
 
-Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is two blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
+Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 5 blocks tall, so the dark inside is 4 blocks wide and 3 blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
 ```
 
 ### [GENERATOR] G7 · mouth round

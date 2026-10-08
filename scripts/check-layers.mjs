@@ -4,13 +4,14 @@
 //
 //   npm run check:layers                 real art
 //   npm run check:layers -- --fixtures   test fixtures
+//   npm run check:layers -- --partial    only the layers whose raw is in
 import { paths } from "../lib/cli.mjs";
 import { checkLayers, formatTable, limitsLine } from "../lib/pipeline.mjs";
 import { loadSpec } from "../lib/spec.mjs";
 
 const p = paths();
 try {
-  const res = checkLayers(loadSpec(), p.raw, p.layers, p.regions, { fixtures: p.fixtures });
+  const res = checkLayers(loadSpec(), p.raw, p.layers, p.regions, { fixtures: p.fixtures, partial: process.argv.includes("--partial") });
   console.log(formatTable(res));
   console.log(limitsLine(res.limits));
   console.log(`regions: ${res.regionsFrozen ? "frozen" : "NOT frozen (master not approved yet)"}`);

@@ -1,11 +1,14 @@
 // out/contact-sheet.png: every layer on a checkerboard, then head + eyes_open + each mouth, then the same
 // composites at 64 x 64 (the size Ping must stay readable at). The thumbnails are scaled for display only; the
 // layers themselves are never resampled.
+// out/composites/*.png: full-size composites with no scaling, layers stacked by z: glow + head + cursor + eyes_open
+// with each mouth, one with eyes_closed, one with brows.
 //
 //   npm run sheet                 real art → out/contact-sheet.png
 //   npm run sheet -- --fixtures   fixtures → test/fixtures/build/contact-sheet.png
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { paths } from "../lib/cli.mjs";
 import { drawText } from "../lib/font.mjs";
 import { checkerboard, create, over, resample } from "../lib/image.mjs";
@@ -68,13 +71,43 @@ export function buildSheet(spec, layersDir, fixtures) {
   return sheet;
 }
 
-const p = paths();
-try {
-  const sheet = buildSheet(loadSpec(), p.layers, p.fixtures);
-  fs.mkdirSync(path.dirname(p.sheet), { recursive: true });
-  const w = writePng(p.sheet, sheet, p.fixtures ? { [FIXTURE_KEY]: FIXTURE_VALUE } : {});
-  console.log(`${rel(p.sheet)}  ${sheet.width}x${sheet.height}  ${w.bytes} bytes  sha256 ${w.sha256}`);
-} catch (e) {
-  console.error(e.message);
-  process.exit(1);
+// Full-size composites: name → layer ids, drawn in z order. Nothing is scaled.
+export function compositeSets(spec) {
+  const mouths = spec.layers.filter((l) => l.group === "mouth").map((l) => l.id);
+  const sets = mouths.map((m) => [`eyes_open-${m}`, ["glow", "head", "cursor", "eyes_open", m]]);
+  sets.push(["eyes_closed-mouth_rest", ["glow", "head", "cursor", "eyes_closed", "mouth_rest"]]);
+  sets.push(["brows-eyes_open-mouth_rest", ["glow", "head", "cursor", "eyes_open", "brows", "mouth_rest"]]);
+  const z = new Map(spec.layers.map((l) => [l.id, l.z]));
+  return sets.map(([name, ids]) => ({ name, ids: [...ids].sort((a, b) => z.get(a) - z.get(b)) }));
+}
+
+export function writeComposites(spec, layersDir, outDir, fixtures) {
+  guardDirs([layersDir, outDir], fixtures);
+  const imgs = new Map(spec.layers.map((l) => [l.id, readPng(path.join(layersDir, l.file))]));
+  for (const [id, r] of imgs) if (r.fixture !== fixtures) throw new Error(`${id}: fixture flag does not match the mode`);
+  fs.mkdirSync(outDir, { recursive: true });
+  const { width: W, height: H } = imgs.get("head").img;
+  return compositeSets(spec).map(({ name, ids }) => {
+    const c = create(W, H);
+    for (const id of ids) over(c, imgs.get(id).img);
+    const file = path.join(outDir, `${name}.png`);
+    const w = writePng(file, c, fixtures ? { [FIXTURE_KEY]: FIXTURE_VALUE } : {});
+    return { file: rel(file), layers: ids, width: W, height: H, ...w };
+  });
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const p = paths();
+  try {
+    for (const c of writeComposites(loadSpec(), p.layers, p.composites, p.fixtures)) {
+      console.log(`${c.file}  ${c.width}x${c.height}  ${c.layers.join(" + ")}  sha256 ${c.sha256}`);
+    }
+    const sheet = buildSheet(loadSpec(), p.layers, p.fixtures);
+    fs.mkdirSync(path.dirname(p.sheet), { recursive: true });
+    const w = writePng(p.sheet, sheet, p.fixtures ? { [FIXTURE_KEY]: FIXTURE_VALUE } : {});
+    console.log(`${rel(p.sheet)}  ${sheet.width}x${sheet.height}  ${w.bytes} bytes  sha256 ${w.sha256}`);
+  } catch (e) {
+    console.error(e.message);
+    process.exit(1);
+  }
 }

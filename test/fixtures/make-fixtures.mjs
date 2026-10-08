@@ -115,13 +115,13 @@ export function drawFixture(file, S = FIXTURE_SIZE) {
   // Mouths keep the smile's top edge (43) and open downward; one pixel block = 3 units.
   if (face.mouth === "rest") { box(img, 26, 46, 38, 49, CYAN); box(img, 23, 43, 26, 46, CYAN); box(img, 38, 43, 41, 46, CYAN); }
   if (face.mouth === "small") hollow(img, 23, 43, 6, 3, CYAN);
-  if (face.mouth === "open") hollow(img, 23, 43, 6, 4, CYAN);
+  if (face.mouth === "open") hollow(img, 23, 43, 6, 5, CYAN);
   if (face.mouth === "round") hollow(img, 26, 43, 4, 4, CYAN, true);
   if (face.mouth === "wide") hollow(img, 18.5, 43, 9, 3, CYAN);
   // Visible labels: on the screen below the mouth band, and on the background above and below the screen.
   const label = "TEST FIXTURE - NOT CHARACTER ART";
   const lx = (S - textWidth(label, 2)) >> 1;
-  drawText(img, label, lx, px(58), 2, LABEL);
+  drawText(img, label, lx, px(58) + 3, 2, LABEL); // between the open mouth (to 58 units) and the outline
   drawText(img, label, lx, 30, 2, LABEL);
   drawText(img, label + " " + file, (S - textWidth(label + " " + file, 2)) >> 1, S - 50, 2, LABEL);
 

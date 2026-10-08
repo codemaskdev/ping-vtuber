@@ -9,6 +9,8 @@ import { create, translate } from "../lib/image.mjs";
 import { checkLayers, loadRaws, processAll } from "../lib/pipeline.mjs";
 import { FIXTURE_KEY, FIXTURE_VALUE, readPng, writePng } from "../lib/png.mjs";
 import { ROOT, loadSpec } from "../lib/spec.mjs";
+import { compositeSets, writeComposites } from "../scripts/contact-sheet.mjs";
+import { buildReview } from "../scripts/master-review.mjs";
 import { freezeRegions, measureRegions } from "../scripts/regions.mjs";
 import { DISTORTIONS, FIXTURE_RAW, FIXTURE_SIZE, makeFixtures } from "./fixtures/make-fixtures.mjs";
 
@@ -82,6 +84,51 @@ test("screen size is measured per variant next to the master's and catches a sca
   const g = DISTORTIONS["08-mouth_wide.png"].grow;
   assert.deepEqual(row(checked, "mouth_wide").scaleDelta, [2 * g, 2 * g]);
   assert.deepEqual(row(checked, "mouth_small").scaleDelta, [0, 0]);
+});
+
+test("the mouth region has room for mouth_open, 5 blocks under the smile's top", () => {
+  const open = row(checked, "mouth_open").bbox, rest = row(checked, "mouth_rest").bbox, small = row(checked, "mouth_small").bbox;
+  assert.equal(open.y, rest.y);
+  assert.ok(open.h > small.h * 1.5, "open differs clearly from small");
+  assert.ok(row(checked, "mouth_open").inside);
+});
+
+test("partial mode: with only the master and the empty screen, their layers are made and the rest wait", () => {
+  const dir = run("partial-raw");
+  fs.mkdirSync(dir, { recursive: true });
+  for (const f of ["01-master.png", "02-head.png"]) fs.copyFileSync(path.join(FIXTURE_RAW, f), path.join(dir, f));
+  assert.throws(() => processAll(spec, dir, run("partial"), REGIONS, { fixtures: true }), /missing in .*03-brows.png/);
+  const log = processAll(spec, dir, run("partial"), REGIONS, { fixtures: true, partial: true });
+  assert.deepEqual(log.layers.map((l) => l.id), ["glow", "head", "cursor", "eyes_open", "mouth_rest"]);
+  assert.deepEqual(log.waiting, ["eyes_closed", "brows", "mouth_small", "mouth_open", "mouth_round", "mouth_wide"]);
+  for (const l of log.layers) assert.ok(fs.readFileSync(path.join(ROOT, l.file)).equals(fs.readFileSync(run("a/" + path.basename(l.file)))), l.id);
+  const res = checkLayers(spec, dir, run("partial"), REGIONS, { fixtures: true, partial: true });
+  assert.ok(res.ok);
+  assert.deepEqual(res.rows.filter((r) => r.waiting).map((r) => r.id).sort(), [...log.waiting].sort());
+});
+
+test("full-size composites: no scaling, layers stacked by z", () => {
+  const out = writeComposites(spec, run("a"), run("composites"), true);
+  assert.deepEqual(out.map((c) => path.basename(c.file)), compositeSets(spec).map((c) => `${c.name}.png`));
+  assert.equal(out.length, 7);
+  for (const c of out) assert.deepEqual([c.width, c.height], [FIXTURE_SIZE, FIXTURE_SIZE]);
+  assert.deepEqual(out.find((c) => c.file.endsWith("brows-eyes_open-mouth_rest.png")).layers, ["glow", "head", "cursor", "eyes_open", "brows", "mouth_rest"]);
+  // Where the mouth layer is opaque, the composite shows exactly the mouth pixel.
+  const comp = readPng(path.join(run("composites"), "eyes_open-mouth_open.png")).img, mouth = readPng(run("a/mouth_open.png")).img;
+  let checkedPx = 0;
+  for (let i = 0; i < mouth.data.length; i += 4) {
+    if (mouth.data[i + 3] !== 255) continue;
+    assert.deepEqual([...comp.data.subarray(i, i + 4)], [...mouth.data.subarray(i, i + 4)]);
+    checkedPx++;
+  }
+  assert.ok(checkedPx > 0);
+});
+
+test("the master review is drawn on a full-size copy and never goes into art/", () => {
+  const r = buildReview(spec, FIXTURE_RAW, REGIONS, run("master-review.png"), true);
+  assert.deepEqual([r.width, r.height], [FIXTURE_SIZE, FIXTURE_SIZE]);
+  assert.deepEqual(r.kinds.sort(), ["brows", "cursor", "eyes", "head", "mouth"]);
+  assert.throws(() => buildReview(spec, path.join(ROOT, "art", "raw"), path.join(ROOT, "art", "regions.json"), path.join(ROOT, "art", "review.png"), false), /never goes into art/);
 });
 
 test("the eyes_closed fixture lies on the open eyes' bottom edge, as the prompt says", () => {

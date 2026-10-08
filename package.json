@@ -6,12 +6,13 @@
   "engines": { "node": ">=22.2.0" },
   "scripts": {
     "regions": "node scripts/regions.mjs",
+    "review": "node scripts/master-review.mjs",
     "process": "node scripts/process.mjs",
     "metadata": "node scripts/metadata.mjs",
     "check:layers": "node scripts/check-layers.mjs",
     "sheet": "node scripts/contact-sheet.mjs",
     "sources": "node scripts/sources.mjs",
-    "fixtures": "node test/fixtures/make-fixtures.mjs && node scripts/regions.mjs --fixtures && node scripts/process.mjs --fixtures && node scripts/contact-sheet.mjs --fixtures",
+    "fixtures": "node test/fixtures/make-fixtures.mjs && node scripts/regions.mjs --fixtures && node scripts/master-review.mjs --fixtures && node scripts/process.mjs --fixtures && node scripts/contact-sheet.mjs --fixtures",
     "test": "node --test \"test/*.test.mjs\""
   },
   "dependencies": {

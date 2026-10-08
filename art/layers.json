@@ -9,7 +9,7 @@
     "glow": "the whole canvas",
     "cursor": "the red blob (most pixels with R > G and R > B), grown by the margin",
     "eyes": "the remaining blobs except the lowest one; exactly two expected; their joint box grown by the margin",
-    "mouth": "the lowest non-red blob, box w x h. Every mouth shape keeps the closed smile's top edge and opens downward, so the region runs from the box top minus the margin down to the box top plus max(h, ceil(2w / 3)) plus the margin (room for 'open' and 'round', 2/3 as tall as the smile is wide), and is centred on the box horizontally with half-width ceil(3w / 4) + margin (room for 'wide', 1.5 times as wide)",
+    "mouth": "the lowest non-red blob, box w x h. Every mouth shape keeps the closed smile's top edge and opens downward, so the region runs from the box top minus the margin down to the box top plus max(h, ceil(5w / 6)) plus the margin (room for 'open', 5 blocks tall under a 6-block smile, and 'round', 4 blocks), and is centred on the box horizontally with half-width ceil(3w / 4) + margin (room for 'wide', 1.5 times as wide)",
     "brows": "the eyes region's x range; from the eyes region's top up by ceil(eyesHeight / 2) + margin",
     "overlaps": "eyes and mouth regions are split at the middle of the gap between the measured eyes and mouth boxes; the brows region's top is cut to the cursor region's bottom if they overlap; any overlap left after that rejects the master",
     "clamp": "every feature region is clamped to the head region"
