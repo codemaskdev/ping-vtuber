@@ -1,0 +1,23 @@
+{
+  "$comment": "Emotions for lib/emotions.mjs (author's prompt #15). Each state is a partial pose made only of what this face has: brows shown or hidden and their height, eyes open or closed, the five mouths, head tilt and shift. Chosen values, labelled so. Every state stays inside rig.json limits together with liveness (largest liveness |tilt| 0.68 degrees, |y| 6.64 px).",
+  "transitionFrames": 8,
+  "transitionWhy": "Chosen: 8 frames (0.27 s at 30 fps) is quick enough to land on a word and slow enough not to snap.",
+  "easing": "smootherstep 6x^5 - 15x^4 + 10x^3: no trigonometry, zero speed at both ends.",
+  "discreteRule": "eyes, mouth and whether the brows are shown switch at the middle of a transition; brow height, tilt and shift ease. Hidden brows count as browsRestDy when easing their height.",
+  "states": {
+    "happy": { "partial": { "brows": { "dy": -30 }, "mouth": "rest", "head": { "tilt": 2, "x": 0, "y": -2 } }, "why": "brows lifted part way over the logo's own smile (the rest mouth); a small tilt and lift add lightness", "changed": "first proposed with the wide mouth; on the first emotions sheet the hollow wide mouth read as gritted teeth, not as a grin, so happy keeps the closed smile" },
+    "surprised": { "partial": { "brows": { "dy": -47 }, "mouth": "round", "head": { "tilt": 0, "x": 0, "y": -4 } }, "why": "brows at their highest and the round mouth are the clearest surprise this face has; the head pulls up a little" },
+    "focused": { "partial": { "brows": { "dy": 13 }, "mouth": "rest", "head": { "tilt": 0, "x": 0, "y": 3 } }, "why": "brows lowered onto the slanted eyes read as concentration; the closed smile and a slight dip of the head keep it calm" },
+    "sleepy": { "partial": { "eyes": "closed", "mouth": "rest", "head": { "tilt": -3, "x": 0, "y": 5 } }, "why": "closed eyes, no brows and a drooping, tilted head; the only state that closes the eyes on purpose" }
+  },
+  "speech": "While Ping speaks, lip sync owns the mouth: the speech mouth is combined after the emotion, on every frame from the first to the last letter of an utterance (rest frames of closures included). Outside speech the emotion's mouth shows. Brows, eyes and head stay with the emotion during speech.",
+  "demoMarks": [
+    { "frame": 0, "state": "neutral" },
+    { "frame": 30, "state": "happy" },
+    { "frame": 90, "state": "surprised" },
+    { "frame": 150, "state": "focused" },
+    { "frame": 210, "state": "sleepy" },
+    { "frame": 270, "state": "neutral" }
+  ],
+  "demoWhy": "Chosen: 10 s at 30 fps, each state held for 2 s after its 8-frame transition, ending back at neutral."
+}

@@ -51,3 +51,12 @@ test("the liveness clip is a final render of 10 s at 30 fps for one seed", async
   assert.deepEqual([s.kind, s.seed, s.fps, s.frames, s.final], ["liveness", 1, 30, 300, true]);
   assert.throws(() => livenessSequence(-1), /seed/);
 });
+
+test("the emotions walk-through is a final render of 10 s with the configured marks", async () => {
+  const { emotionsSequence, emotionsConfig } = await import("../scripts/build-preview.mjs");
+  const s = emotionsSequence(1);
+  assert.deepEqual([s.kind, s.seed, s.fps, s.frames, s.final], ["emotions", 1, 30, 300, true]);
+  assert.deepEqual(s.marks, emotionsConfig.demoMarks);
+  const states = new Set(s.marks.map((m) => m.state));
+  for (const k of Object.keys(emotionsConfig.states)) assert.ok(states.has(k), k);
+});

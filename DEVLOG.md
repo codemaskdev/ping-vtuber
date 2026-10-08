@@ -535,3 +535,24 @@ What broke
 - Looked at, not changed (no rule was changed after seeing output): P2 and P3 never use "open" because their text
   has no a and no pronoun I; the round mouth sits 45 px lower than the smile because of its anchorDy, as decided.
 - `npm test`: tests 116, pass 116, fail 0, skipped 0, duration_ms 66610.703166.
+
+### Task 3: step 6, emotions
+- Four states besides neutral, chosen (rig/emotions.json, each with its reason): happy (brows dy -30, the closed
+  smile, tilt 2, y -2), surprised (brows dy -47, round mouth, y -4), focused (brows dy 13, rest mouth, y 3), sleepy
+  (eyes closed, brows hidden, rest mouth, tilt -3, y 5). Every state passes the rig limits on its own and with
+  liveness (test checks 258 frames of 60 s each).
+- Changed after seeing output: happy was first proposed with the wide mouth; on the first emotions sheet the hollow
+  wide mouth read as gritted teeth, not a grin, so happy keeps the logo's closed smile (recorded in the file).
+- lib/emotions.mjs: marks → partial pose per frame, smootherstep over 8 frames (chosen); eyes, mouth and brow
+  visibility switch at the middle of a transition, numbers ease; hidden brows ease from browsRestDy. Speech: lip sync
+  is combined after the emotion on every frame from the first to the last letter of an utterance (speechSpan,
+  speechPartial), so the speech mouth wins there and the emotion's mouth shows outside. combine() was not changed.
+- lib/script-tags.mjs: parseTags (tags removed, spaces collapsed, unknown tags and unbalanced brackets fail) and
+  marksFromAlignment (a tag starts at its character's start frame, or after the last character); tests.
+- out/emotions-sheet.png from a HyperFrames render (5 frames: rendered in 2.8s, `time` 4.458 s).
+- Walk-through: liveness seed 1, demoMarks neutral 0, happy 30, surprised 90, focused 150, sleepy 210, neutral 270;
+  300 frames at 30 fps, rendered twice: run 1 rendered in 1m 1.9s (`time` 1:03.61), run 2 1m 1.9s (1:03.58);
+  `npm run frame-hashes -- out/render/emotions-seed-1-run-1 out/render/emotions-seed-1-run-2`: 300 of 300 identical.
+  out/emotions-seed-1.mp4 made from run 1's frames for viewing (ffmpeg libx264 crf 18).
+- What broke: one emotions test had the happy mouth typed into it; it now reads the mouth from the config.
+- `npm test`: tests 124, pass 124, fail 0, skipped 0, duration_ms 66436.932.

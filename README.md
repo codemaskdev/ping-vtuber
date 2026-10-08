@@ -144,3 +144,16 @@ pronoun I to five mouths, says which mouth wins when two letters share a frame, 
 npm run lipsync:clips -- --seed 1 --method v2       out/lipsync-v2/P<n>.mp4
 npm run lipsync:compare                             closure score, run table, words.txt, P2 chart, side-by-side clips
 ```
+
+## Step 6: emotions
+
+`rig/emotions.json` holds four states besides neutral (happy, surprised, focused, sleepy), each a partial pose made
+of what the face has. `lib/emotions.mjs` eases between marks (smootherstep over `transitionFrames`); it goes into
+`combine()` after liveness, and lip sync after it, so while Ping speaks the speech mouth wins and outside speech the
+emotion's mouth shows. Marks come from tags in the script text: `lib/script-tags.mjs` turns
+"Hello. [happy] I am Ping." into clean text plus marks at the tagged character's start frame.
+
+```
+npm run preview:build -- emotions --seed 1    the 10 s walk-through (rig/emotions.json demoMarks)
+npm run preview:build -- emotions-sheet       then render and node scripts/emotions-sheet.mjs
+```

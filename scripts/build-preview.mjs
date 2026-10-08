@@ -11,12 +11,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { combine } from "../lib/pose.mjs";
 import { neutralPose, validatePose } from "../lib/rig.mjs";
 import { ROOT, rel } from "../lib/spec.mjs";
 
 export const PREVIEW = path.join(ROOT, "rig", "preview");
 export const rig = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "rig.json"), "utf8"));
 export const livenessConfig = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "liveness.json"), "utf8"));
+export const emotionsConfig = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "emotions.json"), "utf8"));
 
 const pose = (change) => { const p = neutralPose(rig); change(p); return p; };
 const L = rig.limits;
@@ -37,6 +39,13 @@ export function rigSequences() {
         { label: `head shift ${L.headShiftPx.x[1]},${L.headShiftPx.y[0]}`, pose: pose((p) => { p.head.x = L.headShiftPx.x[1]; p.head.y = L.headShiftPx.y[0]; }) },
         { label: "cursor off", pose: pose((p) => { p.cursor = false; }) },
         { label: "neutral + skeleton", pose: pose(() => {}), skeleton: true },
+      ],
+    },
+    "emotions-sheet": {
+      fps: 1, framesPerEntry: 1, final: false,
+      entries: [
+        { label: "neutral", pose: pose(() => {}) },
+        ...Object.keys(emotionsConfig.states).map((s) => ({ label: s, pose: combine(rig, neutralPose(rig), emotionsConfig.states[s].partial) })),
       ],
     },
     reconstruction: {
@@ -80,20 +89,27 @@ export function lipsyncSequence(phrase, seed, mouths, fps = 30) {
   return { kind: "lipsync", phrase, seed, fps, frames: mouths.length + 15, mouths, final: true, entries: [] };
 }
 
+// The emotions walk-through: rig/emotions.json demoMarks over 10 s at 30 fps, with liveness for the seed.
+export function emotionsSequence(seed) {
+  if (!Number.isInteger(seed) || seed < 0) throw new Error("seed must be a non-negative integer");
+  return { kind: "emotions", seed, fps: 30, frames: 300, marks: emotionsConfig.demoMarks, final: true, entries: [] };
+}
+
 export function buildPreview(name, seed, extra) {
-  const seq = name === "liveness" ? livenessSequence(seed) : name === "lipsync" ? extra : rigSequences()[name];
+  const seq = name === "liveness" ? livenessSequence(seed) : name === "lipsync" ? extra : name === "emotions" ? emotionsSequence(seed) : rigSequences()[name];
   if (!seq) throw new Error(`unknown sequence ${name}`);
   checkSequence(name, seq);
-  const frames = seq.kind === "liveness" || seq.kind === "lipsync" ? seq.frames : seq.entries.length * seq.framesPerEntry;
+  const frames = seq.kind ? seq.frames : seq.entries.length * seq.framesPerEntry;
   const duration = frames / seq.fps;
   for (const d of ["layers"]) fs.rmSync(path.join(PREVIEW, d), { recursive: true, force: true });
   fs.mkdirSync(path.join(PREVIEW, "art", "layers"), { recursive: true });
   for (const l of rig.layers) fs.copyFileSync(path.join(ROOT, l.file), path.join(PREVIEW, l.file));
-  for (const f of ["rig.mjs", "rng.mjs", "liveness.mjs", "pose.mjs"]) fs.copyFileSync(path.join(ROOT, "lib", f), path.join(PREVIEW, f));
+  for (const f of ["rig.mjs", "rng.mjs", "liveness.mjs", "pose.mjs", "emotions.mjs"]) fs.copyFileSync(path.join(ROOT, "lib", f), path.join(PREVIEW, f));
   fs.copyFileSync(path.join(ROOT, "rig", "adapter.js"), path.join(PREVIEW, "adapter.js"));
   fs.writeFileSync(path.join(PREVIEW, "data.js"),
     "// Written by scripts/build-preview.mjs. Do not edit by hand.\nwindow.PING_RIG = " + JSON.stringify(rig) +
     ";\nwindow.PING_LIVENESS = " + JSON.stringify(livenessConfig) +
+    ";\nwindow.PING_EMOTIONS = " + JSON.stringify(emotionsConfig) +
     ";\nwindow.PING_SEQUENCE = " + JSON.stringify({ name, ...seq, frames, duration }) + ";\n");
   const W = rig.canvas.width, H = rig.canvas.height;
   const imgs = rig.layers.map((l, i) => `      <img id="layer-${i}" data-file="${l.file}" src="${l.file}" alt="" />`).join("\n");
@@ -125,7 +141,8 @@ ${imgs}
       import { drawList, neutralPose, skeleton } from "./rig.mjs";
       import { livenessAt } from "./liveness.mjs";
       import { combine } from "./pose.mjs";
-      const R = window.PING_RIG, S = window.PING_SEQUENCE, LC = window.PING_LIVENESS;
+      import { emotionAt } from "./emotions.mjs";
+      const R = window.PING_RIG, S = window.PING_SEQUENCE, LC = window.PING_LIVENESS, EC = window.PING_EMOTIONS;
       const images = {};
       for (const img of document.querySelectorAll("#preload img")) images[img.dataset.file] = img;
       await Promise.all(Object.values(images).map((img) => img.decode()));
@@ -135,6 +152,10 @@ ${imgs}
         const frame = Math.min(S.frames - 1, Math.round(t * S.fps));
         if (S.kind === "liveness") {
           PingAdapter.draw(ctx, images, drawList(R, combine(R, neutralPose(R), livenessAt(LC, S.seed, frame, S.fps))));
+          return;
+        }
+        if (S.kind === "emotions") {
+          PingAdapter.draw(ctx, images, drawList(R, combine(R, neutralPose(R), livenessAt(LC, S.seed, frame, S.fps), emotionAt(R, EC, S.marks, frame))));
           return;
         }
         if (S.kind === "lipsync") {
@@ -158,11 +179,12 @@ ${imgs}
 </html>
 `;
   fs.writeFileSync(path.join(PREVIEW, "index.html"), html);
-  return { name, frames, duration, fps: seq.fps, seed: seq.seed, entries: seq.entries.map((e) => e.label) };
+  return { name, frames, duration, fps: seq.fps, seed: seq.seed, marks: seq.marks, entries: seq.entries.map((e) => e.label) };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const i = process.argv.indexOf("--seed");
   const r = buildPreview(process.argv[2], i >= 0 ? Number(process.argv[i + 1]) : undefined);
+  if (r.marks) console.log(`marks: ${JSON.stringify(r.marks)}`);
   console.log(`${rel(PREVIEW)}: sequence ${r.name}${r.seed !== undefined ? `, seed ${r.seed}` : ""}, ${r.frames} frames at ${r.fps} fps (${r.duration} s)${r.entries.length ? ": " + r.entries.join(" | ") : ""}`);
 }

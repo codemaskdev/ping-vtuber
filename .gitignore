@@ -17,3 +17,4 @@ rig/preview/liveness.mjs
 rig/preview/pose.mjs
 audio/**/*.mp3
 audio/**/*.wav
+rig/preview/emotions.mjs
