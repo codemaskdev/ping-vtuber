@@ -1,0 +1,157 @@
+{
+  "$comment": "Ping layer spec. Coordinates are canvas pixels, origin top-left. region = [x, y, w, h], the box a layer's visible pixels may occupy. pivot = [x, y], the point the layer rotates and scales around. Every layer is a full-canvas transparent PNG in art/layers/<id>.png. Draw order is z, low to high. Regions and pivots are a spec, not measurements; processing and checks read thresholds from here, and those are chosen limits, not measurements.",
+  "canvas": { "width": 1254, "height": 1254 },
+  "layers": [
+    {
+      "id": "glow",
+      "file": "glow.png",
+      "z": 0,
+      "parent": "head",
+      "region": [0, 0, 1254, 1254],
+      "pivot": [627, 627],
+      "source": "02-head.png",
+      "extract": "glow",
+      "about": "the soft neon halo around the screen-face, everything outside the head silhouette, alpha from brightness"
+    },
+    {
+      "id": "head",
+      "file": "head.png",
+      "z": 1,
+      "parent": null,
+      "region": [94, 94, 1066, 1066],
+      "pivot": [627, 1003],
+      "source": "02-head.png",
+      "extract": "silhouette",
+      "about": "the screen-face with no eyes, brows or mouth; pivot at the bottom centre of the screen"
+    },
+    {
+      "id": "eyes_open",
+      "file": "eyes_open.png",
+      "z": 2,
+      "parent": "head",
+      "region": [251, 490, 752, 190],
+      "pivot": [627, 589],
+      "source": "01-master.png",
+      "extract": "feature",
+      "about": "both eyes, open, looking ahead"
+    },
+    {
+      "id": "eyes_closed",
+      "file": "eyes_closed.png",
+      "z": 2,
+      "parent": "head",
+      "region": [251, 490, 752, 190],
+      "pivot": [627, 589],
+      "source": "03-eyes_closed.png",
+      "extract": "feature",
+      "about": "both eyes, closed; swapped with eyes_open for blinks"
+    },
+    {
+      "id": "brows",
+      "file": "brows.png",
+      "z": 3,
+      "parent": "head",
+      "region": [251, 330, 752, 160],
+      "pivot": [627, 418],
+      "source": "01-master.png",
+      "extract": "feature",
+      "about": "both brows, neutral; expressions later come from moving this layer, not from new art"
+    },
+    {
+      "id": "mouth_rest",
+      "file": "mouth_rest.png",
+      "z": 4,
+      "parent": "head",
+      "group": "mouth",
+      "covers": "silence, M, B, P (lips closed); also F, V",
+      "region": [251, 680, 752, 280],
+      "pivot": [627, 792],
+      "source": "01-master.png",
+      "extract": "feature",
+      "about": "closed mouth: the default between words and the shape every M/B/P closure must hit, or speech looks mumbled"
+    },
+    {
+      "id": "mouth_small",
+      "file": "mouth_small.png",
+      "z": 4,
+      "parent": "head",
+      "group": "mouth",
+      "covers": "most consonants (T D N S Z K G L R H TH CH J) and unstressed vowels (schwa, IH, EH)",
+      "region": [251, 680, 752, 280],
+      "pivot": [627, 792],
+      "source": "04-mouth_small.png",
+      "extract": "feature",
+      "about": "slightly open: the most frequent speaking shape; without it the mouth snaps between closed and wide"
+    },
+    {
+      "id": "mouth_open",
+      "file": "mouth_open.png",
+      "z": 4,
+      "parent": "head",
+      "group": "mouth",
+      "covers": "open stressed vowels AA, AE, AH, AY, AW",
+      "region": [251, 680, 752, 280],
+      "pivot": [627, 792],
+      "source": "05-mouth_open.png",
+      "extract": "feature",
+      "about": "wide open: loud open vowels and stressed syllables, the peak of each word"
+    },
+    {
+      "id": "mouth_round",
+      "file": "mouth_round.png",
+      "z": 4,
+      "parent": "head",
+      "group": "mouth",
+      "covers": "rounded vowels and glides O, OO, OW, OY, UW, W, also SH and ER",
+      "region": [251, 680, 752, 280],
+      "pivot": [627, 792],
+      "source": "06-mouth_round.png",
+      "extract": "feature",
+      "about": "small ring: the one shape that is about lip rounding, not openness; 'you', 'go', 'what' read wrong without it"
+    },
+    {
+      "id": "mouth_wide",
+      "file": "mouth_wide.png",
+      "z": 4,
+      "parent": "head",
+      "group": "mouth",
+      "covers": "spread vowels E, I, EE, EY, IY",
+      "region": [251, 680, 752, 280],
+      "pivot": [627, 792],
+      "source": "07-mouth_wide.png",
+      "extract": "feature",
+      "about": "wide and flat: the spread-lips opposite of mouth_round; also usable as a grin"
+    }
+  ],
+  "dropped": [
+    {
+      "id": "mouth_fv",
+      "reason": "F/V is read from the upper teeth resting on the lower lip. Ping's mouth is a single neon line with no teeth and no lips, so an F/V shape would look the same as mouth_rest or mouth_small; F and V map to mouth_rest."
+    }
+  ],
+  "raws": [
+    { "file": "01-master.png", "prompt": "G1", "changes": [] },
+    { "file": "02-head.png", "prompt": "G2", "changes": ["brows", "eyes_open", "mouth_rest"] },
+    { "file": "03-eyes_closed.png", "prompt": "G3", "changes": ["eyes_open"] },
+    { "file": "04-mouth_small.png", "prompt": "G4", "changes": ["mouth_rest"] },
+    { "file": "05-mouth_open.png", "prompt": "G5", "changes": ["mouth_rest"] },
+    { "file": "06-mouth_round.png", "prompt": "G6", "changes": ["mouth_rest"] },
+    { "file": "07-mouth_wide.png", "prompt": "G7", "changes": ["mouth_rest"] }
+  ],
+  "processing": {
+    "$comment": "Chosen parameters, not measurements. Values are 0..255 channel levels unless named Px.",
+    "master": "01-master.png",
+    "base": "02-head.png",
+    "silhouetteThreshold": 48,
+    "glowFloor": 16,
+    "featureLo": 24,
+    "featureHi": 72,
+    "searchRadiusPx": 12,
+    "searchStridePx": 2
+  },
+  "checks": {
+    "$comment": "Chosen acceptance limits, not measurements. drift = mean absolute RGB difference from the master outside the changed feature, after alignment, 0..255 scale.",
+    "maxOffsetPx": 4,
+    "maxDrift": 6
+  }
+}
