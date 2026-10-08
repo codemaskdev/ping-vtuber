@@ -43,7 +43,7 @@ const FACES = {
   "07-mouth_wide.png": { eyes: "open", brows: true, mouth: "wide" },
 };
 
-const HEAD = { x0: 188, y0: 251, x1: 1066, y1: 1003, r: 60, line: 14, glow: 40 };
+const HEAD = { x0: 188, y0: 188, x1: 1066, y1: 1066, r: 60, line: 14, glow: 40 };
 
 // Distance from (x, y) to the rounded rectangle's edge region: negative inside, positive outside.
 function roundedDist(x, y) {
@@ -92,17 +92,17 @@ export function drawFixture(file, W, H) {
   if (face.brows) for (const ex of eyeX) rect(img, ex - 49, 405, 98, 26, CYAN);
   if (face.eyes === "open") for (const ex of eyeX) rect(img, ex - 49, 511, 98, 156, CYAN);
   if (face.eyes === "closed") for (const ex of eyeX) rect(img, ex - 49, 579, 98, 20, CYAN);
-  if (face.mouth === "rest") rect(img, 481, 783, 293, 18, CYAN);
-  if (face.mouth === "small") frame(img, 481, 756, 293, 73, 14, CYAN);
-  if (face.mouth === "open") frame(img, 481, 695, 293, 195, 14, CYAN);
-  if (face.mouth === "round") ring(img, 627, 792, 73, 14, CYAN);
-  if (face.mouth === "wide") frame(img, 408, 748, 439, 88, 14, CYAN);
+  if (face.mouth === "rest") rect(img, 481, 819, 293, 18, CYAN);
+  if (face.mouth === "small") frame(img, 481, 792, 293, 73, 14, CYAN);
+  if (face.mouth === "open") frame(img, 481, 731, 293, 195, 14, CYAN);
+  if (face.mouth === "round") ring(img, 627, 828, 73, 14, CYAN);
+  if (face.mouth === "wide") frame(img, 408, 784, 439, 88, 14, CYAN);
   // Visible labels: inside the screen below the mouth band, and on the background above and below the head.
   const label = "TEST FIXTURE - NOT CHARACTER ART";
   const lx = (W - textWidth(label, 3)) >> 1;
-  drawText(img, label, lx, 963, 3, LABEL);
+  drawText(img, label, lx, 1010, 3, LABEL);
   drawText(img, label, lx, 120, 3, LABEL);
-  drawText(img, label + " - " + file, (W - textWidth(label + " - " + file, 3)) >> 1, 1110, 3, LABEL);
+  drawText(img, label + " - " + file, (W - textWidth(label + " - " + file, 3)) >> 1, 1140, 3, LABEL);
 
   const rng = mulberry32(dist.seed);
   const out = create(W, H, [0, 0, 0, 255]);

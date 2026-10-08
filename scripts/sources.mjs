@@ -23,7 +23,7 @@ export function buildSources() {
   const prompts = new Map(generatorPrompts().map((p) => [p.id, p]));
   const errors = [];
 
-  const reference = list(art("reference"), /\.(png|jpe?g|webp)$/i).map((f) => fileEntry(art("reference"), f).entry);
+  const reference = list(art("reference"), /\.(png|jpe?g|webp|svg)$/i).map((f) => fileEntry(art("reference"), f).entry);
 
   const raw = list(art("raw"), /\.png$/i).map((f) => {
     const { entry } = fileEntry(art("raw"), f);

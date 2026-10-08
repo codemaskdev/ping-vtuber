@@ -7,7 +7,7 @@ episode 3: a VTuber made with AI. Character art comes from a text-to-image gener
 ## Step 1: Ping's layers
 
 ```
-art/reference/logo-5A.png    the channel logo, the generator's reference
+art/reference/logo-5A.svg    the channel logo (attach a PNG of it to the generator)
 art/GENERATOR_PROMPTS.md     prompts G1…G7, run by hand in this order
 art/raw/                     the generator's images, untouched
 art/generations.json         generator name, version, date and prompt per image

@@ -47,7 +47,7 @@ test("every commit is authored and committed by CodeMask in UTC", () => {
     const [an, ae, ad, cn, ce, cd] = line.split("|");
     assert.equal(an, "CodeMask"); assert.equal(cn, "CodeMask");
     assert.equal(ae, "codemask@users.noreply.github.com"); assert.equal(ce, "codemask@users.noreply.github.com");
-    assert.match(ad, /\+00:00$/); assert.match(cd, /\+00:00$/);
+    assert.match(ad, /(Z|\+00:00)$/); assert.match(cd, /(Z|\+00:00)$/);
   }
 });
 

@@ -1,6 +1,12 @@
 {
   "$comment": "Written by scripts/sources.mjs. Do not edit by hand. Prompt texts are copied from art/GENERATOR_PROMPTS.md.",
-  "reference": [],
+  "reference": [
+    {
+      "file": "art/reference/logo-5A.svg",
+      "sha256": "0647760785308e9f15671161247cb78fc54add8c3a95ffbda965ebdc99bf2d33",
+      "bytes": 642
+    }
+  ],
   "raw": [],
   "layers": [],
   "processLog": null
