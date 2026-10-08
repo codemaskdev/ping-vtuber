@@ -27,6 +27,7 @@
     "lipsync:stats": "node scripts/lipsync-stats.mjs",
     "lipsync:clips": "node scripts/lipsync-clips.mjs",
     "lipsync:report": "node scripts/lipsync-report.mjs",
+    "lipsync:compare": "node scripts/lipsync-compare.mjs",
     "liveness:strip": "node scripts/liveness-strip.mjs",
     "review": "node scripts/master-review.mjs",
     "process": "node scripts/process.mjs",

@@ -132,3 +132,15 @@ npm run lipsync:stats                     RMS percentiles of the development phr
 npm run lipsync:clips -- --seed 1         out/lipsync-v1/P<n>.mp4: HyperFrames render, audio muxed with ffmpeg (copy)
 npm run lipsync:report -- P1 P2 P3 --chart P2
 ```
+
+## Step 5: lip sync v2 (character timings)
+
+Input: the character alignment ElevenLabs returns with the audio (`audio/dev/P<n>.align.json`): **letters with start
+and end times, not phonemes**. `rig/lipsync-text.json` maps letters, a few letter pairs, y, the silent final e and the
+pronoun I to five mouths, says which mouth wins when two letters share a frame, and holds every mouth for at least
+2 frames. `lib/lipsync-text.mjs` applies it.
+
+```
+npm run lipsync:clips -- --seed 1 --method v2       out/lipsync-v2/P<n>.mp4
+npm run lipsync:compare                             closure score, run table, words.txt, P2 chart, side-by-side clips
+```

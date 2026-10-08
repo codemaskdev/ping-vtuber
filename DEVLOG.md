@@ -517,3 +517,21 @@ What broke
   "one commit per task" for this task.
 - Changed before any render: the silent final e rule first also silenced the e of "the" (seen in a unit test, not in
   output); "the" and "she" are now exceptions.
+- Clips (`npm run lipsync:clips -- --seed 1 --method v2 P1 P2 P3`): P1 rendered in 4.8s (`time` real 0m6.663s),
+  P2 4.6s (0m6.059s), P3 4.4s (0m5.784s); audio muxed by ffmpeg 8.1.1 stream copy, as for v1.
+- `npm run lipsync:compare` (out/lipsync-v2/compare.txt):
+  - closure score (m, b, p with rest in at least one frame of the letter's span): v1 P1 1 of 2, P2 1 of 3, P3 0 of 1
+    (2 of 6); v2 P1 2 of 2, P2 3 of 3, P3 1 of 1 (6 of 6);
+  - P1: v1 8.135593220338983 changes/s, rest 25 small 25 open 9, shortest 1 median 3, 5 one-frame runs;
+        v2 5.593220338983051 changes/s, rest 31 small 10 open 6 round 5 wide 7, shortest 2 median 4, 0;
+  - P2: v1 9.285714285714286, rest 26 small 41 open 17, shortest 1 median 3, 6;
+        v2 7.500000000000001, rest 32 small 18 open 0 round 24 wide 10, shortest 2 median 3, 0;
+  - P3: v1 6.710526315789474, rest 25 small 31 open 20, shortest 1 median 3.5, 4;
+        v2 4.736842105263158, rest 28 small 5 open 0 round 30 wide 13, shortest 2 median 5, 0.
+  - out/lipsync-v2/words.txt, P2-timeline.png (both rows), P1-P3-side-by-side.mp4 (v1 left, v2 right, labels drawn
+    by code and overlaid; ffmpeg 8.1.1 hstack, video re-encoded with libx264 crf 18, audio stream copied).
+  - The mp3 inside each mp4 is longer than the decoded audio by 0.00952380952380949 s (P1), 0.00961444217687113 s
+    (P2), 0.00024989795918362034 s (P3), the same for v1 and v2. Nothing corrected.
+- Looked at, not changed (no rule was changed after seeing output): P2 and P3 never use "open" because their text
+  has no a and no pronoun I; the round mouth sits 45 px lower than the smile because of its anchorDy, as decided.
+- `npm test`: tests 116, pass 116, fail 0, skipped 0, duration_ms 66610.703166.
