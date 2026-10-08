@@ -11,7 +11,7 @@ import { buildSources } from "../scripts/sources.mjs";
 const git = (...args) => execFileSync("git", args, { cwd: ROOT, encoding: "utf8" }).trim();
 const gitOr = (fallback, ...args) => { try { return git(...args); } catch { return fallback; } };
 const files = git("ls-files", "--cached", "--others", "--exclude-standard").split("\n").filter(Boolean);
-const textFiles = files.filter((f) => !/\.(png|jpe?g|webp)$/i.test(f) && fs.existsSync(path.join(ROOT, f)));
+const textFiles = files.filter((f) => !/\.(png|jpe?g|webp|mp3|wav|m4a|ogg|flac|mp4|wasm|task|bin)$/i.test(f) && fs.existsSync(path.join(ROOT, f)));
 
 test("no Math.random, wall-clock time or engine-dependent maths in code that makes output", () => {
   const code = files.filter((f) => /^(lib|scripts)\/.*\.mjs$/.test(f) || f === "test/fixtures/make-fixtures.mjs");

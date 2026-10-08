@@ -437,10 +437,10 @@ Step 3 change
   1m 1.6s (`time` 1:03.33), run 2 in 1m 1.3s (`time` 1:02.90); `npm run frame-hashes`: 300 of 300 frames identical.
 
 Voice (ElevenLabs)
-- The key is read like episodes/tools/voice.mjs reads it: ELEVENLABS_API_KEY, else the ElevenLabs MCP entry in
+- The key is read like the CodeMask episodes pipeline reads it: ELEVENLABS_API_KEY, else the ElevenLabs MCP entry in
   ~/.claude.json; memory only (lib/elevenlabs.mjs). test/voice.test.mjs searches tracked files, the whole git history
   and logs/ and out/ for it and reports only where it was found (nowhere).
-- Candidates (audio/voice.json; the host's voice uFIXVu9mmnDZ7dTKCBTX excluded), the line "Hello. I am Ping. I live
+- Candidates (audio/voice.json; the host's voice excluded), the line "Hello. I am Ping. I live
   in a terminal.", model eleven_multilingual_v2, settings stability 0.5, similarity_boost 0.75, style 0,
   use_speaker_boost true, speed 1.0, output mp3_44100_128, seed 1; files in out/voice-candidates/ with
   candidates.txt:
@@ -480,3 +480,16 @@ What broke
 - scripts/decode-audio.mjs took the "--no-log" flag for a file name; flags are now filtered out.
 - The first P2 chart drew the threshold labels under the loudness bars; they now sit in the left margin.
 - `npm test`: tests 110, pass 110, fail 0, skipped 0, duration_ms 66629.007417.
+
+## 2026-10-08 · Overnight run (prompt #15), branch `overnight`
+
+### Task 0: small fixes
+- audio/voice.json no longer holds the host's voice id or the path into the CodeMask repository; it says only that the
+  host's voice is excluded. Decided without asking: the same id and the same kind of path were also removed from the
+  step 4 DEVLOG entry and from the comment in lib/elevenlabs.mjs. The step 1 and step 2 mentions of the host avatar's
+  folder (`Avatar/`) stay: they record what the author asked me to find.
+- P1-P3 committed under audio/dev/ (metadata approved by the author: encoder tag only; recorded in audio/voice.json
+  metadataApproved). Synthesis is not repeatable: P1 twice gave different samples with the same alignment, so there is
+  one take per phrase and that take is the asset.
+- What broke: the "no Cyrillic" hygiene test read the new mp3 files as text and found Cyrillic code points in their
+  bytes. Binary media (audio, video, wasm, model files) are now left out of the text checks.

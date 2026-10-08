@@ -6,9 +6,11 @@
     { "name": "River - Relaxed, Neutral, Informative", "id": "SAz9YHcvj6GT2YYXdXww", "why": "calm, flat, gender-neutral: reads like a machine talking" },
     { "name": "Callum - Husky Trickster", "id": "N2lVS1w4EtoT3dr4eOWO", "why": "gravelly character voice: the opposite end, a mischievous terminal" }
   ],
-  "excluded": [{ "id": "uFIXVu9mmnDZ7dTKCBTX", "why": "the CodeMask host's voice (episodes/02-bug-driver/voice.json)" }],
+  "excluded": "the CodeMask host's voice (its id is deliberately not recorded in this repository)",
   "provisional": "M5t0724ORuAGCh3p3DUR",
   "chosen": null,
+  "metadataApproved": ["audio/dev/P1.mp3", "audio/dev/P2.mp3", "audio/dev/P3.mp3"],
+  "metadataApprovedBy": "the author, prompt #15 (encoder tag only)",
   "modelId": "eleven_multilingual_v2",
   "settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0, "use_speaker_boost": true, "speed": 1.0 },
   "settingsWhy": "Chosen: a stable, unstylised reading so the mouth tests are about the method, not about a dramatic take.",

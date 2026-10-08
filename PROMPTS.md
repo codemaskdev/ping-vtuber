@@ -651,6 +651,131 @@ the measured numbers, what looks wrong in v1 in your own words, render
 times, test counts, what broke, questions. Do not start step 5.
 ```
 
+## Prompt #15
+
+```text
+Overnight run. I am asleep and will not answer. Do not ask me anything
+and do not wait for me: decide, write down what you decided and why,
+and go on. The lip sync v1 clips are accepted. I liked none of the
+three voices, so the provisional voice stays provisional.
+
+## Rules for this run
+- Work on a new branch `overnight`. One commit per task. No push, no
+  remote, no force, nothing deleted outside out/.
+- Never choose a voice, never promote anything, never generate images.
+- ElevenLabs: only the six candidate lines of task 1. No other calls.
+- The camera is never opened in this run. No permission prompts.
+- If a task fails its own checks twice, write BLOCKED with the reason
+  in DEVLOG, commit what is safe, and go to the next task only if it
+  does not depend on the failed one. Task 3 needs task 2's combine
+  changes only if you made any; task 4 needs neither.
+- All rules of CLAUDE.md hold. Chosen values are labelled as chosen.
+- At the end write out/overnight-report.md and stop.
+
+## Task 0: small fixes
+- audio/voice.json holds the host's voice id and a path into another
+  repository. Remove both.
+- The audio metadata of P1 to P3 is approved for committing (encoder
+  tag only). Commit the provisional audio under audio/dev/ and record
+  in DEVLOG that synthesis is not repeatable: one take per phrase.
+
+## Task 1: voice candidates, round 2
+Six candidates, same line: "Hello. I am Ping. I live in a terminal."
+1. Library, two voices unlike the first three (not squeaky, not flat,
+   not husky).
+2. Voice design, two voices: if the account can create a voice from a
+   text description, write two descriptions of Ping (a small, friendly
+   terminal character; curious, quick, a little dry; not a child, not a
+   cartoon mouse) and generate one preview from each. Do not save a
+   designed voice to the account. If it cannot, say so and make two
+   more library candidates.
+3. Processed, two versions: the most neutral voice with a light
+   "terminal" effect through ffmpeg, one subtle and one stronger, words
+   still easy to understand. The filter chain is in a script and in
+   the log.
+Put them in out/voice-candidates/round-2/ (not committed) with a text
+file: name and id or full description, model, settings, filter chain,
+duration, credits used if the API reports it.
+
+## Task 2: step 5, lip sync v2 (character timings -> mouth)
+1. Input: the character alignment that came with the audio. Letters
+   with times, not phonemes. Say so in README.
+2. lib/lipsync-text.mjs, plain JavaScript: (alignment, fps, rules) ->
+   one mouth per frame. Rules as data in rig/lipsync-text.json:
+   m, b, p -> rest; f, v -> rest; o, u, w -> round; e, i and y as a
+   vowel -> wide; a -> open; other consonants -> small; spaces,
+   punctuation and gaps -> rest. Add a short list of letter pairs and
+   the silent final "e" where single letters are plainly wrong. Every
+   entry gets one line on why.
+3. A mouth lasts at least 2 frames. When two letters fall in one frame,
+   the config says which wins and why.
+4. Commit the rules BEFORE rendering anything with them. If you change
+   a rule after seeing output, record what you saw and why.
+5. Compare v1 and v2 on P1 to P3:
+   - closure score for both: for every m, b, p in the text, is the
+     mouth "rest" in at least one frame inside that letter's time span?
+   - the v1 table for v2: changes per second, frames per shape,
+     shortest and median run, one-frame runs;
+   - out/lipsync-v2/words.txt: every word with its letters, times and
+     chosen mouths;
+   - clips P1 to P3, and side-by-side clips, v1 left, v2 right,
+     labelled, same audio;
+   - out/lipsync-v2/P2-timeline.png with both mouth rows.
+6. No audio-to-mouth offset in milliseconds. Report how much longer the
+   mp3 inside each mp4 is than the decoded audio; correct nothing.
+
+## Task 3: step 6, emotions
+1. Propose four states besides neutral that this face can really show
+   with what it has: brows shown or hidden and their height, eyes open
+   or closed, the five mouths, head tilt and shift. Each state is a
+   partial pose in rig/emotions.json with one line on why.
+2. lib/emotions.mjs, plain JavaScript: a list of (frame, state) marks
+   -> partial pose per frame, eased with a polynomial over a chosen
+   number of frames. It plugs into combine(). While Ping speaks the lip
+   sync owns the mouth; say how an emotion's mouth and the speech mouth
+   are resolved.
+3. Marks come from tags in the script text, for example [happy]. Write
+   the parser and its tests.
+4. out/emotions-sheet.png: every state, labelled; and one 10 second
+   clip that walks through all of them with liveness on, rendered twice
+   with frame hashes compared.
+
+## Task 4: step 7, the webcam page (code only, camera never opened)
+1. web/: a static page. MediaPipe Face Landmarker from the npm package
+   @mediapipe/tasks-vision, version pinned; the wasm files and the
+   model file are served from this repository, nothing from a CDN.
+   Record the package version, the model file name, its sha256, its
+   licence and where it was downloaded from.
+2. lib/face-to-pose.mjs, plain JavaScript, no MediaPipe in it:
+   (blendshape scores, face matrix, previous state, config) -> pose.
+   Head tilt and shift from the matrix; blink from the eye scores with
+   hysteresis; mouth from the jaw and lip scores into the five mouths;
+   brows from the brow scores. Smoothing and thresholds in
+   rig/face.json as chosen values. If the rig's tilt limit is too small
+   for a real head, propose a larger stage and a larger limit, do not
+   change the art.
+3. The page draws two things only: Ping, and the landmark points on a
+   second canvas. The video element is never attached to the page and
+   never drawn. Detection runs off the main thread if that works with
+   this package; if not, say why.
+4. Privacy, enforced by code and by tests: no drawImage, texImage or
+   capture call ever receives the video except the one call that hands
+   a frame to the detector; nothing is recorded or stored; after the
+   page has loaded it makes no network request. Test the last one in a
+   headless browser with the camera request stubbed out.
+5. A recorded stream for tests and for rendering: numbers only, made by
+   code for now (no real face exists in this run). Play it through
+   face-to-pose and render a clip.
+6. Mark clearly in the report and in README: NOT VERIFIED WITH A REAL
+   CAMERA. List exactly what I must check in the morning.
+
+## out/overnight-report.md
+Per task: done or BLOCKED, the commit hash, the measured numbers, every
+decision you took instead of asking me and why, what broke, test
+counts, render times, and the questions I must answer in the morning,
+most important first.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.
