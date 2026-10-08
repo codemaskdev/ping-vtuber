@@ -157,3 +157,26 @@ emotion's mouth shows. Marks come from tags in the script text: `lib/script-tags
 npm run preview:build -- emotions --seed 1    the 10 s walk-through (rig/emotions.json demoMarks)
 npm run preview:build -- emotions-sheet       then render and node scripts/emotions-sheet.mjs
 ```
+
+## Step 7: the webcam page — NOT VERIFIED WITH A REAL CAMERA
+
+Nothing here has ever seen a real camera or a real face. It was built and tested overnight with the camera request
+stubbed out (a synthetic canvas stream) and a face stream made by code.
+
+```
+npm run web:vendor      copy the pinned @mediapipe/tasks-vision 1.1.0 files and fetch the model (sha256 checked)
+npm run web:serve       http://127.0.0.1:8317/web/index.html
+npm run face:stream -- --seed 1     a synthetic face stream through lib/face-to-pose.mjs
+```
+
+- `web/privacy.js` runs first: the video can only reach the detector through one hand-off call; drawImage,
+  texImage, createImageBitmap, attaching the video, MediaRecorder and captureStream refuse it; after the page is ready
+  every network API refuses. `test/web.test.mjs` checks this in headless Chrome, and that the server sees no request
+  after ready.
+- MediaPipe Face Landmarker runs in a module worker (`web/detector-worker.js`, CPU delegate); the main thread gets
+  numbers only. `lib/face-to-pose.mjs` turns them into a pose with the chosen values in `rig/face.json`.
+- Model: `face_landmarker.task` from
+  https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task,
+  sha256 and licence in `web/VENDOR.json`.
+
+To check with a real camera: see `out/overnight-report.md`, "What to check in the morning".

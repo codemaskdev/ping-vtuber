@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ping webcam</title>
+    <link rel="icon" href="data:," />
+    <!-- NOT VERIFIED WITH A REAL CAMERA. privacy.js must stay the first script. -->
+    <script src="/web/privacy.js"></script>
+    <script src="/rig/adapter.js"></script>
+    <style>
+      body { margin: 0; background: #0b0d13; color: #e6e6ec; font: 14px monospace; }
+      main { display: flex; gap: 16px; padding: 16px; align-items: flex-start; }
+      #ping { width: 627px; height: 627px; }
+      #points { width: 320px; height: 240px; background: #000; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <canvas id="ping" width="1254" height="1254"></canvas>
+      <div>
+        <canvas id="points" width="640" height="480"></canvas>
+        <p><button id="start">Start camera</button></p>
+        <p id="status">loading…</p>
+        <p>The camera picture is never shown, drawn, stored or sent. Only Ping and the face points are drawn.</p>
+      </div>
+    </main>
+    <script type="module" src="/web/main.js"></script>
+  </body>
+</html>

@@ -556,3 +556,32 @@ What broke
   out/emotions-seed-1.mp4 made from run 1's frames for viewing (ffmpeg libx264 crf 18).
 - What broke: one emotions test had the happy mouth typed into it; it now reads the mouth from the config.
 - `npm test`: tests 124, pass 124, fail 0, skipped 0, duration_ms 66436.932.
+
+### Task 4: step 7, the webcam page — NOT VERIFIED WITH A REAL CAMERA
+- Packages, pinned: @mediapipe/tasks-vision 1.1.0 (Apache-2.0, npm) and, for the headless test only, puppeteer-core
+  25.13.0 driving the installed Google Chrome. `npm run web:vendor` copies vision_bundle.mjs and the wasm files into
+  web/vendor/ and downloads face_landmarker.task (3758596 bytes, sha256
+  64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff) from
+  https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task
+  into web/models/; both folders are gitignored (37 MB of wasm, 3.7 MB of model), and web/VENDOR.json records every
+  file's sha256. Decided without asking: the files are served from this repository's folders but not committed; the
+  model licence is written as stated by the MediaPipe documentation and was not checked against the model card here.
+- lib/face-to-pose.mjs: tilt from the matrix's rotation (sine from its first column, arcsine as a polynomial, no
+  trigonometry), shift from its translation against the first frame, exponential smoothing; blink and brows with
+  hysteresis; mouth from pucker/funnel, jawOpen and smile. Values in rig/face.json, all chosen, none checked on a
+  face. The rig's 4 degree tilt is too small for a real head (about ±20 degrees): face.json maps it with gain 0.2 and
+  saturates at the limit, flagged in the state, never silent; it proposes a 1600 x 1600 stage with a ±12 degree limit
+  (no art change), not applied.
+- The page draws Ping and the landmark points only. Detection runs in a module worker (FilesetResolver with
+  useModule = true loads the module build of the wasm), CPU delegate; the main thread hands it one ImageBitmap per
+  frame through privacy.js handOff(), the only call that may take the video. Timestamps for the detector come from
+  the frame count, not a clock.
+- Headless test (test/web.test.mjs, stubbed camera): 24 requests before ready (page, scripts, rig, layers, worker,
+  bundle, module wasm, model), 0 after; 16 hand-offs for 18 drawn frames; no video element in the page; storage
+  empty; drawImage, createImageBitmap, appendChild of a video, fetch after ready, MediaRecorder and captureStream all
+  refused (out/web-headless.json).
+- Synthetic face stream (`npm run face:stream -- --seed 1`, numbers made by code, SYNTHETIC): 300 frames; eyes closed
+  8; brows shown 100; mouths rest 116, small 24, open 8, round 152, wide 0 (the seed never drew the smile mode);
+  largest |tilt| 4 (saturated in 31 frames), |x| 16.445415981231584, |y| 6.885732103368328. Rendered through
+  HyperFrames as a poses clip: out/face-synthetic-seed-1.mp4, rendered in 9.4s (`time` 11.234 s).
+- `npm test`: tests 136, pass 136, fail 0, skipped 0, duration_ms 67211.651292 (includes the headless browser test).

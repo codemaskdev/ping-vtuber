@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "description": "Ping, a VTuber made with AI: CodeMask episode 3.",
-  "engines": { "node": ">=22.2.0" },
+  "engines": {
+    "node": ">=22.2.0"
+  },
   "scripts": {
     "generate": "node scripts/generate.mjs",
     "attempt:extract": "node scripts/extract-attempt.mjs",
@@ -28,6 +30,9 @@
     "lipsync:clips": "node scripts/lipsync-clips.mjs",
     "lipsync:report": "node scripts/lipsync-report.mjs",
     "lipsync:compare": "node scripts/lipsync-compare.mjs",
+    "web:vendor": "node scripts/web-vendor.mjs",
+    "web:serve": "node scripts/serve-web.mjs",
+    "face:stream": "node scripts/face-stream.mjs",
     "liveness:strip": "node scripts/liveness-strip.mjs",
     "review": "node scripts/master-review.mjs",
     "process": "node scripts/process.mjs",
@@ -39,6 +44,10 @@
     "test": "node --test \"test/*.test.mjs\""
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "1.1.0",
     "pngjs": "7.0.0"
+  },
+  "devDependencies": {
+    "puppeteer-core": "25.13.0"
   }
 }

@@ -95,10 +95,16 @@ export function emotionsSequence(seed) {
   return { kind: "emotions", seed, fps: 30, frames: 300, marks: emotionsConfig.demoMarks, final: true, entries: [] };
 }
 
+// A clip of ready-made poses, one per frame (e.g. a face stream played through lib/face-to-pose.mjs).
+export function posesSequence(poses, label, fps = 30) {
+  return { kind: "poses", label, fps, frames: poses.length, poses, final: true, entries: [] };
+}
+
 export function buildPreview(name, seed, extra) {
-  const seq = name === "liveness" ? livenessSequence(seed) : name === "lipsync" ? extra : name === "emotions" ? emotionsSequence(seed) : rigSequences()[name];
+  const seq = name === "liveness" ? livenessSequence(seed) : name === "lipsync" || name === "poses" ? extra : name === "emotions" ? emotionsSequence(seed) : rigSequences()[name];
   if (!seq) throw new Error(`unknown sequence ${name}`);
   checkSequence(name, seq);
+  if (seq.kind === "poses") for (const p of seq.poses) validatePose(rig, p);
   const frames = seq.kind ? seq.frames : seq.entries.length * seq.framesPerEntry;
   const duration = frames / seq.fps;
   for (const d of ["layers"]) fs.rmSync(path.join(PREVIEW, d), { recursive: true, force: true });
@@ -152,6 +158,10 @@ ${imgs}
         const frame = Math.min(S.frames - 1, Math.round(t * S.fps));
         if (S.kind === "liveness") {
           PingAdapter.draw(ctx, images, drawList(R, combine(R, neutralPose(R), livenessAt(LC, S.seed, frame, S.fps))));
+          return;
+        }
+        if (S.kind === "poses") {
+          PingAdapter.draw(ctx, images, drawList(R, S.poses[frame]));
           return;
         }
         if (S.kind === "emotions") {

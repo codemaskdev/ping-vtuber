@@ -1,0 +1,34 @@
+{
+  "$comment": "Webcam face → pose (lib/face-to-pose.mjs). Chosen values, not measurements (author's prompt #15). NOT VERIFIED WITH A REAL CAMERA: every number here was chosen without a face in front of a camera and must be checked.",
+  "mirror": true,
+  "mirrorWhy": "Chosen: Ping moves like a mirror image of the viewer (tilt your head to your left, Ping tilts to the screen's left).",
+  "head": {
+    "tiltGain": 0.2,
+    "tiltGainWhy": "Chosen: a real head rolls about ±20 degrees; ×0.2 fits that into the rig's ±4 degree limit. Beyond it the tilt saturates and the state says so. See stageProposal.",
+    "shiftPxPerCm": 3,
+    "shiftWhy": "Chosen: the face matrix translation is in centimetres; ±10 cm of head movement gives ±30 px, the rig's shift limit.",
+    "smoothing": 0.35,
+    "smoothingWhy": "Chosen: each frame moves 35 % of the way to the new reading (exponential), enough to hide landmark jitter at 30 fps without a visible lag."
+  },
+  "blink": {
+    "closeAbove": 0.55,
+    "openBelow": 0.35,
+    "why": "Chosen hysteresis on the mean of eyeBlinkLeft and eyeBlinkRight: closes above 0.55, opens again below 0.35, so a score hovering near one value cannot flicker the eyes."
+  },
+  "mouth": {
+    "roundAbove": 0.35,
+    "openJawAbove": 0.4,
+    "wideSmileAbove": 0.45,
+    "wideJawBelow": 0.25,
+    "smallJawAbove": 0.1,
+    "why": "Chosen, checked in this order: pucker or funnel above 0.35 → round; jawOpen above 0.4 → open; smile (mean of left and right) above 0.45 with jawOpen under 0.25 → wide; jawOpen above 0.1 → small; otherwise rest."
+  },
+  "brows": {
+    "showAbove": 0.3,
+    "hideBelow": 0.2,
+    "upFull": 0.8,
+    "downFull": 0.7,
+    "why": "Chosen: brows appear when browInnerUp, the mean outer-up or the mean browDown passes 0.3 and hide below 0.2 (hysteresis); up moves them toward the rig's highest brow position (browsDy min) at a score of 0.8, down toward its lowest (browsDy max) at 0.7, from browsRestDy."
+  },
+  "stageProposal": "Not applied (author's rule: do not change the art). The rig's ±4 degree tilt fits a 1254 px stage. With the art centred on a 1600 x 1600 stage (173 px more room on every side) the same arc bound used in rig.json fitCheck allows about 14 degrees (room 137 + 173 - 42 px over the 1078 px farthest corner); a ±12 degree limit with tiltGain 0.6 would follow a real head much more closely."
+}
