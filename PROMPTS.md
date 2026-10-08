@@ -287,6 +287,42 @@ art/reference/logo-5A.png is in place (not committed yet).
 6. Report and stop. Do not run G3 to G8.
 ```
 
+## Prompt #8
+
+```text
+Stage 1 review. I looked at both images and the logs myself.
+
+## Decisions
+1. G1-01 is approved as the master. Promote it to art/raw/01-master.png.
+   Its metadata is approved for committing (C2PA only: ChatGPT,
+   gpt-image, OpenAI Media Service API).
+2. Region rule, changed after seeing G1-01 and G2-01, and labelled so in
+   layers.json and DEVLOG: face features are searched only inside the
+   screen, shrunk inward by the existing margin. Differences on the
+   outline are drift, not regions.
+3. Cursor rule, same label: the cursor is the red pixels of the master
+   inside the screen. The chevron is part of the head, not a feature.
+4. The chevron: G2-01 repainted it although the prompt says to keep it.
+   Run G2 once more (G2-02). For both attempts report the chevron's mean
+   colour next to the master's, and the difference on the outline and
+   inside the screen. Use G2-01 as the provisional head. I choose later.
+5. mouth_open goes back to 6 x 4 blocks. My 6 x 5 does not fit this
+   master: measure the block size, the smile's top edge and the inner
+   bottom edge of the outline, and put the numbers in DEVLOG. Update G6,
+   the mouth region rule, the fixtures and the tests.
+
+## Then
+1. Run regions. If the rule finds exactly the cursor, two eyes and the
+   mouth, and no regions overlap, write the review image, freeze, and go
+   on. Otherwise stop and report.
+2. Generate G2-02 and G3 to G8, attempt 1 each. An attempt of another
+   size than the master is a failed attempt: one more try, then stop.
+3. Stage 2 as calibration, with attempt 1 of each as provisional sources:
+   metadata dumps, processing, check:layers, contact sheet, full-size
+   composites. Set no limits. Commit no raw file except the master.
+4. Report briefly and stop.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.
@@ -384,7 +420,7 @@ Save as: `art/raw/06-mouth_open.png`
 ```text
 Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
 
-Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 5 blocks tall, so the dark inside is 4 blocks wide and 3 blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
+Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is 4 blocks wide and 2 blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
 ```
 
 ### [GENERATOR] G7 · mouth round

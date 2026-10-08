@@ -132,3 +132,10 @@ test("dilate grows a mask by r in x and y", () => {
   assert.equal(d[2 * 7 + 2], 1);
   assert.equal(d[1 * 7 + 3], 0);
 });
+
+test("pixels lit in the empty screen (the chevron, the outline) never become feature pixels", () => {
+  const base = create(3, 1, [10, 10, 10, 255]), v = create(3, 1, [200, 200, 200, 255]);
+  base.data.set([60, 140, 160], 4); // a lit head pixel, e.g. the chevron, repainted in the variant
+  const f = extractFeature(v, base, Uint8Array.from([1, 1, 1]), [0, 0, 3, 1], 24, 72, 48);
+  assert.deepEqual([0, 1, 2].map((x) => px(f, x, 0)[3]), [255, 0, 255]);
+});

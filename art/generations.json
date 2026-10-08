@@ -1,6 +1,14 @@
 {
   "$comment": "images: one entry per file in art/raw/ the author promoted from an attempt (fromAttempt), with metadataApproved: true once the author has seen its embedded metadata and approved committing it. attempts: one entry per generator attempt, written by scripts/extract-attempt.mjs from Codex's logs: Codex CLI version, the session's model, the image tool, the image model only where something reports it (otherwise 'not reported'), prompt id, the prompt as passed to the tool and how it compares with ours, date, attempt number, output size, the copy and its sha256. A test refuses any committed raw file without metadataApproved.",
-  "images": {},
+  "images": {
+    "01-master.png": {
+      "fromAttempt": "G1-01",
+      "sha256": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a",
+      "promotedBy": "the author, prompt #8",
+      "metadataApproved": true,
+      "metadataApprovedBy": "the author, prompt #8 (C2PA only: ChatGPT, gpt-image, OpenAI Media Service API)"
+    }
+  },
   "attempts": {
     "G1-01": {
       "prompt": "G1",
@@ -22,7 +30,8 @@
       "sha256": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a",
       "sizeCheck": "1254x1254: a G1 attempt sets the canvas if the author makes it the master",
       "extract": "art/attempts/G1-01.json",
-      "metadataApproved": false
+      "metadataApproved": false,
+      "promotedTo": "art/raw/01-master.png"
     },
     "G2-01": {
       "prompt": "G2",
@@ -44,6 +53,160 @@
       "sha256": "923936cdc85c7ff4b38d39426174b4e9f76a000d07e8ac9f03375e2ac837e7b4",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G2-01.json",
+      "metadataApproved": false
+    },
+    "G2-02": {
+      "prompt": "G2",
+      "attempt": 2,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/01-master.png",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same outline, the same dim cyan \">\" chevron in the top-left corner, the same colours, the same glow, the same pure black background.\n\nChange only this: remove both eyes, the mouth and the red cursor block. The rest of the screen is empty: flat, solid, very dark navy-black, with no shapes, no marks, no text and no reflections. Keep the \">\" chevron. Do not add anything.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G2-02.png",
+      "sha256": "30bc8b270bccd1d9190a0ac5fb0fa68624074fc523f8f6a64c0fe67ab086fa89",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G2-02.json",
+      "metadataApproved": false
+    },
+    "G3-01": {
+      "prompt": "G3",
+      "attempt": 1,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/01-master.png",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same mouth, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only this: add two eyebrows. Each is one thin, straight, level neon cyan bar, half a pixel block tall, as wide as the eye below it, with a clear dark gap of one pixel block between the brow and the highest point of its eye. The brows are neutral, not angled, and stay well below the red cursor. Crisp edges, no glow or halo.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G3-01.png",
+      "sha256": "96692f5f64c4f2fc2e0c9c8f9333073ea2d8b5b92271031d1a1a85b928ba9049",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G3-01.json",
+      "metadataApproved": false
+    },
+    "G4-01": {
+      "prompt": "G4",
+      "attempt": 1,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/01-master.png",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same mouth, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the eyes: close both of them. Each closed eye is one short, straight, horizontal neon cyan bar, one pixel block tall, as wide as the open eye was, lying along the flat bottom edge of where the open eye was. Crisp edges, no glow or halo.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G4-01.png",
+      "sha256": "795f27770cbdd97a71ce67c45644e2fbf9767da9fe86f8529ce835c46a4372e3",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G4-01.json",
+      "metadataApproved": false
+    },
+    "G5-01": {
+      "prompt": "G5",
+      "attempt": 1,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/01-master.png",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: open it slightly. The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 3 blocks tall, so the dark inside is one block tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. Crisp edges, no glow or halo.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G5-01.png",
+      "sha256": "ce04ef178b8e98ac482b945e9881cfcbc85e83c42d3acd3fd38c6823dc4846c6",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G5-01.json",
+      "metadataApproved": false
+    },
+    "G6-01": {
+      "prompt": "G6",
+      "attempt": 1,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/01-master.png",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: open it wide, as if saying \"ah\". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is 4 blocks wide and 2 blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G6-01.png",
+      "sha256": "f2a395c77435ea68ad9a7d133778391a15aec18681844c936aed44700bca6a11",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G6-01.json",
+      "metadataApproved": false
+    },
+    "G7-01": {
+      "prompt": "G7",
+      "attempt": 1,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/01-master.png",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: make it round, as if saying \"oo\". The mouth becomes a pixel ring whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: 4 blocks wide and 4 blocks tall with the four corner blocks left out, so the dark inside is 2 by 2 blocks. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. Crisp edges, no glow or halo.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G7-01.png",
+      "sha256": "838825d9fcd3381cf1517c573fb72af87bd7f88e84c2a608105d4b88c1a24aa3",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G7-01.json",
+      "metadataApproved": false
+    },
+    "G8-01": {
+      "prompt": "G8",
+      "attempt": 1,
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "input": "art/raw/01-master.png",
+      "promptAsSent": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: spread it wide, as if saying \"ee\". The mouth becomes a long, flat hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: one and a half times as wide as the closed smile and 3 blocks tall, so the dark inside is one block tall. Its top edge is where the top of the closed smile was, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.",
+      "promptAsSentVsOurs": "identical",
+      "outputSize": "1254x1254",
+      "file": "art/raw/attempts/G8-01.png",
+      "sha256": "1d7eff381d3802747eaf51433cb3aae30e41b8d4e662e87ba2b288f54b45dbe0",
+      "sizeCheck": "ok: 1254x1254, same as the input master",
+      "extract": "art/attempts/G8-01.json",
       "metadataApproved": false
     }
   }

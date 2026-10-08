@@ -64,10 +64,10 @@ test("author prompts in PROMPTS.md are numbered #1, #2, ... in order", () => {
   assert.deepEqual(nums, nums.map((_, i) => i + 1));
 });
 
-test("mouth sizes in blocks: small 6 x 3, open 6 x 5 (inside 4 x 3), round 4 x 4, wide 1.5 x by 3", () => {
+test("mouth sizes in blocks: small 6 x 3, open 6 x 4 (inside 4 x 2), round 4 x 4, wide 1.5 x by 3", () => {
   const t = (id) => gen.find((g) => g.id === id).text;
   assert.match(t("G5"), /as wide as the closed smile and 3 blocks tall/);
-  assert.match(t("G6"), /as wide as the closed smile and 5 blocks tall, so the dark inside is 4 blocks wide and 3 blocks tall/);
+  assert.match(t("G6"), /as wide as the closed smile and 4 blocks tall, so the dark inside is 4 blocks wide and 2 blocks tall/);
   assert.match(t("G7"), /4 blocks wide and 4 blocks tall with the four corner blocks left out/);
   assert.match(t("G8"), /one and a half times as wide as the closed smile and 3 blocks tall/);
   assert.doesNotMatch(t("G8"), /raised/);

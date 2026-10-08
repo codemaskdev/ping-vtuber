@@ -87,7 +87,7 @@ Save as: `art/raw/06-mouth_open.png`
 ```text
 Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
 
-Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 5 blocks tall, so the dark inside is 4 blocks wide and 3 blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
+Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is 4 blocks wide and 2 blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
 ```
 
 ## G7 · mouth round

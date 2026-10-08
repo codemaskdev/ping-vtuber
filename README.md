@@ -35,6 +35,9 @@ npm install
 npm run generate -- G1 one generator attempt through Codex CLI's image tool → art/raw/attempts/, logs/codex/
 npm run attempt:extract -- G1-01   committed extract art/attempts/G1-01.json + disclosure in art/generations.json
 npm run stage1 -- <G1 attempt> <G2 attempt>   regions, partial layers, check and review in out/stage1/
+npm run stage2 -- regions G2-01 | calibrate <ids>   regions on the master / calibration run in out/stage2/
+npm run measure:master  block size, smile top, outline inner edge of the master
+npm run compare:heads -- G2-01 G2-02   chevron colour and drift of empty-screen attempts against the master
 npm run metadata       embedded metadata of every raw (EXIF, XMP, PNG chunks, C2PA yes/no); prints only
 npm run regions        art/regions.json from the master; -- --freeze once the master is approved
 npm run review         out/master-review.png: the master with its measured regions and pivots drawn on it

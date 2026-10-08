@@ -7,9 +7,11 @@
     "screen": "the master's head silhouette bounding box (outline plus its bright halo); screenWidth is its width; margin = ceil(screenWidth * 3 / 100)",
     "head": "screen box grown by the margin, clamped to the canvas",
     "glow": "the whole canvas",
-    "cursor": "the red blob (most pixels with R > G and R > B), grown by the margin",
-    "eyes": "the remaining blobs except the lowest one; exactly two expected; their joint box grown by the margin",
-    "mouth": "the lowest non-red blob, box w x h. Every mouth shape keeps the closed smile's top edge and opens downward, so the region runs from the box top minus the margin down to the box top plus max(h, ceil(5w / 6)) plus the margin (room for 'open', 5 blocks tall under a 6-block smile, and 'round', 4 blocks), and is centred on the box horizontally with half-width ceil(3w / 4) + margin (room for 'wide', 1.5 times as wide)",
+    "changedAfterSeeing": "The interior, cursor and head-pixel rules below were changed after seeing G1-01 and G2-01 (author's prompt #8): the first rule also searched the outline, where a redrawn empty screen differs in thin rims, and took the cursor as a red blob, which joined it with a recoloured chevron.",
+    "interior": "changed after seeing G1-01 and G2-01: face features are searched only inside the screen (the largest dark area inside the silhouette with everything it encloses), shrunk inward by the margin. Differences on the outline are drift, not regions. Pixels lit in the empty screen (max channel >= processing.silhouetteThreshold: the chevron, the outline) belong to the head, never to a feature; feature extraction skips them too.",
+    "cursor": "changed after seeing G1-01 and G2-01: the master's red pixels inside the screen (R minus the larger of G and B above processing.featureLo); their box grown by the margin. The chevron is part of the head.",
+    "eyes": "the blobs except the lowest one; exactly two expected; their joint box grown by the margin",
+    "mouth": "the lowest blob, box w x h. Every mouth shape keeps the closed smile's top edge and opens downward, so the region runs from the box top minus the margin down to the box top plus max(h, ceil(2w / 3)) plus the margin (room for 'open' and 'round', 4 blocks tall under a 6-block smile), and is centred on the box horizontally with half-width ceil(3w / 4) + margin (room for 'wide', 1.5 times as wide)",
     "brows": "the eyes region's x range; from the eyes region's top up by ceil(eyesHeight / 2) + margin",
     "overlaps": "eyes and mouth regions are split at the middle of the gap between the measured eyes and mouth boxes; the brows region's top is cut to the cursor region's bottom if they overlap; any overlap left after that rejects the master",
     "clamp": "every feature region is clamped to the head region"
@@ -172,7 +174,7 @@
     "searchStridePx": 2
   },
   "checks": {
-    "$comment": "Canvas size, inside-region and corner alpha are pass/fail from the start. Offset, drift and screen scale are only measured until limits are chosen after looking at the first real run; null means not set yet. drift = mean absolute RGB difference from the master outside the changed feature, after alignment, 0..255 scale. scale = the variant's screen box size minus the master's.",
+    "$comment": "Canvas size, inside-region and corner alpha are pass/fail from the start. Inside-region has two parts: the layer's alpha box inside its region, and (added after the first real run showed that feature layers are cut to their region, so their box alone could never fail) every blob a variant changed against the master inside the screen lies inside the regions of the layers it is meant to change (lib/pipeline.mjs changedBlobs). Offset, drift and screen scale are only measured until limits are chosen after looking at the first real run; null means not set yet. drift = mean absolute RGB difference from the master outside the changed feature, after alignment, 0..255 scale. scale = the variant's screen box size minus the master's.",
     "maxOffsetPx": null,
     "maxDrift": null,
     "maxScaleDeltaPx": null

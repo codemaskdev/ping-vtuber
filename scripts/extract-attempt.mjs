@@ -96,6 +96,8 @@ fs.writeFileSync(path.join(ATTEMPTS_LOG, `${id}.json`), JSON.stringify(extract, 
 const gfile = path.join(ROOT, "art", "generations.json");
 const g = JSON.parse(fs.readFileSync(gfile, "utf8"));
 g.attempts = g.attempts || {};
+// Fields only the author sets survive a re-extraction.
+const kept = Object.fromEntries(Object.entries(g.attempts[id] || {}).filter(([k]) => ["metadataApproved", "promotedTo"].includes(k)));
 g.attempts[id] = sanitize({
   prompt: run.prompt,
   attempt: extract.attemptNumber,
@@ -114,6 +116,7 @@ g.attempts[id] = sanitize({
   sizeCheck,
   extract: `art/attempts/${id}.json`,
   metadataApproved: false,
+  ...kept,
 });
 const sorted = Object.fromEntries(Object.entries(g.attempts).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
 g.attempts = sorted;

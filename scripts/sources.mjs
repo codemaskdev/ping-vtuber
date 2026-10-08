@@ -41,12 +41,17 @@ export function buildSources() {
     const specRaw = spec.raws.find((r) => r.file === f);
     if (!specRaw) errors.push(`art/raw/${f} is not listed in art/layers.json raws`);
     const g = gens[f];
-    if (!g) { errors.push(`art/raw/${f} has no entry in art/generations.json`); return entry; }
-    for (const k of ["generator", "version", "date", "prompt"]) if (!g[k]) errors.push(`art/generations.json ${f}: ${k} is empty`);
-    if (specRaw && g.prompt !== specRaw.prompt) errors.push(`art/generations.json ${f}: prompt ${g.prompt}, layers.json says ${specRaw.prompt}`);
-    const p = prompts.get(g.prompt);
-    if (!p) errors.push(`art/generations.json ${f}: unknown prompt ${g.prompt}`);
-    return { ...entry, generator: g.generator, version: g.version, date: g.date, prompt: g.prompt, promptText: p ? p.text : null, ...(g.note ? { note: g.note } : {}) };
+    if (!g) { errors.push(`art/raw/${f} has no entry in art/generations.json images`); return entry; }
+    const a = (gfile.attempts || {})[g.fromAttempt];
+    if (!a) { errors.push(`art/generations.json images.${f}: fromAttempt ${g.fromAttempt} is not an attempt`); return entry; }
+    if (g.sha256 !== entry.sha256 || a.sha256 !== entry.sha256) errors.push(`art/raw/${f}: sha256 differs from its attempt ${g.fromAttempt}`);
+    if (specRaw && a.prompt !== specRaw.prompt) errors.push(`art/raw/${f}: attempt ${g.fromAttempt} ran ${a.prompt}, layers.json says ${specRaw.prompt}`);
+    const p = prompts.get(a.prompt);
+    return {
+      ...entry, fromAttempt: g.fromAttempt, prompt: a.prompt, promptText: p ? p.text : null, promptAsSent: a.promptAsSentVsOurs,
+      date: a.date, generator: a.generator, codexCliVersion: a.codexCliVersion, codexModel: a.codexModel,
+      imageTool: a.imageTool, imageModel: a.imageModel, metadataApproved: g.metadataApproved === true,
+    };
   });
 
   const P = spec.processing;

@@ -147,3 +147,61 @@ What broke
   (no account, e-mail, user, session, thread, auth or token keys) and strings for paths, e-mail addresses and ids.
 - `npm test`: tests 66, pass 65, fail 0, skipped 1 (reprocess vs committed layers: no approved raws yet),
   duration_ms 31683.754583.
+
+## 2026-10-08 · Stage 1 review applied; regions frozen; G2-02, G3-G8; stage 2 calibration
+
+Decisions (prompt #8) and what was done
+- G1-01 promoted, unmodified, to art/raw/01-master.png (sha256 c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a
+  at both); its metadata approved by the author (C2PA only). It is the only raw file committed.
+- Region rule changed after seeing G1-01 and G2-01, labelled so in art/layers.json (regionRule.changedAfterSeeing,
+  interior, cursor): faces are searched only inside the screen shrunk by the margin; the cursor is the master's red
+  pixels there; the chevron is head. To make "the chevron is head" work, pixels lit in the empty screen (max channel
+  >= silhouetteThreshold 48) are never feature pixels, in the region rule and in feature extraction. That last part
+  is my implementation of the author's rule, chosen after seeing the data.
+- mouth_open back to 6 x 4 blocks (G6, mouth region rule depth max(h, ceil(2w / 3)) + margin, fixtures, tests).
+  `npm run measure:master`: smile box 480,788,294,99; smile top edge y 788; end blocks 50 px wide and 50 px tall
+  (top-row runs [480,50] and [723,51]); bar 49 px tall; smile width / 6 = 49, height / 2 = 49.5; inner bottom edge
+  of the outline below the smile's centre y 1048; room from the smile top to the outline 260 px = 5.2 blocks of 50 px.
+- Regions (`npm run stage2 -- regions G2-01`, base G2-01 as the provisional head): margin 29, screen
+  147,152,959,950, inside 230,231,794,788, 02-head offset 0,0; found the cursor (379,291,59,103), two eyes (joint
+  345,518,564,172) and the mouth (480,788,294,99); 5 blobs, 3 kept, 2 under 841 px ignored (chevron edges, 70 and
+  97 px). No overlaps. Frozen (`npm run regions -- --freeze`); review image out/master-review.png.
+- Attempts G2-02, G3-01 ... G8-01 (input art/raw/01-master.png): all exit 0, one image each, 1254 x 1254, one tool
+  call, prompt passed identical to ours, session model gpt-5.5, C2PA gpt-image. Metadata dumps in art/attempts/.
+- Chevron (`npm run compare:heads -- G2-01 G2-02`; masks: outline 168688 px, chevron 4733 px, inside 364442 px):
+  - master chevron mean RGB 27.552714979928165, 142.27424466511727, 165.58229452778366;
+  - G2-01: 30.27403338263258, 173.17282907246988, 199.6712444538348; mean |RGB difference| outline
+    6.19678143475924, chevron 24.284386224381997, inside the screen 1.7938190439082213;
+  - G2-02: 19.987745615888443, 145.38178744982042, 171.92372702302978; outline 5.691950030035727, chevron
+    6.801253609409113, inside the screen 1.303507828406166.
+- Stage 2 calibration (`npm run stage2 -- calibrate G2-01 G3-01 G4-01 G5-01 G6-01 G7-01 G8-01`; sources are
+  provisional; output in out/stage2/, not committed). No limits set. Table as printed:
+
+```
+| layer       | source             | canvas    | alpha bbox x,y,w,h | region x,y,w,h    | inside | changed blobs (outside) | corner alpha TL,TR,BL,BR | offset dx,dy | drift mean (sum/samples)             | screen w,h (master w,h) | status                                                                                |
+|-------------|--------------------|-----------|--------------------|-------------------|--------|-------------------------|--------------------------|--------------|--------------------------------------|-------------------------|---------------------------------------------------------------------------------------|
+| glow        | 02-head.png        | 1254x1254 | 137,141,980,971    | 0,0,1254,1254     | yes    | 4 (0)                   | 0,0,0,0                  | 0,0          | 1.5692632798970356 (5822006/3710025) | 956,948 (959,950)       | measured                                                                              |
+| head        | 02-head.png        | 1254x1254 | 149,153,956,948    | 118,123,1017,1008 | yes    | 4 (0)                   | 0,0,0,0                  | 0,0          | 1.5692632798970356 (5822006/3710025) | 956,948 (959,950)       | measured                                                                              |
+| cursor      | 01-master.png      | 1254x1254 | 378,291,60,103     | 350,262,117,161   | yes    | master                  | 0,0,0,0                  | master       | master                               | 959,950 (959,950)       | ok                                                                                    |
+| eyes_open   | 01-master.png      | 1254x1254 | 345,518,564,172    | 316,489,622,230   | yes    | master                  | 0,0,0,0                  | master       | master                               | 959,950 (959,950)       | ok                                                                                    |
+| eyes_closed | 04-eyes_closed.png | 1254x1254 | 354,625,547,42     | 316,489,622,230   | yes    | 2 (0)                   | 0,0,0,0                  | 0,0          | 1.5526169054191705 (6560266/4225296) | 955,947 (959,950)       | measured                                                                              |
+| brows       | 03-brows.png       | 1254x1254 | 345,477,564,12     | 316,423,622,66    | yes    | 2 (2)                   | 0,0,0,0                  | 0,0          | 1.5091606487864748 (6856310/4543128) | 958,949 (959,950)       | FAIL: changed outside its regions: [346,477,222,43] 4664 px, [686,477,223,21] 4681 px |
+| mouth_rest  | 01-master.png      | 1254x1254 | 480,788,294,99     | 377,759,500,254   | yes    | master                  | 0,0,0,0                  | master       | master                               | 959,950 (959,950)       | ok                                                                                    |
+| mouth_small | 05-mouth_small.png | 1254x1254 | 479,787,296,127    | 377,759,500,254   | yes    | 1 (0)                   | 0,0,0,0                  | 0,0          | 1.4959255064557395 (6403357/4280532) | 957,948 (959,950)       | measured                                                                              |
+| mouth_open  | 06-mouth_open.png  | 1254x1254 | 486,759,282,176    | 377,759,500,254   | yes    | 1 (0)                   | 0,0,0,0                  | 0,0          | 1.6122400206329495 (6901245/4280532) | 956,948 (959,950)       | measured                                                                              |
+| mouth_round | 07-mouth_round.png | 1254x1254 | 522,759,210,175    | 377,759,500,254   | yes    | 1 (1)                   | 0,0,0,0                  | 0,0          | 1.7481572383993391 (7483043/4280532) | 957,948 (959,950)       | FAIL: changed outside its regions: [480,739,294,194] 25568 px                         |
+| mouth_wide  | 08-mouth_wide.png  | 1254x1254 | 416,788,422,103    | 377,759,500,254   | yes    | 1 (0)                   | 0,0,0,0                  | 0,0          | 1.4159415231564674 (6060983/4280532) | 956,948 (959,950)       | measured                                                                              |
+```
+
+What broke
+- The inside-region check could never fail for a feature layer: extraction cuts each feature to its region, so its
+  alpha box is inside by construction. Seen in this run: mouth_open and mouth_round boxes started exactly at the
+  region's top (759). Added the changed-blob check (layers.json checks.$comment) and a test with a shape drawn past
+  its region. With it, two attempts fail:
+  - G7-01 (mouth_round): the ring starts at y 739, a block above the smile's top edge 788, 20 px above the mouth
+    region; the layer had been cut at 759.
+  - G3-01 (brows): the brows sit at y 477, close above the eyes (top 518); they reach y 497 and 498, below the brows
+    region's bottom 489, and the blob joins the eyes' top edge (to y 520). The layer had been cut at 489.
+- G6-01 (mouth_open) also did not keep the smile's top edge: it starts at y 759/760, 28 px above 788, inside the
+  region by 1 px. It passes.
+- `npm test`: tests 69, pass 67, fail 0, skipped 2 (reprocess vs committed layers, and the empty-art/raw CLI check, both waiting for promoted raws), duration_ms 43203.035.

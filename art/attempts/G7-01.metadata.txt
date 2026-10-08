@@ -1,0 +1,89 @@
+
+=== art/raw/attempts/G7-01.png  1012374 bytes  sha256 838825d9fcd3381cf1517c573fb72af87bd7f88e84c2a608105d4b88c1a24aa3
+--- exiftool -a -u -G1 -s
+[ExifTool]      ExifToolVersion                 : 13.55
+[System]        FileName                        : G7-01.png
+[System]        Directory                       : art/raw/attempts
+[System]        FileSize                        : 1012 kB
+[System]        FileModifyDate                  : 2026:10:08 18:39:52+00:00
+[System]        FileAccessDate                  : 2026:10:08 18:39:52+00:00
+[System]        FileInodeChangeDate             : 2026:10:08 18:39:52+00:00
+[System]        FilePermissions                 : -rw-r--r--
+[File]          FileType                        : PNG
+[File]          FileTypeExtension               : png
+[File]          MIMEType                        : image/png
+[PNG]           ImageWidth                      : 1254
+[PNG]           ImageHeight                     : 1254
+[PNG]           BitDepth                        : 8
+[PNG]           ColorType                       : RGB
+[PNG]           Compression                     : Deflate/Inflate
+[PNG]           Filter                          : Adaptive
+[PNG]           Interlace                       : Noninterlaced
+[JUMBF]         JUMDType                        : (c2pa)-0011-0010-800000aa00389b71
+[JUMBF]         JUMDToggles                     : Requestable, Label
+[JUMBF]         JUMDLabel                       : c2pa
+[JUMBF]         JUMDType                        : (c2ma)-0011-0010-800000aa00389b71
+[JUMBF]         JUMDToggles                     : Requestable, Label
+[JUMBF]         JUMDLabel                       : urn:c2pa:09121a80-e05a-4021-a8be-aede6504aef3
+[JUMBF]         JUMDType                        : (c2as)-0011-0010-800000aa00389b71
+[JUMBF]         JUMDToggles                     : Requestable, Label
+[JUMBF]         JUMDLabel                       : c2pa.assertions
+[JUMBF]         JUMDType                        : 40cb0c32-bb8a-489d-a70b2ad6f47f4369
+[JUMBF]         JUMDToggles                     : Requestable, Label, [4]
+[JUMBF]         JUMDLabel                       : c2pa.icon
+[JUMBF]         JUMDType                        : (cbor)-0011-0010-800000aa00389b71
+[JUMBF]         JUMDToggles                     : Requestable, Label, [4]
+[JUMBF]         JUMDLabel                       : c2pa.actions.v2
+[JUMBF]         JUMDType                        : (cbor)-0011-0010-800000aa00389b71
+[JUMBF]         JUMDToggles                     : Requestable, Label, [4]
+[JUMBF]         JUMDLabel                       : c2pa.hash.data
+[JUMBF]         JUMDType                        : (c2cl)-0011-0010-800000aa00389b71
+[JUMBF]         JUMDToggles                     : Requestable, Label
+[JUMBF]         JUMDLabel                       : c2pa.claim.v2
+[JUMBF]         JUMDType                        : (c2cs)-0011-0010-800000aa00389b71
+[JUMBF]         JUMDToggles                     : Requestable, Label
+[JUMBF]         JUMDLabel                       : c2pa.signature
+[Jpeg2000]      C2PAIconSalt                    : 942570201e444b501b6015c1a132e9e0
+[Jpeg2000]      C2PAIconType                    : image/svg+xml
+[Jpeg2000]      C2PAIconData                    : (Binary data 2415 bytes, use -b option to extract)
+[Jpeg2000]      C2PAActionsV2Salt               : 9e5f47b268b594e697359dac8bcddf7d
+[Jpeg2000]      C2PAHashDataSalt                : df3de39c22e10e6a6a362e48d6d5f66e
+[CBOR]          ActionsAction                   : c2pa.created, c2pa.converted, c2pa.watermarked.unbound
+[CBOR]          ActionsWhen                     : 2026:10:08 18:39:47.362935573Z, 2026:10:08 18:39:47.362939349Z, 2026:10:08 18:39:47.361161778Z
+[CBOR]          ActionsSoftwareAgentName        : ChatGPT
+[CBOR]          ActionsSoftwareAgentVersion     : gpt-image
+[CBOR]          ActionsDigitalSourceType        : http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia
+[CBOR]          AllActionsIncluded              : False
+[CBOR]          ExclusionsStart                 : 33
+[CBOR]          ExclusionsLength                : 21893
+[CBOR]          Name                            : jumbf manifest
+[CBOR]          Alg                             : sha256
+[CBOR]          Hash                            : (Binary data 32 bytes, use -b option to extract)
+[CBOR]          Pad                             : (Binary data 8 bytes, use -b option to extract)
+[CBOR]          InstanceID                      : xmp:iid:5d7428eb-e16f-4404-a7c1-682e4c53a19d
+[CBOR]          Claim_Generator_InfoName        : OpenAI Media Service API
+[CBOR]          Claim_Generator_InfoIconUrl     : self#jumbf=c2pa.assertions/c2pa.icon
+[CBOR]          Claim_Generator_InfoIconHash    : (Binary data 32 bytes, use -b option to extract)
+[CBOR]          Claim_Generator_InfoSpecVersion : 2.2.0
+[CBOR]          Claim_Generator_InfoOrgContentauthC2Pa_Rs: 0.79.2
+[CBOR]          Signature                       : self#jumbf=/c2pa/urn:c2pa:09121a80-e05a-4021-a8be-aede6504aef3/c2pa.signature
+[CBOR]          Created_AssertionsUrl           : self#jumbf=c2pa.assertions/c2pa.icon, self#jumbf=c2pa.assertions/c2pa.actions.v2, self#jumbf=c2pa.assertions/c2pa.hash.data
+[CBOR]          Created_AssertionsHash          : (Binary data 32 bytes, use -b option to extract), (Binary data 32 bytes, use -b option to extract), (Binary data 32 bytes, use -b option to extract)
+[CBOR]          Title                           : image.png
+[CBOR]          Alg                             : sha256
+[CBOR]          Item0                           : (Binary data 1877 bytes, use -b option to extract)
+[CBOR]          Item1SigTst2TstTokensVal        : (Binary data 5260 bytes, use -b option to extract)
+[CBOR]          Item1RValsOcspVals              : (Binary data 1050 bytes, use -b option to extract)
+[CBOR]          Item1Pad                        : (Binary data 9499 bytes, use -b option to extract)
+[CBOR]          Item2                           : null
+[CBOR]          Item3                           : (Binary data 64 bytes, use -b option to extract)
+[Composite]     ImageSize                       : 1254x1254
+[Composite]     Megapixels                      : 1.6
+--- c2patool
+c2patool not installed
+--- PNG chunks (lib/png.mjs)
+IHDR  13
+caBX  21881
+IDAT  990424
+IEND  0
+C2PA/JUMBF chunk: present (caBX 21881 bytes)

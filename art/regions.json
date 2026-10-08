@@ -1,0 +1,255 @@
+{
+  "$comment": "Written by scripts/regions.mjs from the master, with the rules in art/layers.json. Do not edit by hand. frozen: true once the author approved the master; after that the regions do not change.",
+  "frozen": true,
+  "master": {
+    "file": "01-master.png",
+    "sha256": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a"
+  },
+  "base": {
+    "file": "02-head.png",
+    "sha256": "923936cdc85c7ff4b38d39426174b4e9f76a000d07e8ac9f03375e2ac837e7b4"
+  },
+  "canvas": {
+    "width": 1254,
+    "height": 1254
+  },
+  "margin": 29,
+  "baseOffset": {
+    "dx": 0,
+    "dy": 0,
+    "atSearchEdge": false
+  },
+  "measured": {
+    "screen": [
+      147,
+      152,
+      959,
+      950
+    ],
+    "interior": [
+      230,
+      231,
+      794,
+      788
+    ],
+    "cursor": [
+      379,
+      291,
+      59,
+      103
+    ],
+    "eyes": [
+      345,
+      518,
+      564,
+      172
+    ],
+    "mouth": [
+      480,
+      788,
+      294,
+      99
+    ],
+    "blobs": [
+      {
+        "box": [
+          268,
+          285,
+          79,
+          120
+        ],
+        "pixels": 70,
+        "redPixels": 0,
+        "diffMax": 62,
+        "diffSum": 2499,
+        "pixelsOverFeatureHi": 0
+      },
+      {
+        "box": [
+          378,
+          297,
+          2,
+          97
+        ],
+        "pixels": 97,
+        "redPixels": 0,
+        "diffMax": 51,
+        "diffSum": 2867,
+        "pixelsOverFeatureHi": 0
+      },
+      {
+        "box": [
+          345,
+          518,
+          223,
+          172
+        ],
+        "pixels": 28228,
+        "redPixels": 0,
+        "diffMax": 247,
+        "diffSum": 6634972,
+        "pixelsOverFeatureHi": 28076
+      },
+      {
+        "box": [
+          686,
+          518,
+          223,
+          172
+        ],
+        "pixels": 28254,
+        "redPixels": 0,
+        "diffMax": 247,
+        "diffSum": 6644106,
+        "pixelsOverFeatureHi": 28101
+      },
+      {
+        "box": [
+          480,
+          788,
+          294,
+          99
+        ],
+        "pixels": 14820,
+        "redPixels": 0,
+        "diffMax": 247,
+        "diffSum": 3385727,
+        "pixelsOverFeatureHi": 14384
+      }
+    ]
+  },
+  "layers": {
+    "glow": {
+      "region": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "pivot": [
+        626,
+        627
+      ]
+    },
+    "head": {
+      "region": [
+        118,
+        123,
+        1017,
+        1008
+      ],
+      "pivot": [
+        626,
+        1102
+      ]
+    },
+    "cursor": {
+      "region": [
+        350,
+        262,
+        117,
+        161
+      ],
+      "pivot": [
+        408,
+        342
+      ]
+    },
+    "eyes_open": {
+      "region": [
+        316,
+        489,
+        622,
+        230
+      ],
+      "pivot": [
+        627,
+        604
+      ]
+    },
+    "eyes_closed": {
+      "region": [
+        316,
+        489,
+        622,
+        230
+      ],
+      "pivot": [
+        627,
+        604
+      ]
+    },
+    "brows": {
+      "region": [
+        316,
+        423,
+        622,
+        66
+      ],
+      "pivot": [
+        627,
+        456
+      ]
+    },
+    "mouth_rest": {
+      "region": [
+        377,
+        759,
+        500,
+        254
+      ],
+      "pivot": [
+        627,
+        837
+      ]
+    },
+    "mouth_small": {
+      "region": [
+        377,
+        759,
+        500,
+        254
+      ],
+      "pivot": [
+        627,
+        837
+      ]
+    },
+    "mouth_open": {
+      "region": [
+        377,
+        759,
+        500,
+        254
+      ],
+      "pivot": [
+        627,
+        837
+      ]
+    },
+    "mouth_round": {
+      "region": [
+        377,
+        759,
+        500,
+        254
+      ],
+      "pivot": [
+        627,
+        837
+      ]
+    },
+    "mouth_wide": {
+      "region": [
+        377,
+        759,
+        500,
+        254
+      ],
+      "pivot": [
+        627,
+        837
+      ]
+    }
+  }
+}

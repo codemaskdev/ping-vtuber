@@ -35,6 +35,18 @@ test("the canvas is the master's own size; regions are measured on it", () => {
   assert.deepEqual([regions.baseOffset.dx, regions.baseOffset.dy], [DISTORTIONS["02-head.png"].dx, DISTORTIONS["02-head.png"].dy]);
 });
 
+test("faces are searched inside the screen only; the cursor is the master's red pixels; the chevron is head", () => {
+  const [ix, iy, iw, ih] = regions.measured.interior, [sx, sy, sw, sh] = regions.measured.screen;
+  assert.ok(ix > sx && iy > sy && ix + iw < sx + sw && iy + ih < sy + sh, "the inside is within the screen box");
+  for (const b of regions.measured.blobs.filter((x) => x.pixels >= regions.margin * regions.margin)) {
+    assert.ok(b.box[0] >= ix && b.box[1] >= iy && b.box[0] + b.box[2] <= ix + iw && b.box[1] + b.box[3] <= iy + ih, `blob ${b.box} outside the inside`);
+  }
+  const cursorLayer = readPng(run("a/cursor.png")).img;
+  let lit = 0, red = 0;
+  for (let i = 0; i < cursorLayer.data.length; i += 4) if (cursorLayer.data[i + 3] === 255) { lit++; if (cursorLayer.data[i] > cursorLayer.data[i + 1] + 24) red++; }
+  assert.ok(lit > 0 && red === lit, "the cursor layer holds only red pixels");
+});
+
 test("feature regions are measured boxes plus the margin, and do not overlap", () => {
   const m = regions.margin;
   assert.equal(m, Math.ceil((regions.measured.screen[2] * 3) / 100));
@@ -86,10 +98,10 @@ test("screen size is measured per variant next to the master's and catches a sca
   assert.deepEqual(row(checked, "mouth_small").scaleDelta, [0, 0]);
 });
 
-test("the mouth region has room for mouth_open, 5 blocks under the smile's top", () => {
+test("the mouth region has room for mouth_open, 4 blocks under the smile's top", () => {
   const open = row(checked, "mouth_open").bbox, rest = row(checked, "mouth_rest").bbox, small = row(checked, "mouth_small").bbox;
   assert.equal(open.y, rest.y);
-  assert.ok(open.h > small.h * 1.5, "open differs clearly from small");
+  assert.ok(open.h > small.h + small.h / 4, "open (4 blocks) is clearly taller than small (3 blocks)");
   assert.ok(row(checked, "mouth_open").inside);
 });
 
@@ -152,6 +164,21 @@ test("check:layers fails a layer out of its region, with corner alpha, or missin
   assert.match(problems.brows, /corner alpha/);
   assert.match(problems.mouth_wide, /missing/);
   assert.equal(problems.mouth_rest, "");
+});
+
+test("a shape drawn past its region fails, although its layer is cut to the region", () => {
+  const dir = run("overflow-raw");
+  fs.cpSync(FIXTURE_RAW, dir, { recursive: true });
+  const img = readPng(path.join(dir, "07-mouth_round.png")).img;
+  const r = regions.layers.mouth_round.region;
+  // A cyan block straddling the top of the mouth region, as if the ring were drawn one block too high.
+  for (let y = r[1] - 30; y < r[1] + 10; y++) for (let x = r[0] + 100; x < r[0] + 160; x++) img.data.set([46, 230, 255, 255], (y * img.width + x) * 4);
+  writePng(path.join(dir, "07-mouth_round.png"), img, mark);
+  processAll(spec, dir, run("overflow"), REGIONS, { fixtures: true });
+  const res = checkLayers(spec, dir, run("overflow"), REGIONS, { fixtures: true });
+  assert.equal(row(res, "mouth_round").inside, true, "the cut layer alone looks fine");
+  assert.match(row(res, "mouth_round").problems.join(), /changed outside its regions/);
+  assert.equal(row(res, "mouth_small").problems.length, 0);
 });
 
 test("once limits are set, offset, drift and scale become pass/fail", () => {

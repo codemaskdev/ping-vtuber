@@ -1,0 +1,92 @@
+{
+  "$comment": "Written by scripts/extract-attempt.mjs from Codex's logs. Local paths, account details and session, call and response ids are removed. Values Codex did not report are 'not reported'.",
+  "attempt": "G8-01",
+  "prompt": "G8",
+  "attemptNumber": 1,
+  "input": {
+    "file": "art/raw/01-master.png",
+    "sha256": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a",
+    "width": 1254,
+    "height": 1254
+  },
+  "command": [
+    "codex",
+    "exec",
+    "--json",
+    "--sandbox",
+    "read-only",
+    "-C",
+    ".",
+    "-i",
+    "art/raw/01-master.png"
+  ],
+  "exitStatus": 0,
+  "codexCliVersion": "codex-cli 0.161.0",
+  "sessionCliVersion": "0.161.0",
+  "date": "2026-10-08",
+  "dateSource": "Codex session file, session_meta.timestamp (UTC)",
+  "codexModel": "gpt-5.5",
+  "sandbox": "read-only",
+  "approvalPolicy": "never",
+  "jsonEventTypes": [
+    "thread.started",
+    "turn.started",
+    "item.completed",
+    "turn.completed"
+  ],
+  "jsonEventsReportToolCall": "no: the --json events show only thread, turn and agent messages; the tool call is read from Codex's session file",
+  "injectedByCodex": "none",
+  "imageTool": {
+    "name": "imagegen",
+    "namespace": "image_gen",
+    "calls": 1,
+    "argumentKeys": [
+      "prompt",
+      "referenced_image_paths",
+      "transparent_background"
+    ],
+    "otherArguments": {
+      "referenced_image_paths": [
+        "art/raw/01-master.png"
+      ],
+      "transparent_background": false
+    }
+  },
+  "promptPassed": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: spread it wide, as if saying \"ee\". The mouth becomes a long, flat hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: one and a half times as wide as the closed smile and 3 blocks tall, so the dark inside is one block tall. Its top edge is where the top of the closed smile was, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.",
+  "promptPassedVsOurs": "identical",
+  "revisedPrompt": "Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.\n\nChange only the mouth: spread it wide, as if saying \"ee\". The mouth becomes a long, flat hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: one and a half times as wide as the closed smile and 3 blocks tall, so the dark inside is one block tall. Its top edge is where the top of the closed smile was, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.",
+  "revisedPromptVsOurs": "identical",
+  "imageResult": {
+    "status": "completed",
+    "failure": null,
+    "transparentBackground": false,
+    "saved": "under $CODEX_HOME/generated_images"
+  },
+  "imagesCreated": 1,
+  "imageModel": {
+    "value": "gpt-image",
+    "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+  },
+  "c2pa": {
+    "ActionsSoftwareAgentName": "ChatGPT",
+    "ActionsSoftwareAgentVersion": "gpt-image",
+    "Claim_Generator_InfoName": "OpenAI Media Service API",
+    "ActionsAction": [
+      "c2pa.created",
+      "c2pa.converted",
+      "c2pa.watermarked.unbound"
+    ],
+    "ActionsDigitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "output": {
+    "copy": "art/raw/attempts/G8-01.png",
+    "bytes": 1046515,
+    "sha256AtSource": "1d7eff381d3802747eaf51433cb3aae30e41b8d4e662e87ba2b288f54b45dbe0",
+    "sha256AtCopy": "1d7eff381d3802747eaf51433cb3aae30e41b8d4e662e87ba2b288f54b45dbe0",
+    "format": "png",
+    "width": 1254,
+    "height": 1254
+  },
+  "sizeCheck": "ok: 1254x1254, same as the input master",
+  "agentFinalMessage": "The image tool returned an image."
+}

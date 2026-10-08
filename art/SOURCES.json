@@ -14,7 +14,27 @@
       "role": "reference: the CodeMask channel logo, given to the generator with G1; not character art"
     }
   ],
-  "raw": [],
+  "raw": [
+    {
+      "file": "art/raw/01-master.png",
+      "sha256": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a",
+      "bytes": 934841,
+      "fromAttempt": "G1-01",
+      "prompt": "G1",
+      "promptText": "Turn the attached logo into an original mascot character called Ping. Keep the logo's design: the same square screen with rounded corners, the same thin neon cyan outline, the same very dark navy-black screen, the same small terminal prompt in the top-left corner of the screen (a dim cyan \">\" chevron followed by a small solid coral-red cursor block), the same two eye shapes and the same pixel-block smile, in the same places on the screen. No eyebrows. Do not copy any text.\n\nPing is a head only: this screen with a face. No body, no neck, no stand, no cables, no keyboard, no antenna, no hands.\n\nCanvas and framing: square 1:1 image. Pure flat black background (#000000) everywhere outside the character: no gradient, no vignette, no texture, no stars, no particles, no code symbols, no decorations, no text, no logo, no watermark, no border. Front view, perfectly straight, not tilted, no perspective. The screen is centred horizontally and vertically and is 70% of the image width; leave 15% empty black margin on every side.\n\nScreen: one continuous, unbroken, closed neon cyan outline around its outer edge. The inside of the screen is flat, solid, very dark navy-black, with no scanlines, no reflections, no gradient and no texture. Only this outer outline glows: a soft cyan glow surrounds it on the outside and fades to pure black well before the image edges.\n\nFace, as flat solid neon cyan shapes with crisp, sharp edges and no glow or halo around them:\n- Eyes: the logo's two eyes, solid four-sided shapes that mirror each other, flat at the bottom, their top edges sloping down toward the middle of the face, just below the middle of the screen.\n- Mouth: the logo's closed smile, built from square pixel blocks: a flat bar with one block raised at each end, centred below the eyes, in the lower third of the screen.\nThe red cursor block also has crisp edges and no glow. No face shape touches another shape, the prompt or the outline.\n\nStyle: flat vector-like neon on dark, clean shapes, high contrast, no shading, no highlights, no 3D, simple enough to stay readable at 64 x 64 pixels. Ping is an original character: not any existing character, mascot, brand or real person.",
+      "promptAsSent": "identical",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "metadataApproved": true
+    }
+  ],
   "attempts": [
     {
       "attempt": "G1-01",
@@ -49,9 +69,133 @@
       },
       "outputSize": "1254x1254",
       "extract": "art/attempts/G2-01.json"
+    },
+    {
+      "attempt": "G2-02",
+      "file": "art/raw/attempts/G2-02.png",
+      "sha256": "30bc8b270bccd1d9190a0ac5fb0fa68624074fc523f8f6a64c0fe67ab086fa89",
+      "prompt": "G2",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G2-02.json"
+    },
+    {
+      "attempt": "G3-01",
+      "file": "art/raw/attempts/G3-01.png",
+      "sha256": "96692f5f64c4f2fc2e0c9c8f9333073ea2d8b5b92271031d1a1a85b928ba9049",
+      "prompt": "G3",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G3-01.json"
+    },
+    {
+      "attempt": "G4-01",
+      "file": "art/raw/attempts/G4-01.png",
+      "sha256": "795f27770cbdd97a71ce67c45644e2fbf9767da9fe86f8529ce835c46a4372e3",
+      "prompt": "G4",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G4-01.json"
+    },
+    {
+      "attempt": "G5-01",
+      "file": "art/raw/attempts/G5-01.png",
+      "sha256": "ce04ef178b8e98ac482b945e9881cfcbc85e83c42d3acd3fd38c6823dc4846c6",
+      "prompt": "G5",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G5-01.json"
+    },
+    {
+      "attempt": "G6-01",
+      "file": "art/raw/attempts/G6-01.png",
+      "sha256": "f2a395c77435ea68ad9a7d133778391a15aec18681844c936aed44700bca6a11",
+      "prompt": "G6",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G6-01.json"
+    },
+    {
+      "attempt": "G7-01",
+      "file": "art/raw/attempts/G7-01.png",
+      "sha256": "838825d9fcd3381cf1517c573fb72af87bd7f88e84c2a608105d4b88c1a24aa3",
+      "prompt": "G7",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G7-01.json"
+    },
+    {
+      "attempt": "G8-01",
+      "file": "art/raw/attempts/G8-01.png",
+      "sha256": "1d7eff381d3802747eaf51433cb3aae30e41b8d4e662e87ba2b288f54b45dbe0",
+      "prompt": "G8",
+      "date": "2026-10-08",
+      "generator": "Codex CLI built-in image tool, signed in with ChatGPT",
+      "codexCliVersion": "codex-cli 0.161.0",
+      "codexModel": "gpt-5.5",
+      "imageTool": "image_gen.imagegen",
+      "imageModel": {
+        "value": "gpt-image",
+        "source": "C2PA manifest in the output file, c2pa.actions.v2 softwareAgent.version (exiftool)"
+      },
+      "outputSize": "1254x1254",
+      "extract": "art/attempts/G8-01.json"
     }
   ],
   "layers": [],
-  "regions": null,
+  "regions": {
+    "file": "art/regions.json",
+    "sha256": "8a5944a47790e772e0720e84db7eacab72b4278ee3962d9ee8f2e560cd58bd46",
+    "bytes": 3887,
+    "frozen": true
+  },
   "processLog": null
 }
