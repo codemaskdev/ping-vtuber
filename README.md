@@ -77,3 +77,26 @@ this. A glow pulse would need new processing or drawing the glow in code.
 6. Mouth anchors: every mouth's top edge is measured, and anchorDy = the smile's top edge minus it goes into the
    process log (`mouthAnchors`). Composites, the contact sheet and the rig draw each mouth moved down by anchorDy;
    the layers themselves are not changed. Keeping the smile's top edge is a rig rule, not a generator rule.
+
+## Step 2: the rig
+
+```
+rig/rig.json          layers, parents, z, pivots, regions, mouth anchors, browsRest, chosen pose limits (npm run rig)
+lib/rig.mjs           pose -> draw list (pure, no imports; runs in Node and in the browser)
+rig/adapter.js        paints a draw list on a canvas inside a HyperFrames composition; debug skeleton overlay
+rig/preview/          the HyperFrames project (hyperframes@0.8.134, pinned like the episodes pipeline)
+```
+
+```
+npm run rig                              rig/rig.json
+npm run preview:build -- pose-sheet      write rig/preview/ for a sequence: pose-sheet | clip | reconstruction
+(cd rig/preview && npx --yes hyperframes@0.8.134 render --format png-sequence -o ../../out/render/<name>)
+npm run pose-sheet                       out/pose-sheet.png from the pose-sheet render
+npm run frame-hashes -- out/render/clip-1 out/render/clip-2
+npm run reconstruction                   neutral pose without brows against the master
+```
+
+A pose is `{ head: { tilt, x, y }, eyes, brows: { dy } | "hidden", mouth, cursor, glow }`; every field is required
+and anything outside `rig.json` limits is rejected. The draw list gives, per drawn layer in z order, its file, own
+offset (mouth anchorDy, brows dy), the head's rotation and centre, the head's translation, and opacity. The adapter
+draws `translate + rotate(p + offset)`; the rotation is done by the canvas, not by the rig.

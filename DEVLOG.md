@@ -337,3 +337,50 @@ What broke
   requires the layers to be tracked). After committing: tests 73, pass 73, fail 0, skipped 0, duration_ms
   67238.940209; the two tests that were skipped (reprocess equals the committed layers; check:layers CLI on the real
   art) both ran and passed.
+
+## 2026-10-08 · Step 2: the rig (prompt #12)
+
+What was done
+- `scripts/build-rig.mjs` → rig/rig.json: layers, parents and z from art/layers.json; pivots and regions from the
+  frozen art/regions.json; each mouth's anchorDy from art/process-log.json; canvas 1254 x 1254; head pivot 626,1102;
+  smile top 788.
+- browsRestDy, chosen rule (labelled in rig.json): the dark gap between the brows' bottom edge and the eyes' top edge
+  equals one smile block. Measured (`npm run rig`): brows bottom row 489, eyes top row 518, gap 28 px, block 50 px
+  (the smile's first raised end block, on the row below its top edge) → browsRestDy = 28 - 50 = -22.
+- Pose limits, chosen values (labelled in rig.json): head tilt -4..4 degrees, head shift x -30..30 and y -30..30 px,
+  brows dy -47..13 (keeps the brows inside their frozen region 316,423,622,80), glow opacity 0..1. Tilt and shift were
+  chosen so no layer's alpha box can leave the canvas; the check (rig.json fitCheck) bounds each box corner's move by
+  r * theta + shift without trigonometry; smallest room left 19.26524282106189 px (glow). A first choice of 6 degrees
+  would not have fitted by that bound (the glow box corner 1078 px from the pivot moves up to 112.9 px at 6 degrees
+  plus 42.4 px of shift, more than its 137 px of room), so 4 was chosen.
+- lib/rig.mjs: drawList(rig, pose), validatePose, skeleton, neutralPose. No imports, no Node API, no trigonometry.
+- HyperFrames, as in the host avatar's preview (Avatar/preview: a generated index.html with one canvas, a paused GSAP
+  timeline whose proxy tween draws the frame for the current time, vendor/gsap.min.js, hyperframes.json copied from it).
+  Pinned hyperframes@0.8.134, the version the episodes pipeline uses (the host preview itself pins 0.8.133).
+  rig/adapter.js paints a draw list and the debug skeleton; lib/rig.mjs is loaded in the composition as an ES module,
+  so the rig runs in the browser. `npx --yes hyperframes@0.8.134 check`: lint 0 errors 0 warnings, runtime 0, layout
+  0 errors 0 warnings 1 info (the skeleton's smile line touches the frame edge at t=14.17s, intended), motion 0.
+- out/pose-sheet.png (15 cells) from the HyperFrames png-sequence render of the "pose-sheet" sequence.
+- Test clip: 8 fixed poses, 15 frames each at 30 fps, 120 frames, no easing. Rendered twice
+  (`(cd rig/preview && npx --yes hyperframes@0.8.134 render --format png-sequence -o ../../out/render/clip-N)`):
+  `npm run frame-hashes -- out/render/clip-1 out/render/clip-2`: 120 frames, 120 identical by sha256, 0 differ.
+  Within each run the frames form exactly 8 runs of 15 identical frames.
+
+Numbers (no limits yet)
+- Reconstruction (`npm run reconstruction`; neutral pose, brows hidden, over opaque black; smallest alpha 255) against
+  the master, RGB channels 0..255:
+  - outside the outline: 704761 px, mean 1.0156350876396396 (2147340/2114283), max 23, 34174 px with a channel off by
+    more than 16 (the glow layer keeps only the faint band, alpha at most 33: the known limitation);
+  - on the outline: 168688 px, mean 5.854277324607164 (2962639/506064), max 142, 13271 px off by more than 16 (the
+    head comes from G2-02, whose outline is a redraw of the master's);
+  - inside the screen: 699067 px, mean 1.105652724750751 (2318776/2097201), max 64, 1098 px off by more than 16.
+- Render times, hyperframes' own report and `time`:
+  - pose sheet, 15 frames at 1 fps: rendered in 4.6s (capture 4.0s, screenshot capture, hardware gpu); `time` total
+    6.247 s;
+  - clip, 120 frames at 30 fps: run 1 rendered in 26.4s (capture 24.2s), `time` 28.402 s; run 2 rendered in 26.4s
+    (capture 24.5s), `time` 28.240 s.
+- `npm test`: tests 91, pass 91, fail 0, skipped 0, duration_ms 67063.60475.
+
+What broke
+- Nothing failed. Generated preview files (index.html, data.js, copies of rig.mjs, adapter.js and the layers) are
+  gitignored; the committed project is package.json, hyperframes.json, meta.json and vendor/gsap.min.js.

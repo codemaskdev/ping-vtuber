@@ -5,3 +5,10 @@ test/fixtures/raw/
 test/fixtures/build/
 logs/
 art/raw/attempts/*.png
+rig/preview/index.html
+rig/preview/data.js
+rig/preview/rig.mjs
+rig/preview/adapter.js
+rig/preview/art/
+rig/preview/renders/
+rig/preview/.hyperframes/

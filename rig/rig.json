@@ -1,0 +1,377 @@
+{
+  "$comment": "Written by scripts/build-rig.mjs from art/layers.json, art/regions.json, art/process-log.json and art/layers/. Do not edit by hand. Coordinates are canvas pixels.",
+  "canvas": {
+    "width": 1254,
+    "height": 1254
+  },
+  "headPivot": [
+    626,
+    1102
+  ],
+  "smileTop": 788,
+  "layers": [
+    {
+      "id": "glow",
+      "file": "art/layers/glow.png",
+      "z": 0,
+      "parent": "head",
+      "kind": "glow",
+      "pivot": [
+        626,
+        627
+      ],
+      "region": [
+        0,
+        0,
+        1254,
+        1254
+      ]
+    },
+    {
+      "id": "head",
+      "file": "art/layers/head.png",
+      "z": 1,
+      "parent": null,
+      "kind": "head",
+      "pivot": [
+        626,
+        1102
+      ],
+      "region": [
+        118,
+        123,
+        1017,
+        1008
+      ]
+    },
+    {
+      "id": "cursor",
+      "file": "art/layers/cursor.png",
+      "z": 2,
+      "parent": "head",
+      "kind": "cursor",
+      "pivot": [
+        408,
+        342
+      ],
+      "region": [
+        350,
+        262,
+        117,
+        161
+      ]
+    },
+    {
+      "id": "eyes_open",
+      "file": "art/layers/eyes_open.png",
+      "z": 2,
+      "parent": "head",
+      "kind": "eyes",
+      "value": "open",
+      "pivot": [
+        627,
+        604
+      ],
+      "region": [
+        316,
+        503,
+        622,
+        216
+      ]
+    },
+    {
+      "id": "eyes_closed",
+      "file": "art/layers/eyes_closed.png",
+      "z": 2,
+      "parent": "head",
+      "kind": "eyes",
+      "value": "closed",
+      "pivot": [
+        627,
+        604
+      ],
+      "region": [
+        316,
+        503,
+        622,
+        216
+      ]
+    },
+    {
+      "id": "brows",
+      "file": "art/layers/brows.png",
+      "z": 3,
+      "parent": "head",
+      "kind": "brows",
+      "pivot": [
+        627,
+        463
+      ],
+      "region": [
+        316,
+        423,
+        622,
+        80
+      ]
+    },
+    {
+      "id": "mouth_rest",
+      "file": "art/layers/mouth_rest.png",
+      "z": 4,
+      "parent": "head",
+      "kind": "mouth",
+      "value": "rest",
+      "pivot": [
+        627,
+        837
+      ],
+      "region": [
+        377,
+        719,
+        500,
+        294
+      ],
+      "anchorDy": 0
+    },
+    {
+      "id": "mouth_small",
+      "file": "art/layers/mouth_small.png",
+      "z": 4,
+      "parent": "head",
+      "kind": "mouth",
+      "value": "small",
+      "pivot": [
+        627,
+        837
+      ],
+      "region": [
+        377,
+        719,
+        500,
+        294
+      ],
+      "anchorDy": 0
+    },
+    {
+      "id": "mouth_open",
+      "file": "art/layers/mouth_open.png",
+      "z": 4,
+      "parent": "head",
+      "kind": "mouth",
+      "value": "open",
+      "pivot": [
+        627,
+        837
+      ],
+      "region": [
+        377,
+        719,
+        500,
+        294
+      ],
+      "anchorDy": 29
+    },
+    {
+      "id": "mouth_round",
+      "file": "art/layers/mouth_round.png",
+      "z": 4,
+      "parent": "head",
+      "kind": "mouth",
+      "value": "round",
+      "pivot": [
+        627,
+        837
+      ],
+      "region": [
+        377,
+        719,
+        500,
+        294
+      ],
+      "anchorDy": 45
+    },
+    {
+      "id": "mouth_wide",
+      "file": "art/layers/mouth_wide.png",
+      "z": 4,
+      "parent": "head",
+      "kind": "mouth",
+      "value": "wide",
+      "pivot": [
+        627,
+        837
+      ],
+      "region": [
+        377,
+        719,
+        500,
+        294
+      ],
+      "anchorDy": -1
+    }
+  ],
+  "browsRest": {
+    "rule": "Chosen (author's prompt #12): the dark gap between the brows' bottom edge and the eyes' top edge equals one smile block. Edges are the last and first rows with alpha >= 128; the block is the width of the smile's first raised end block.",
+    "browsBottomRow": 489,
+    "eyesTopRow": 518,
+    "gapPx": 28,
+    "blockPx": 50,
+    "browsRestDy": -22
+  },
+  "limits": {
+    "$comment": "Chosen values, not measurements (author's prompt #12). A pose outside them is rejected, never clamped. headTiltDeg and headShiftPx were chosen so that every layer stays on the canvas (fitCheck); browsDy so that the brows stay inside their frozen region.",
+    "headTiltDeg": [
+      -4,
+      4
+    ],
+    "headShiftPx": {
+      "x": [
+        -30,
+        30
+      ],
+      "y": [
+        -30,
+        30
+      ]
+    },
+    "browsDy": [
+      -47,
+      13
+    ],
+    "glowOpacity": [
+      0,
+      1
+    ]
+  },
+  "fitCheck": {
+    "rule": "room = distance from each layer's alpha box corner to the canvas edge minus (r * theta + shift); must be >= 0",
+    "thetaRad": 0.06981317007977318,
+    "shiftPx": 42.42640687119285,
+    "layers": [
+      {
+        "id": "glow",
+        "alphaBox": [
+          137,
+          141,
+          980,
+          971
+        ],
+        "smallestRoomPx": 19.26524282106189
+      },
+      {
+        "id": "head",
+        "alphaBox": [
+          148,
+          153,
+          957,
+          948
+        ],
+        "smallestRoomPx": 31.391227631891283
+      },
+      {
+        "id": "cursor",
+        "alphaBox": [
+          379,
+          291,
+          59,
+          103
+        ],
+        "smallestRoomPx": 189.38742202463098
+      },
+      {
+        "id": "eyes_open",
+        "alphaBox": [
+          345,
+          518,
+          564,
+          172
+        ],
+        "smallestRoomPx": 257.29825866706847
+      },
+      {
+        "id": "eyes_closed",
+        "alphaBox": [
+          354,
+          625,
+          547,
+          42
+        ],
+        "smallestRoomPx": 272.1696861786945
+      },
+      {
+        "id": "brows",
+        "alphaBox": [
+          355,
+          470,
+          544,
+          20
+        ],
+        "smallestRoomPx": 264.53888509948547
+      },
+      {
+        "id": "mouth_rest",
+        "alphaBox": [
+          480,
+          788,
+          294,
+          99
+        ],
+        "smallestRoomPx": 306.33310709943186
+      },
+      {
+        "id": "mouth_small",
+        "alphaBox": [
+          479,
+          787,
+          296,
+          127
+        ],
+        "smallestRoomPx": 280.81479660151007
+      },
+      {
+        "id": "mouth_open",
+        "alphaBox": [
+          486,
+          759,
+          282,
+          176
+        ],
+        "smallestRoomPx": 261.26157380863145
+      },
+      {
+        "id": "mouth_round",
+        "alphaBox": [
+          522,
+          743,
+          211,
+          209
+        ],
+        "smallestRoomPx": 246.69367814941063
+      },
+      {
+        "id": "mouth_wide",
+        "alphaBox": [
+          416,
+          788,
+          422,
+          103
+        ],
+        "smallestRoomPx": 299.6919849680479
+      }
+    ]
+  },
+  "neutralPose": {
+    "head": {
+      "tilt": 0,
+      "x": 0,
+      "y": 0
+    },
+    "eyes": "open",
+    "brows": {
+      "dy": -22
+    },
+    "mouth": "rest",
+    "cursor": true,
+    "glow": 1
+  }
+}

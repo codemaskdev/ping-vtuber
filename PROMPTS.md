@@ -452,6 +452,73 @@ Then
    limits, the test counts, and what failed. Then stop.
 ```
 
+## Prompt #12
+
+```text
+Step 1 is closed at ddd2ffc: I checked the promoted files, the limits and
+the tests against the repository. The per-edge reading of "6 px per side"
+is what I meant. This prompt is step 2: the rig. No blinking timer, no
+breathing, no lip sync, no webcam yet.
+
+## Part A: rig core (plain JavaScript, no HyperFrames in it)
+1. rig/rig.json, written by a script, never by hand: layers, parents and
+   z order from art/layers.json; pivots from art/regions.json; each
+   mouth's anchorDy from the process log; the canvas size.
+2. lib/rig.mjs: one pure function, pose -> draw list. The pose:
+   - head: tilt in degrees around the head pivot, and x, y shift in px
+   - eyes: open or closed
+   - brows: vertical shift in px (negative is up), or hidden
+   - mouth: one of rest, small, open, round, wide
+   - cursor: on or off
+   - glow: opacity 0..1
+   The draw list is, per visible layer in z order: file, translation,
+   rotation and its centre, opacity. Children move with the head. Exactly
+   one eyes layer and one mouth layer are drawn. Each mouth is moved by
+   its anchorDy. Reject a pose outside its limits instead of clamping
+   silently; put the limits in rig.json as chosen values, labelled so.
+3. Brows at rest: the script measures the gap between the brows' bottom
+   edge and the eyes' top edge and the smile's block size, and stores
+   browsRestDy so that the gap equals one block. Chosen rule, labelled.
+4. This module must also run in a browser later (the webcam page), so no
+   Node-only imports in it. Rule 5 of CLAUDE.md applies: no Math.sin and
+   similar in output code; the renderer does the rotation.
+5. Tests: the draw list for the neutral pose, one test per pose field,
+   mouth and eyes exclusivity, limits, and that the same pose gives the
+   same draw list.
+
+## Part B: HyperFrames
+1. Look at how the CodeMask host avatar's HyperFrames preview is set up
+   and mirror it where it fits. Pin the HyperFrames version the episodes
+   pipeline uses and report it. If HyperFrames cannot do something below,
+   stop and tell me; do not swap in another tool.
+2. A thin adapter that draws a draw list with HyperFrames. No rig logic
+   in the adapter.
+3. Debug skeleton, a switchable overlay: every pivot, every region box,
+   the parent links, and a line at the smile's top edge. Drawn by code,
+   clearly not character art, never in a final render.
+4. out/pose-sheet.png, rendered through the adapter, each cell labelled:
+   neutral; eyes closed; each of the five mouths; brows as drawn and
+   brows at browsRestDy side by side; brows raised; head tilted to each
+   limit; head shifted; cursor off; neutral with the skeleton on.
+5. A short test clip of fixed poses, a few seconds, no easing yet.
+   Render it twice and compare the frame hashes. Report whether they are
+   identical; if not, which frames differ and by how much.
+
+## Part C: measured, no limits yet
+- Reconstruction: the neutral pose with brows hidden, rendered over
+  opaque black, against the master: mean and max channel difference
+  outside the outline, on the outline, inside the screen. The glow
+  limitation will show here; that is expected, just report it.
+- Render time of the pose sheet and of the clip, with the commands.
+
+## STOP here
+Commit, then report briefly: the file tree for rig/ and the adapter, the
+HyperFrames version, browsRestDy and the numbers behind it, the pose
+limits you chose, the reconstruction numbers, the two frame-hash runs,
+the render times, test counts, what broke, questions. Do not start the
+liveness step.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.
