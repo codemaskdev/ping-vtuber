@@ -112,7 +112,69 @@ character image yourself. Wait until I say the images are in art/raw/.
 - Questions for me
 ```
 
+## Prompt #2
+
+```text
+Review of step 1: accepted, with the changes below. Make them, commit,
+send the same report, and stop again. Still no character images from you.
+
+## Answers to your questions
+1. Logo PNG: I will add art/reference/logo-5A.png myself (1024 x 1024,
+   29096 bytes). Check that its sha256 starts with 05bb7b746c89d52a and
+   that logo-5A.svg starts with 0647760785308e9f. Record both in
+   SOURCES.json as reference, not character art. No conversion script.
+2. Canvas: the canvas is the master's own pixel size. No resampling
+   anywhere. Every raw must have exactly the master's size; a raw of
+   another size fails. Remove the 1254 test. Do not hard-code a generator;
+   I will give you its name and version together with the images.
+3. Regions: derived by a script from the approved master, not tuned by
+   hand: each feature's measured bounding box plus a margin. Choose the
+   margin rule now, before a master exists, and write it in layers.json.
+   Once I approve the master the regions are frozen; a variant that does
+   not fit is a failed generation and gets a rerun. Say in DEVLOG that the
+   regions were fitted to the master.
+4. Metadata: install exiftool with brew. Install c2patool only if it
+   installs cleanly; otherwise list the PNG chunks yourself and say
+   whether a C2PA/JUMBF chunk is present.
+5. Brows: the master has no brows, like the logo. Brows become their own
+   edit of the master (add the two bars you already described), so we can
+   drop that layer later without regenerating anything.
+6. G2 may remove the whole face in one edit. It also removes the red
+   cursor block and keeps the chevron. Add a `cursor` layer, child of
+   head, extracted from the master, so the cursor can blink later.
+7. Commit art/layers/*.png. Add a test that reprocessing art/raw gives
+   the same bytes as the committed files.
+
+## Generator prompt changes
+- I will attach 01-master.png to every edit message. Start each edit with
+  "Edit the attached image" instead of "the first image in this chat".
+- Face shapes and the cursor have crisp edges and no halo. Only the outer
+  outline of the screen glows. Replace "flat glowing".
+- Hollow mouths: say the outline is one pixel block thick.
+- New order: G1 master, G2 head, G3 brows, G4 eyes_closed, G5-G8 mouths.
+
+## Check changes
+- Tell me whether processing shifts each variant by its measured offset
+  before extracting, and where that is logged.
+- Add to check:layers the width and height of the screen outline's
+  bounding box in every variant next to the master's, to catch a change
+  of scale.
+- Offset, drift and scale: 4 px and 6 are not pass/fail yet. The first
+  real run is calibration: print the numbers with status "measured". We
+  set the limits after looking at the contact sheet, and DEVLOG says they
+  were chosen after seeing the data. Canvas size, inside-region and
+  corner alpha stay pass/fail from the start.
+- The eyes_closed fixture puts the bar in the middle of the eye; the
+  prompt says the bottom edge. Make them agree.
+
+## Report
+Same format as before, plus the output of
+`git log --format='%h %an <%ae> %cn <%ce> %cI'` pasted as is.
+```
+
 ## Generator prompts
+
+The current version of each generator prompt, the same text as art/GENERATOR_PROMPTS.md. None has been run yet; drafts that were never run are only in git history. Once a prompt has been run, a corrected version is added next to it for the rerun instead of replacing it.
 
 ### [GENERATOR] G1 · master
 
@@ -120,19 +182,18 @@ Save as: `art/raw/01-master.png`
 Attach: `art/reference/logo-5A.png`
 
 ```text
-Turn the attached logo into an original mascot character called Ping. Keep the logo's design: the same square screen with rounded corners, the same thin neon cyan outline, the same very dark navy-black screen, the same small terminal prompt in the top-left corner of the screen (a dim cyan ">" chevron followed by a small solid coral-red cursor block), the same two eye shapes and the same pixel-block smile, in the same places on the screen. Do not copy any text.
+Turn the attached logo into an original mascot character called Ping. Keep the logo's design: the same square screen with rounded corners, the same thin neon cyan outline, the same very dark navy-black screen, the same small terminal prompt in the top-left corner of the screen (a dim cyan ">" chevron followed by a small solid coral-red cursor block), the same two eye shapes and the same pixel-block smile, in the same places on the screen. No eyebrows. Do not copy any text.
 
 Ping is a head only: this screen with a face. No body, no neck, no stand, no cables, no keyboard, no antenna, no hands.
 
 Canvas and framing: square 1:1 image. Pure flat black background (#000000) everywhere outside the character: no gradient, no vignette, no texture, no stars, no particles, no code symbols, no decorations, no text, no logo, no watermark, no border. Front view, perfectly straight, not tilted, no perspective. The screen is centred horizontally and vertically and is 70% of the image width; leave 15% empty black margin on every side.
 
-Screen: one continuous, unbroken, closed neon cyan outline around its outer edge. The inside of the screen is flat, solid, very dark navy-black, with no scanlines, no reflections, no gradient and no texture. A soft cyan glow surrounds the outer outline and fades to pure black well before the image edges.
+Screen: one continuous, unbroken, closed neon cyan outline around its outer edge. The inside of the screen is flat, solid, very dark navy-black, with no scanlines, no reflections, no gradient and no texture. Only this outer outline glows: a soft cyan glow surrounds it on the outside and fades to pure black well before the image edges.
 
-Face, as flat glowing neon cyan shapes on the screen:
+Face, as flat solid neon cyan shapes with crisp, sharp edges and no glow or halo around them:
 - Eyes: the logo's two eyes, solid four-sided shapes that mirror each other, flat at the bottom, their top edges sloping down toward the middle of the face, just below the middle of the screen.
-- Brows: add one short, thin, straight, level bar above each eye, as wide as the eye, separated from the eye by a clear dark gap. They are neutral: not angled.
-- Mouth: the logo's closed smile, built from square pixel blocks: a short flat bar with one block raised at each end, centred below the eyes, in the lower third of the screen.
-No face shape touches another shape, the prompt or the outline.
+- Mouth: the logo's closed smile, built from square pixel blocks: a flat bar with one block raised at each end, centred below the eyes, in the lower third of the screen.
+The red cursor block also has crisp edges and no glow. No face shape touches another shape, the prompt or the outline.
 
 Style: flat vector-like neon on dark, clean shapes, high contrast, no shading, no highlights, no 3D, simple enough to stay readable at 64 x 64 pixels. Ping is an original character: not any existing character, mascot, brand or real person.
 ```
@@ -142,57 +203,67 @@ Style: flat vector-like neon on dark, clean shapes, high contrast, no shading, n
 Save as: `art/raw/02-head.png`
 
 ```text
-Edit the master image (the first image of Ping in this chat), not the most recent one. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same outline, the same prompt chevron and red cursor in the top-left corner, the same colours, the same glow, the same pure black background.
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same outline, the same dim cyan ">" chevron in the top-left corner, the same colours, the same glow, the same pure black background.
 
-Change only this: remove the whole face. Both eyes, both brows and the mouth are gone, and the rest of the screen is empty: flat, solid, very dark navy-black, with no shapes, no marks, no text and no reflections. Keep the prompt chevron and the red cursor. Do not add anything.
+Change only this: remove both eyes, the mouth and the red cursor block. The rest of the screen is empty: flat, solid, very dark navy-black, with no shapes, no marks, no text and no reflections. Keep the ">" chevron. Do not add anything.
 ```
 
-### [GENERATOR] G3 · eyes closed
+### [GENERATOR] G3 · brows
 
-Save as: `art/raw/03-eyes_closed.png`
+Save as: `art/raw/03-brows.png`
 
 ```text
-Edit the master image (the first image of Ping in this chat), not the most recent one. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same prompt and cursor, the same brows, the same mouth, the same outline, the same colours, the same glow, the same pure black background.
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same mouth, the same outline, the same colours, the same glow, the same pure black background.
 
-Change only the eyes: close both of them. Each closed eye is one short, straight, horizontal neon cyan bar, as wide as the open eye was, lying where the flat bottom edge of the open eye was. The brows do not move.
+Change only this: add two eyebrows. Each is one thin, straight, level neon cyan bar, half a pixel block tall, as wide as the eye below it, with a clear dark gap of one pixel block between the brow and the highest point of its eye. The brows are neutral, not angled, and stay well below the red cursor. Crisp edges, no glow or halo.
 ```
 
-### [GENERATOR] G4 · mouth small open
+### [GENERATOR] G4 · eyes closed
 
-Save as: `art/raw/04-mouth_small.png`
+Save as: `art/raw/04-eyes_closed.png`
 
 ```text
-Edit the master image (the first image of Ping in this chat), not the most recent one. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same prompt and cursor, the same eyes, the same brows, the same outline, the same colours, the same glow, the same pure black background.
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same mouth, the same outline, the same colours, the same glow, the same pure black background.
 
-Change only the mouth: open it slightly. The mouth becomes a hollow rectangle built from the same square pixel blocks as the closed smile, dark inside, as wide as the closed smile and about one quarter as tall as it is wide, centred exactly where the closed smile was.
+Change only the eyes: close both of them. Each closed eye is one short, straight, horizontal neon cyan bar, one pixel block tall, as wide as the open eye was, lying along the flat bottom edge of where the open eye was. Crisp edges, no glow or halo.
 ```
 
-### [GENERATOR] G5 · mouth wide open
+### [GENERATOR] G5 · mouth small open
 
-Save as: `art/raw/05-mouth_open.png`
+Save as: `art/raw/05-mouth_small.png`
 
 ```text
-Edit the master image (the first image of Ping in this chat), not the most recent one. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same prompt and cursor, the same eyes, the same brows, the same outline, the same colours, the same glow, the same pure black background.
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
 
-Change only the mouth: open it wide, as if saying "ah". The mouth becomes a tall hollow rectangle built from the same square pixel blocks as the closed smile, dark inside, as wide as the closed smile and about two thirds as tall as it is wide, centred exactly where the closed smile was. It stays inside the screen and does not touch the eyes or the outline.
+Change only the mouth: open it slightly. The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 3 blocks tall, so the dark inside is one block tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. Crisp edges, no glow or halo.
 ```
 
-### [GENERATOR] G6 · mouth round
+### [GENERATOR] G6 · mouth wide open
 
-Save as: `art/raw/06-mouth_round.png`
+Save as: `art/raw/06-mouth_open.png`
 
 ```text
-Edit the master image (the first image of Ping in this chat), not the most recent one. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same prompt and cursor, the same eyes, the same brows, the same outline, the same colours, the same glow, the same pure black background.
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
 
-Change only the mouth: make it round, as if saying "oo". The mouth becomes a small hollow ring built from the same square pixel blocks as the closed smile, dark inside, about half as wide as the closed smile and as tall as it is wide, centred exactly where the closed smile was.
+Change only the mouth: open it wide, as if saying "ah". The mouth becomes a hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: as wide as the closed smile and 4 blocks tall, so the dark inside is two blocks tall. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
 ```
 
-### [GENERATOR] G7 · mouth wide
+### [GENERATOR] G7 · mouth round
 
-Save as: `art/raw/07-mouth_wide.png`
+Save as: `art/raw/07-mouth_round.png`
 
 ```text
-Edit the master image (the first image of Ping in this chat), not the most recent one. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same prompt and cursor, the same eyes, the same brows, the same outline, the same colours, the same glow, the same pure black background.
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
 
-Change only the mouth: spread it wide, as if saying "ee". The mouth becomes a long, flat hollow rectangle built from the same square pixel blocks as the closed smile, dark inside, one and a half times as wide as the closed smile and about one fifth as tall as it is wide, with one block raised at each end like the closed smile, centred exactly where the closed smile was. It stays inside the screen.
+Change only the mouth: make it round, as if saying "oo". The mouth becomes a pixel ring whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: 4 blocks wide and 4 blocks tall with the four corner blocks left out, so the dark inside is 2 by 2 blocks. Its top edge is where the top of the closed smile was, it opens downward, and it is centred horizontally where the closed smile was. Crisp edges, no glow or halo.
+```
+
+### [GENERATOR] G8 · mouth wide
+
+Save as: `art/raw/08-mouth_wide.png`
+
+```text
+Edit the attached image. Keep everything else exactly as it is: the same square canvas and pixel size, the same framing, the same size and position of the screen, the same chevron and red cursor, the same eyes, the same outline, the same colours, the same glow, the same pure black background.
+
+Change only the mouth: spread it wide, as if saying "ee". The mouth becomes a long, flat hollow rectangle whose outline is one pixel block thick, built from the same square pixel blocks as the closed smile: one and a half times as wide as the closed smile and 3 blocks tall, so the dark inside is one block tall. Its top edge is where the top of the closed smile was, and it is centred horizontally where the closed smile was. It stays inside the screen. Crisp edges, no glow or halo.
 ```

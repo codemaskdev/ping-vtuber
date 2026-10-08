@@ -1,61 +1,87 @@
 {
-  "$comment": "Ping layer spec. Coordinates are canvas pixels, origin top-left. region = [x, y, w, h], the box a layer's visible pixels may occupy. pivot = [x, y], the point the layer rotates and scales around. Every layer is a full-canvas transparent PNG in art/layers/<id>.png. Draw order is z, low to high. Regions follow art/reference/logo-5A.svg (a 64-unit square screen, 61 units wide) drawn 878 px wide (70% of the canvas) at x, y 188..1066: logo unit u maps to 188 + (u - 1.5) * 878 / 61. Regions and pivots are a spec, not measurements; processing and checks read thresholds from here, and those are chosen limits, not measurements.",
-  "canvas": { "width": 1254, "height": 1254 },
+  "$comment": "Ping layer spec. The canvas is the master's own pixel size; nothing is resampled. Regions ([x, y, w, h], the box a layer's visible pixels may occupy) and pivots ([x, y], the point a layer rotates and scales around) are not typed in: scripts/regions.mjs measures them on the master with the rules below and writes art/regions.json, which is frozen once the author approves the master. Every layer is a full-canvas transparent PNG in art/layers/<id>.png. Draw order is z, low to high.",
+  "canvas": "the master's pixel size, measured into art/regions.json",
+  "regionRule": {
+    "$comment": "Chosen before any master existed. All lengths in pixels, rounded up. Blobs come from the master compared with 02-head.png (the empty screen) after aligning it: pixels whose largest channel differs by more than processing.featureLo, joined when closer than the margin (dilated by ceil(margin / 2)), blobs under margin x margin pixels ignored.",
+    "marginPercentOfScreenWidth": 3,
+    "screen": "the master's head silhouette bounding box (outline plus its bright halo); screenWidth is its width; margin = ceil(screenWidth * 3 / 100)",
+    "head": "screen box grown by the margin, clamped to the canvas",
+    "glow": "the whole canvas",
+    "cursor": "the red blob (most pixels with R > G and R > B), grown by the margin",
+    "eyes": "the remaining blobs except the lowest one; exactly two expected; their joint box grown by the margin",
+    "mouth": "the lowest non-red blob, box w x h. Every mouth shape keeps the closed smile's top edge and opens downward, so the region runs from the box top minus the margin down to the box top plus max(h, ceil(2w / 3)) plus the margin (room for 'open' and 'round', 2/3 as tall as the smile is wide), and is centred on the box horizontally with half-width ceil(3w / 4) + margin (room for 'wide', 1.5 times as wide)",
+    "brows": "the eyes region's x range; from the eyes region's top up by ceil(eyesHeight / 2) + margin",
+    "overlaps": "eyes and mouth regions are split at the middle of the gap between the measured eyes and mouth boxes; the brows region's top is cut to the cursor region's bottom if they overlap; any overlap left after that rejects the master",
+    "clamp": "every feature region is clamped to the head region"
+  },
+  "pivotRule": {
+    "glow": "centre of the screen box",
+    "head": "bottom centre of the screen box",
+    "cursor": "centre of the measured cursor box",
+    "eyes": "centre of the measured eyes box",
+    "brows": "centre of the brows region",
+    "mouth": "centre of the measured mouth box"
+  },
   "layers": [
     {
       "id": "glow",
       "file": "glow.png",
       "z": 0,
       "parent": "head",
-      "region": [0, 0, 1254, 1254],
-      "pivot": [627, 627],
+      "regionFrom": "glow",
       "source": "02-head.png",
       "extract": "glow",
-      "about": "the soft neon halo around the screen-face, everything outside the head silhouette, alpha from brightness"
+      "about": "the soft neon halo around the screen, everything outside the head silhouette, alpha from brightness"
     },
     {
       "id": "head",
       "file": "head.png",
       "z": 1,
       "parent": null,
-      "region": [94, 94, 1066, 1066],
-      "pivot": [627, 1066],
+      "regionFrom": "head",
       "source": "02-head.png",
       "extract": "silhouette",
-      "about": "the screen-face with no eyes, brows or mouth, keeping the logo's prompt chevron and red cursor; pivot at the bottom centre of the screen"
+      "about": "the screen with no eyes, brows, mouth or cursor; keeps the logo's prompt chevron"
+    },
+    {
+      "id": "cursor",
+      "file": "cursor.png",
+      "z": 2,
+      "parent": "head",
+      "regionFrom": "cursor",
+      "source": "01-master.png",
+      "extract": "feature",
+      "about": "the logo's red cursor block, its own layer so it can blink"
     },
     {
       "id": "eyes_open",
       "file": "eyes_open.png",
       "z": 2,
       "parent": "head",
-      "region": [251, 505, 752, 200],
-      "pivot": [627, 605],
+      "regionFrom": "eyes",
       "source": "01-master.png",
       "extract": "feature",
-      "about": "both eyes, open, looking ahead"
+      "about": "both eyes, open, the logo's shapes"
     },
     {
       "id": "eyes_closed",
       "file": "eyes_closed.png",
       "z": 2,
       "parent": "head",
-      "region": [251, 505, 752, 200],
-      "pivot": [627, 605],
-      "source": "03-eyes_closed.png",
+      "regionFrom": "eyes",
+      "source": "04-eyes_closed.png",
       "extract": "feature",
-      "about": "both eyes, closed; swapped with eyes_open for blinks"
+      "about": "both eyes closed: a bar along each eye's bottom edge; swapped with eyes_open for blinks"
     },
     {
       "id": "brows",
       "file": "brows.png",
       "z": 3,
       "parent": "head",
-      "region": [251, 380, 752, 125],
-      "pivot": [627, 445],
-      "source": "01-master.png",
+      "regionFrom": "brows",
+      "source": "03-brows.png",
       "extract": "feature",
-      "about": "both brows, neutral (the logo has none; added in the master); expressions later come from moving this layer, not from new art"
+      "about": "both brows, neutral; not in the logo or the master, their own edit so the layer can be dropped without regenerating anything"
     },
     {
       "id": "mouth_rest",
@@ -64,8 +90,7 @@
       "parent": "head",
       "group": "mouth",
       "covers": "silence, M, B, P (lips closed); also F, V",
-      "region": [251, 705, 752, 295],
-      "pivot": [627, 828],
+      "regionFrom": "mouth",
       "source": "01-master.png",
       "extract": "feature",
       "about": "closed mouth, the logo's pixel smile: the default between words and the shape every M/B/P closure must hit, or speech looks mumbled"
@@ -77,9 +102,8 @@
       "parent": "head",
       "group": "mouth",
       "covers": "most consonants (T D N S Z K G L R H TH CH J) and unstressed vowels (schwa, IH, EH)",
-      "region": [251, 705, 752, 295],
-      "pivot": [627, 828],
-      "source": "04-mouth_small.png",
+      "regionFrom": "mouth",
+      "source": "05-mouth_small.png",
       "extract": "feature",
       "about": "slightly open: the most frequent speaking shape; without it the mouth snaps between closed and wide"
     },
@@ -90,9 +114,8 @@
       "parent": "head",
       "group": "mouth",
       "covers": "open stressed vowels AA, AE, AH, AY, AW",
-      "region": [251, 705, 752, 295],
-      "pivot": [627, 828],
-      "source": "05-mouth_open.png",
+      "regionFrom": "mouth",
+      "source": "06-mouth_open.png",
       "extract": "feature",
       "about": "wide open: loud open vowels and stressed syllables, the peak of each word"
     },
@@ -103,9 +126,8 @@
       "parent": "head",
       "group": "mouth",
       "covers": "rounded vowels and glides O, OO, OW, OY, UW, W, also SH and ER",
-      "region": [251, 705, 752, 295],
-      "pivot": [627, 828],
-      "source": "06-mouth_round.png",
+      "regionFrom": "mouth",
+      "source": "07-mouth_round.png",
       "extract": "feature",
       "about": "small ring: the one shape that is about lip rounding, not openness; 'you', 'go', 'what' read wrong without it"
     },
@@ -116,9 +138,8 @@
       "parent": "head",
       "group": "mouth",
       "covers": "spread vowels E, I, EE, EY, IY",
-      "region": [251, 705, 752, 295],
-      "pivot": [627, 828],
-      "source": "07-mouth_wide.png",
+      "regionFrom": "mouth",
+      "source": "08-mouth_wide.png",
       "extract": "feature",
       "about": "wide and flat: the spread-lips opposite of mouth_round; also usable as a grin"
     }
@@ -131,12 +152,13 @@
   ],
   "raws": [
     { "file": "01-master.png", "prompt": "G1", "changes": [] },
-    { "file": "02-head.png", "prompt": "G2", "changes": ["brows", "eyes_open", "mouth_rest"] },
-    { "file": "03-eyes_closed.png", "prompt": "G3", "changes": ["eyes_open"] },
-    { "file": "04-mouth_small.png", "prompt": "G4", "changes": ["mouth_rest"] },
-    { "file": "05-mouth_open.png", "prompt": "G5", "changes": ["mouth_rest"] },
-    { "file": "06-mouth_round.png", "prompt": "G6", "changes": ["mouth_rest"] },
-    { "file": "07-mouth_wide.png", "prompt": "G7", "changes": ["mouth_rest"] }
+    { "file": "02-head.png", "prompt": "G2", "changes": ["cursor", "eyes_open", "mouth_rest"] },
+    { "file": "03-brows.png", "prompt": "G3", "changes": ["brows"] },
+    { "file": "04-eyes_closed.png", "prompt": "G4", "changes": ["eyes_open"] },
+    { "file": "05-mouth_small.png", "prompt": "G5", "changes": ["mouth_rest"] },
+    { "file": "06-mouth_open.png", "prompt": "G6", "changes": ["mouth_rest"] },
+    { "file": "07-mouth_round.png", "prompt": "G7", "changes": ["mouth_rest"] },
+    { "file": "08-mouth_wide.png", "prompt": "G8", "changes": ["mouth_rest"] }
   ],
   "processing": {
     "$comment": "Chosen parameters, not measurements. Values are 0..255 channel levels unless named Px.",
@@ -150,8 +172,9 @@
     "searchStridePx": 2
   },
   "checks": {
-    "$comment": "Chosen acceptance limits, not measurements. drift = mean absolute RGB difference from the master outside the changed feature, after alignment, 0..255 scale.",
-    "maxOffsetPx": 4,
-    "maxDrift": 6
+    "$comment": "Canvas size, inside-region and corner alpha are pass/fail from the start. Offset, drift and screen scale are only measured until limits are chosen after looking at the first real run; null means not set yet. drift = mean absolute RGB difference from the master outside the changed feature, after alignment, 0..255 scale. scale = the variant's screen box size minus the master's.",
+    "maxOffsetPx": null,
+    "maxDrift": null,
+    "maxScaleDeltaPx": null
   }
 }

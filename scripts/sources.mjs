@@ -23,7 +23,10 @@ export function buildSources() {
   const prompts = new Map(generatorPrompts().map((p) => [p.id, p]));
   const errors = [];
 
-  const reference = list(art("reference"), /\.(png|jpe?g|webp|svg)$/i).map((f) => fileEntry(art("reference"), f).entry);
+  const reference = list(art("reference"), /\.(png|jpe?g|webp|svg)$/i).map((f) => ({
+    ...fileEntry(art("reference"), f).entry,
+    role: "reference: the CodeMask channel logo, given to the generator with G1; not character art",
+  }));
 
   const raw = list(art("raw"), /\.png$/i).map((f) => {
     const { entry } = fileEntry(art("raw"), f);
@@ -51,12 +54,17 @@ export function buildSources() {
 
   const log = art("process-log.json");
   const processLog = fs.existsSync(log) ? fileEntry(art(), "process-log.json").entry : null;
+  const regionsFile = art("regions.json");
+  const regions = fs.existsSync(regionsFile)
+    ? { ...fileEntry(art(), "regions.json").entry, frozen: JSON.parse(fs.readFileSync(regionsFile, "utf8")).frozen === true }
+    : null;
   return {
     sources: {
       $comment: "Written by scripts/sources.mjs. Do not edit by hand. Prompt texts are copied from art/GENERATOR_PROMPTS.md.",
       reference,
       raw,
       layers,
+      regions,
       processLog,
     },
     errors,

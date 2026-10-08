@@ -1,5 +1,6 @@
 // out/contact-sheet.png: every layer on a checkerboard, then head + eyes_open + each mouth, then the same
-// composites at 64 x 64 (the size Ping must stay readable at).
+// composites at 64 x 64 (the size Ping must stay readable at). The thumbnails are scaled for display only; the
+// layers themselves are never resampled.
 //
 //   npm run sheet                 real art → out/contact-sheet.png
 //   npm run sheet -- --fixtures   fixtures → test/fixtures/build/contact-sheet.png
@@ -17,7 +18,6 @@ const INK = [230, 230, 236, 255], WARN = [255, 212, 0, 255];
 
 export function buildSheet(spec, layersDir, fixtures) {
   guardDirs([layersDir], fixtures);
-  const { width: W, height: H } = spec.canvas;
   const imgs = new Map();
   for (const l of spec.layers) {
     const file = path.join(layersDir, l.file);
@@ -26,6 +26,7 @@ export function buildSheet(spec, layersDir, fixtures) {
     if (r.fixture !== fixtures) throw new Error(`${rel(file)}: fixture flag does not match the mode`);
     imgs.set(l.id, r.img);
   }
+  const { width: W, height: H } = imgs.get("head");
   const layers = [...spec.layers].sort((a, b) => a.z - b.z);
   const mouths = spec.layers.filter((l) => l.group === "mouth");
   const composites = mouths.map((m) => {

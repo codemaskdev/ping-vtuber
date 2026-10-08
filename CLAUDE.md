@@ -33,8 +33,13 @@ channel logo. These rules hold for the whole project.
 
 - Node 22 or newer (`.nvmrc` pins 24.15.0; byte-for-byte output is only promised on that version, since PNG
   compression comes from Node's zlib). `npm test` runs everything.
-- Raw generator files are never committed before the author has seen their embedded metadata (EXIF, XMP, C2PA) and
-  approved them.
+- Raw generator files are never committed before the author has seen their embedded metadata (`npm run metadata`)
+  and approved them (`metadataApproved` in `art/generations.json`; a test checks it).
+- The canvas is the master's own pixel size; nothing is resampled, and a raw of another size is a failed generation.
+- Regions and pivots are measured on the approved master by `npm run regions` with the rules in `art/layers.json`,
+  never tuned by hand, and frozen once the author approves the master.
+- Offset, drift and screen-size limits stay `null` (measured only) until they are chosen after looking at the first
+  real run; DEVLOG says so when they are set.
 - Test fixtures are made by code, live only under `test/fixtures/`, are labelled `TEST FIXTURE` in the pixels and in
   a PNG text chunk, and the scripts refuse to use them as character art.
 - Do not push and do not add a remote unless the author asks.

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { MAX_MOUTHS, loadSpec, validateSpec } from "../lib/spec.mjs";
+import { MAX_MOUTHS, REGION_KINDS, loadSpec, validateSpec } from "../lib/spec.mjs";
 
 const spec = loadSpec();
 const clone = () => JSON.parse(JSON.stringify(spec));
@@ -10,58 +10,59 @@ test("art/layers.json is valid", () => {
   assert.deepEqual(validateSpec(spec), []);
 });
 
-test("the canvas mirrors the CodeMask host avatar (1254 x 1254)", () => {
-  assert.deepEqual(spec.canvas, { width: 1254, height: 1254 });
+test("no canvas size, region or pivot is typed in: they are measured on the master", () => {
+  assert.equal(typeof spec.canvas, "string");
+  for (const l of spec.layers) {
+    assert.ok(!("region" in l) && !("pivot" in l), l.id);
+    assert.ok(REGION_KINDS.includes(l.regionFrom), l.id);
+  }
+  assert.equal(spec.regionRule.marginPercentOfScreenWidth, 3);
 });
 
 test("has every required layer and at most 6 mouths", () => {
-  for (const id of ["head", "eyes_open", "eyes_closed", "brows", "glow"]) assert.ok(byId(spec, id), id);
+  for (const id of ["head", "eyes_open", "eyes_closed", "brows", "glow", "cursor"]) assert.ok(byId(spec, id), id);
   const mouths = spec.layers.filter((l) => l.group === "mouth");
   assert.ok(mouths.length >= 1 && mouths.length <= MAX_MOUTHS);
-  assert.ok(byId(spec, "mouth_rest"), "mouth_rest");
+  assert.ok(byId(spec, "mouth_rest"));
   for (const m of mouths) assert.ok(m.covers && m.about, m.id);
 });
 
-test("feature regions do not overlap each other, and pivots sit inside their regions", () => {
-  const bands = ["brows", "eyes_open", "mouth_rest"].map((id) => byId(spec, id).region);
-  for (let i = 0; i < bands.length; i++) {
-    for (let j = i + 1; j < bands.length; j++) {
-      const a = bands[i], b = bands[j];
-      const overlap = a[0] < b[0] + b[2] && b[0] < a[0] + a[2] && a[1] < b[1] + b[3] && b[1] < a[1] + a[3];
-      assert.ok(!overlap, `${a} overlaps ${b}`);
-    }
-  }
-  for (const l of spec.layers) {
-    if (l.extract !== "feature") continue;
-    const [x, y, w, h] = l.region, [px, py] = l.pivot;
-    assert.ok(px >= x && py >= y && px < x + w && py < y + h, l.id);
-  }
+test("cursor is a child of head taken from the master; brows are their own edit", () => {
+  assert.equal(byId(spec, "cursor").parent, "head");
+  assert.equal(byId(spec, "cursor").source, spec.processing.master);
+  const browsRaw = spec.raws.find((r) => r.file === byId(spec, "brows").source);
+  assert.notEqual(browsRaw.file, spec.processing.master);
+  assert.deepEqual(browsRaw.changes, ["brows"]);
+  assert.ok(!spec.layers.some((l) => l.id !== "brows" && l.source === browsRaw.file), "nothing else depends on the brows edit");
 });
 
-test("eyes_open and eyes_closed share region and pivot", () => {
-  assert.deepEqual(byId(spec, "eyes_open").region, byId(spec, "eyes_closed").region);
-  assert.deepEqual(byId(spec, "eyes_open").pivot, byId(spec, "eyes_closed").pivot);
-});
-
-test("every raw is used, and every variant is an edit of the master", () => {
+test("raws run G1 master, G2 head, G3 brows, G4 eyes_closed, G5-G8 mouths", () => {
+  assert.deepEqual(spec.raws.map((r) => r.prompt), ["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8"]);
+  assert.deepEqual(spec.raws.slice(0, 4).map((r) => r.file), ["01-master.png", "02-head.png", "03-brows.png", "04-eyes_closed.png"]);
   const used = new Set(spec.layers.map((l) => l.source));
   for (const r of spec.raws) assert.ok(used.has(r.file), r.file);
-  assert.equal(spec.raws[0].file, spec.processing.master);
+});
+
+test("offset, drift and scale limits are unset until calibrated on the first real run", () => {
+  assert.deepEqual([spec.checks.maxOffsetPx, spec.checks.maxDrift, spec.checks.maxScaleDeltaPx], [null, null, null]);
 });
 
 test("validation catches broken specs", () => {
   const cases = [
     [(s) => { s.layers[1].id = s.layers[0].id; }, /duplicate id/],
-    [(s) => { byId(s, "brows").region = [1200, 0, 100, 10]; }, /region outside the canvas/],
-    [(s) => { byId(s, "brows").pivot = [5000, 1]; }, /pivot outside the canvas/],
+    [(s) => { byId(s, "brows").region = [0, 0, 1, 1]; }, /measured into art\/regions.json/],
+    [(s) => { byId(s, "brows").regionFrom = "nose"; }, /unknown regionFrom/],
     [(s) => { byId(s, "head").parent = "glow"; }, /parent cycle|exactly one root/],
     [(s) => { byId(s, "brows").parent = "nope"; }, /unknown parent/],
-    [(s) => { byId(s, "mouth_round").region = [251, 680, 752, 279]; }, /share one region/],
+    [(s) => { byId(s, "mouth_round").regionFrom = "eyes"; }, /mouths take the mouth region/],
     [(s) => { byId(s, "brows").file = "Brows.png"; }, /file must be brows.png/],
     [(s) => { byId(s, "brows").source = "99-x.png"; }, /not in raws/],
     [(s) => { for (let i = 0; i < 2; i++) s.layers.push({ ...byId(s, "mouth_wide"), id: `mouth_x${i}`, file: `mouth_x${i}.png` }); }, /1\.\.6 shapes/],
     [(s) => { s.processing.featureHi = 1; }, /featureHi/],
     [(s) => { s.raws[3].changes = []; }, /must name the layers it changes/],
+    [(s) => { s.checks.maxDrift = "6"; }, /checks.maxDrift/],
+    [(s) => { delete s.pivotRule.mouth; }, /pivotRule.mouth/],
+    [(s) => { s.raws.reverse(); }, /master must be the first raw/],
   ];
   for (const [mutate, re] of cases) {
     const s = clone();

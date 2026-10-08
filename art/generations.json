@@ -1,4 +1,4 @@
 {
-  "$comment": "One entry per file in art/raw/, filled in from what the author reports: generator name and version exactly as the generator UI shows them, the date (YYYY-MM-DD) and the prompt id from art/GENERATOR_PROMPTS.md. Optional note, e.g. that an edit was run in a new chat. Example: \"01-master.png\": { \"generator\": \"...\", \"version\": \"...\", \"date\": \"2026-10-08\", \"prompt\": \"G1\" }",
+  "$comment": "One entry per file in art/raw/, filled in from what the author reports: generator name and version exactly as the generator UI shows them, the date (YYYY-MM-DD) and the prompt id from art/GENERATOR_PROMPTS.md. metadataApproved: true once the author has seen the file's embedded metadata (npm run metadata) and approved committing it; a test refuses a committed raw without it. Optional note, e.g. that an edit was run in a new chat. Example: \"01-master.png\": { \"generator\": \"...\", \"version\": \"...\", \"date\": \"2026-10-08\", \"prompt\": \"G1\", \"metadataApproved\": true }",
   "images": {}
 }

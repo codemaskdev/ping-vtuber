@@ -4,10 +4,12 @@
     {
       "file": "art/reference/logo-5A.svg",
       "sha256": "0647760785308e9f15671161247cb78fc54add8c3a95ffbda965ebdc99bf2d33",
-      "bytes": 642
+      "bytes": 642,
+      "role": "reference: the CodeMask channel logo, given to the generator with G1; not character art"
     }
   ],
   "raw": [],
   "layers": [],
+  "regions": null,
   "processLog": null
 }

@@ -16,9 +16,30 @@ test("generator prompts are G1..Gn in order, each with text and a save-as path",
   }
 });
 
-test("G1 starts from the reference logo; every later prompt edits the master", () => {
+test("G1 starts from the reference logo; every later prompt edits the attached master", () => {
   assert.equal(gen[0].attach, "art/reference/logo-5A.png");
-  for (const p of gen.slice(1)) assert.match(p.text, /^Edit the master image/, p.id);
+  for (const p of gen.slice(1)) assert.match(p.text, /^Edit the attached image\./, p.id);
+});
+
+test("face shapes and the cursor are crisp; only the outer outline glows", () => {
+  for (const p of gen) assert.doesNotMatch(p.text, /flat glowing/i, p.id);
+  assert.match(gen[0].text, /Only this outer outline glows/);
+  assert.match(gen[0].text, /crisp, sharp edges and no glow or halo/);
+  assert.match(gen[0].text, /No eyebrows/);
+});
+
+test("hollow mouths say their outline is one pixel block thick and open downward from the smile's top", () => {
+  for (const id of ["G5", "G6", "G7", "G8"]) {
+    const t = gen.find((g) => g.id === id).text;
+    assert.match(t, /outline is one pixel block thick/, id);
+    assert.match(t, /top edge is where the top of the closed smile was/, id);
+  }
+});
+
+test("G2 removes the face and the cursor and keeps the chevron", () => {
+  const t = gen.find((g) => g.id === "G2").text;
+  assert.match(t, /remove both eyes, the mouth and the red cursor block/);
+  assert.match(t, /Keep the ">" chevron/);
 });
 
 test("each raw in layers.json is saved by exactly the prompt it names", () => {

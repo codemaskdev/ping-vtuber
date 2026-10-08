@@ -3,7 +3,8 @@ import test from "node:test";
 import { drift, extractFeature, extractGlow, findOffset, silhouette } from "../lib/extract.mjs";
 import { GLYPHS } from "../lib/font.mjs";
 import { alphaBBox, create, fillRect, over, resample, translate } from "../lib/image.mjs";
-import { FIXTURE_KEY, FIXTURE_VALUE, decode, encode, isFixture, sha256 } from "../lib/png.mjs";
+import { FIXTURE_KEY, FIXTURE_VALUE, c2paChunks, decode, describeChunks, encode, isFixture, sha256 } from "../lib/png.mjs";
+import { dilate } from "../lib/regions.mjs";
 import { mulberry32 } from "../lib/rng.mjs";
 
 function noise(w, h, seed) {
@@ -111,4 +112,23 @@ test("every font glyph is 7 rows of 5 cells", () => {
     assert.equal(rows.length, 7, k);
     for (const r of rows) assert.match(r, /^[.#]{5}$/, k);
   }
+});
+
+test("metadata listing names text chunks and finds a C2PA (caBX) chunk", () => {
+  const plain = encode(noise(8, 8, 4), { Software: "x" });
+  assert.deepEqual(describeChunks(plain).map((c) => c.type), ["IHDR", "tEXt", "IDAT", "IEND"]);
+  assert.equal(describeChunks(plain)[1].keyword, "Software");
+  assert.equal(c2paChunks(plain).length, 0);
+  // Splice a fake caBX chunk (CRC not checked by the lister) after IHDR.
+  const fake = Buffer.concat([Buffer.from([0, 0, 0, 8]), Buffer.from("caBX"), Buffer.from("jumbc2pa"), Buffer.alloc(4)]);
+  const withC2pa = Buffer.concat([plain.subarray(0, 33), fake, plain.subarray(33)]);
+  assert.deepEqual(c2paChunks(withC2pa).map((c) => c.type), ["caBX"]);
+});
+
+test("dilate grows a mask by r in x and y", () => {
+  const m = new Uint8Array(7 * 7); m[3 * 7 + 3] = 1;
+  const d = dilate(m, 7, 7, 1);
+  assert.equal(d.reduce((a, b) => a + b, 0), 9);
+  assert.equal(d[2 * 7 + 2], 1);
+  assert.equal(d[1 * 7 + 3], 0);
 });

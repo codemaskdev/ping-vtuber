@@ -9,7 +9,7 @@ import { loadSpec, rel } from "../lib/spec.mjs";
 
 const p = paths();
 try {
-  const log = processAll(loadSpec(), p.raw, p.layers, { fixtures: p.fixtures });
+  const log = processAll(loadSpec(), p.raw, p.layers, p.regions, { fixtures: p.fixtures });
   fs.writeFileSync(p.log, JSON.stringify(log, null, 2) + "\n");
   for (const r of log.raws) {
     const extra = r.offset ? `offset ${r.offset.dx},${r.offset.dy}  drift ${r.drift.mean} (${r.drift.sum}/${r.drift.samples})` : "master";
