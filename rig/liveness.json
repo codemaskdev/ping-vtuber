@@ -13,8 +13,8 @@
   "breathing": {
     "periodS": 4.0,
     "periodWhy": "Chosen: about 15 breaths a minute, a calm rate at rest.",
-    "depthPx": 3,
-    "depthWhy": "Chosen: 3 px from top to bottom (head y from -1.5 to +1.5), felt more than seen; one tenth of the 30 px shift limit."
+    "depthPx": 6,
+    "depthWhy": "Chosen by the author (prompt #14): 6 px from top to bottom (head y from -3 to +3), because Ping will be smaller than the canvas on screen; a fifth of the 30 px shift limit (it was 3 px at step 3)."
   },
   "micro": {
     "segmentS": [1.5, 3.5],

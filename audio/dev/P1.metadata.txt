@@ -1,0 +1,31 @@
+
+=== audio/dev/P1.mp3  32226 bytes  sha256 d816273dfcad08e3860e583bf8df562734d6e9115343aa5705b1f85d9983746c
+--- exiftool -a -u -G1 -s
+[ExifTool]      ExifToolVersion                 : 13.55
+[System]        FileName                        : P1.mp3
+[System]        Directory                       : audio/dev
+[System]        FileSize                        : 32 kB
+[System]        FileModifyDate                  : 2026:10:08 19:47:08+00:00
+[System]        FileAccessDate                  : 2026:10:08 19:47:11+00:00
+[System]        FileInodeChangeDate             : 2026:10:08 19:47:08+00:00
+[System]        FilePermissions                 : -rw-r--r--
+[File]          FileType                        : MP3
+[File]          FileTypeExtension               : mp3
+[File]          MIMEType                        : audio/mpeg
+[File]          ID3Size                         : 45
+[MPEG]          MPEGAudioVersion                : 1
+[MPEG]          AudioLayer                      : 3
+[MPEG]          AudioBitrate                    : 128 kbps
+[MPEG]          SampleRate                      : 44100
+[MPEG]          ChannelMode                     : Single Channel
+[MPEG]          MSStereo                        : Off
+[MPEG]          IntensityStereo                 : Off
+[MPEG]          CopyrightFlag                   : False
+[MPEG]          OriginalMedia                   : False
+[MPEG]          Emphasis                        : None
+[ID3v2_4]       EncoderSettings                 : Lavf60.16.101
+[Composite]     Duration                        : 2.01 s (approx)
+--- c2patool
+c2patool not installed
+--- PNG chunks (lib/png.mjs)
+not a PNG file

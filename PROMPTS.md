@@ -578,6 +578,79 @@ the two frame-hash runs, render times, test counts, what broke,
 questions. Do not start lip sync.
 ```
 
+## Prompt #14
+
+```text
+Step 3 is accepted at a287792: I read liveness.mjs and pose.mjs and
+looked at the strip and the timeline. Answers: do not re-render the
+step 2 clip; breathing depth becomes 6 px (Ping will be smaller than the
+canvas on screen); the cursor phase stays fixed. Update liveness.json,
+the report numbers and the 10 second clip for the 6 px.
+
+This prompt is step 4: Ping's voice and lip sync v1 (loudness -> mouth).
+No viseme mapping, no emotions, no webcam.
+
+## Part A: Ping's voice (ElevenLabs)
+1. Look at how the CodeMask episodes pipeline calls ElevenLabs and reuse
+   its way of reading the key. The key never enters this repository, its
+   logs or its commits. Add a test for that.
+2. Ping needs his own voice, not the host's. From the voices available
+   on the account pick 3 clearly different candidates that could suit a
+   small terminal character, and synthesise this line with each:
+   "Hello. I am Ping. I live in a terminal."
+   Put them in out/voice-candidates/ (not committed) with a text file:
+   voice name, voice id, model id, settings. I choose by ear. Until I
+   do, the first candidate is the provisional voice, and everything
+   measured below is measured again once I have chosen.
+3. Request audio together with character timestamps and keep the
+   alignment JSON next to the audio. Step 5 will need it; do not use it
+   in this step.
+4. Development phrases, synthesise each once with the provisional voice:
+   P1 "Hello. I am Ping."
+   P2 "My mouth moves when the sound gets loud."
+   P3 "Oh wow. We move, you see?"
+   Do not tune on any other speech. Held-out phrases come at step 8.
+5. Disclosure in audio/SOURCES.json, per file: voice name and id, model
+   id, settings, date, the exact text, sha256, duration, sample rate.
+   Before committing any audio file, dump its metadata and show it to
+   me, the same rule as for images. Say whether the calls are
+   repeatable: synthesise P1 twice and compare the bytes.
+6. Decoding to samples is done by a script, with the decoder and its
+   version logged.
+
+## Part B: lip sync v1
+1. lib/lipsync-volume.mjs, plain JavaScript that also runs in a browser:
+   (samples, sample rate, fps, config) -> one mouth per frame. Loudness
+   of each frame's window, then thresholds: rest, small, open. Keep it
+   naive on purpose: no smoothing, no hysteresis, no look-ahead. This is
+   the baseline that step 5 has to beat.
+2. The thresholds go in rig/lipsync-volume.json as chosen values,
+   labelled so, with how you chose them.
+3. The mouth plugs into combine() next to liveness.
+4. Tests on synthetic signals made by code: silence gives rest, a loud
+   tone gives open, a quiet tone gives small, same input same output.
+
+## Part C: render and measure
+1. One clip per phrase with liveness on (seed in the log) and the audio
+   muxed in, so that I can watch and listen: out/lipsync-v1/P1.mp4 etc.
+   Report how the audio is muxed and with which tool and version.
+2. out/lipsync-v1/P2-timeline.png, drawn by code: the loudness curve,
+   the thresholds, the chosen mouth per frame, and the characters from
+   the alignment along the time axis (for looking only).
+3. Measured per phrase, with commands: mouth changes per second; frames
+   per mouth shape; the shortest and the median run of one shape, in
+   frames; frames with an open mouth where the loudness is under the
+   rest threshold of the neighbouring frames, if any.
+4. Do not measure audio-to-mouth offset in milliseconds yet. That method
+   is fixed at step 8, before measuring.
+
+## STOP here
+Commit (no audio until I approve its metadata), then report briefly: the
+three voice candidates, whether synthesis is repeatable, the thresholds,
+the measured numbers, what looks wrong in v1 in your own words, render
+times, test counts, what broke, questions. Do not start step 5.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

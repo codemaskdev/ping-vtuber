@@ -114,3 +114,21 @@ npm run preview:build -- liveness --seed 1        10 s at 30 fps, rendered like 
 npm run liveness:report -- --seed 1 --seconds 60  numbers and out/liveness-timeline.png
 npm run liveness:strip -- --seed 1                out/liveness-strip.png, one blink from the render
 ```
+
+## Step 4: voice and lip sync v1
+
+```
+audio/voice.json            voice candidates, the provisional voice, model, settings, seed, the development phrases
+audio/dev/                  P1-P3 (.mp3 not committed until the author approves their metadata) and .align.json
+audio/SOURCES.json          per audio file: voice, model, settings, server date, text, sha256, duration, sample rate
+rig/lipsync-volume.json     chosen loudness thresholds
+lib/lipsync-volume.mjs      samples -> one mouth per frame (rest, small, open); naive on purpose
+```
+
+```
+npm run voice -- candidates | phrases     ElevenLabs (key read like the episodes pipeline; never written)
+npm run decode -- audio/dev/P1.mp3 ...    ffmpeg decode, logged in audio/decode-log.json
+npm run lipsync:stats                     RMS percentiles of the development phrases
+npm run lipsync:clips -- --seed 1         out/lipsync-v1/P<n>.mp4: HyperFrames render, audio muxed with ffmpeg (copy)
+npm run lipsync:report -- P1 P2 P3 --chart P2
+```

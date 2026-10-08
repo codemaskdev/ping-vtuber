@@ -1,0 +1,7 @@
+{
+  "$comment": "Lip sync v1 thresholds for lib/lipsync-volume.mjs. Chosen values, not measurements (author's prompt #14). Loudness is the RMS of one frame's samples, linear, full scale 1.",
+  "restBelow": 0.01,
+  "openFrom": 0.08,
+  "howChosen": "Chosen after looking at the RMS of every frame (30 fps) of P1, P2 and P3 with the provisional voice (npm run lipsync:stats, out/lipsync-stats.txt): 66 of 219 frames are under 0.005 and 10 more under 0.01 (silence and breath); speech sits from about 0.02 up; 46 frames are at 0.08 or above (the loud vowels). restBelow 0.01 (about -40 dBFS) puts silence at rest; openFrom 0.08 (about -22 dBFS) opens the mouth only on the loudest fifth. To be chosen again once the author has picked the voice.",
+  "voiceAtChoice": "M5t0724ORuAGCh3p3DUR (provisional)"
+}

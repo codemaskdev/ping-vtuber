@@ -1,0 +1,35 @@
+{
+  "$comment": "Written by scripts/decode-audio.mjs.",
+  "files": [
+    {
+      "file": "audio/dev/P1.mp3",
+      "decoder": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "command": "ffmpeg -v error -i <file> -ac 1 -ar 44100 -f f32le -",
+      "sampleRate": 44100,
+      "samples": 86016,
+      "durationS": 1.9504761904761905,
+      "peak": 0.8775938153266907,
+      "samplesSha256": "417b7a308ff3b6e55ac26b90c96ffc728d61a2419046bbca1f2a6ec9e5427e55"
+    },
+    {
+      "file": "audio/dev/P2.mp3",
+      "decoder": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "command": "ffmpeg -v error -i <file> -ac 1 -ar 44100 -f f32le -",
+      "sampleRate": 44100,
+      "samples": 122880,
+      "durationS": 2.786394557823129,
+      "peak": 0.705258309841156,
+      "samplesSha256": "1fa8be2d75d61f0eaf03016d0d178713088f872fe049a59932a670747a5d38ad"
+    },
+    {
+      "file": "audio/dev/P3.mp3",
+      "decoder": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "command": "ffmpeg -v error -i <file> -ac 1 -ar 44100 -f f32le -",
+      "sampleRate": 44100,
+      "samples": 110592,
+      "durationS": 2.507755102040816,
+      "peak": 0.6482058763504028,
+      "samplesSha256": "00cef5e3a5bbbc107853a4b276749f55f79ef2778e9641b15e261bc7cf92d3b8"
+    }
+  ]
+}

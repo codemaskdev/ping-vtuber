@@ -73,11 +73,18 @@ export function livenessSequence(seed, seconds = 10, fps = 30) {
   return { kind: "liveness", seed, fps, frames: seconds * fps, final: true, entries: [] };
 }
 
-export function buildPreview(name, seed) {
-  const seq = name === "liveness" ? livenessSequence(seed) : rigSequences()[name];
+// A lip sync clip: one mouth per frame from lib/lipsync-volume.mjs on the phrase's decoded audio, then 15 frames at
+// rest, with liveness for the seed on top. The audio itself is muxed in afterwards (scripts/lipsync-clips.mjs).
+export function lipsyncSequence(phrase, seed, mouths, fps = 30) {
+  if (!/^P\d+$/.test(phrase)) throw new Error("phrase must look like P1");
+  return { kind: "lipsync", phrase, seed, fps, frames: mouths.length + 15, mouths, final: true, entries: [] };
+}
+
+export function buildPreview(name, seed, extra) {
+  const seq = name === "liveness" ? livenessSequence(seed) : name === "lipsync" ? extra : rigSequences()[name];
   if (!seq) throw new Error(`unknown sequence ${name}`);
   checkSequence(name, seq);
-  const frames = seq.kind === "liveness" ? seq.frames : seq.entries.length * seq.framesPerEntry;
+  const frames = seq.kind === "liveness" || seq.kind === "lipsync" ? seq.frames : seq.entries.length * seq.framesPerEntry;
   const duration = frames / seq.fps;
   for (const d of ["layers"]) fs.rmSync(path.join(PREVIEW, d), { recursive: true, force: true });
   fs.mkdirSync(path.join(PREVIEW, "art", "layers"), { recursive: true });
@@ -95,7 +102,7 @@ export function buildPreview(name, seed) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=${W}, height=${H}" />
-    <!-- Written by scripts/build-preview.mjs (sequence "${name}"${seq.kind === "liveness" ? `, seed ${seq.seed}` : ""}). Do not edit by hand. -->
+    <!-- Written by scripts/build-preview.mjs (sequence "${name}"${seq.seed !== undefined ? `, seed ${seq.seed}` : ""}${seq.phrase ? `, phrase ${seq.phrase}` : ""}). Do not edit by hand. -->
     <script src="vendor/gsap.min.js"></script>
     <script src="adapter.js"></script>
     <script src="data.js"></script>
@@ -128,6 +135,11 @@ ${imgs}
         const frame = Math.min(S.frames - 1, Math.round(t * S.fps));
         if (S.kind === "liveness") {
           PingAdapter.draw(ctx, images, drawList(R, combine(R, neutralPose(R), livenessAt(LC, S.seed, frame, S.fps))));
+          return;
+        }
+        if (S.kind === "lipsync") {
+          const mouth = frame < S.mouths.length ? S.mouths[frame] : "rest";
+          PingAdapter.draw(ctx, images, drawList(R, combine(R, neutralPose(R), livenessAt(LC, S.seed, frame, S.fps), { mouth })));
           return;
         }
         const e = S.entries[Math.min(S.entries.length - 1, Math.floor(frame / S.framesPerEntry))];

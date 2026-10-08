@@ -427,3 +427,56 @@ Numbers
 What broke
 - The first timeline chart drew the row names over the scale labels ("BREATHING" over "1.5"); the names now sit
   above each row.
+
+## 2026-10-08 · Step 4: Ping's voice and lip sync v1 (prompt #14)
+
+Step 3 change
+- Breathing depth 6 px (rig/liveness.json, the author's value). `npm run liveness:report -- --seed 1 --seconds 60`:
+  blinks unchanged (16, intervals 0.3039843718172044 .. 6.126616161921994 s); largest |tilt| 0.6771515524734805
+  degrees, |x| 3.908362841289338 px, |y| 6.642545818415915 px. 10 s clip for seed 1 rendered twice: run 1 rendered in
+  1m 1.6s (`time` 1:03.33), run 2 in 1m 1.3s (`time` 1:02.90); `npm run frame-hashes`: 300 of 300 frames identical.
+
+Voice (ElevenLabs)
+- The key is read like episodes/tools/voice.mjs reads it: ELEVENLABS_API_KEY, else the ElevenLabs MCP entry in
+  ~/.claude.json; memory only (lib/elevenlabs.mjs). test/voice.test.mjs searches tracked files, the whole git history
+  and logs/ and out/ for it and reports only where it was found (nowhere).
+- Candidates (audio/voice.json; the host's voice uFIXVu9mmnDZ7dTKCBTX excluded), the line "Hello. I am Ping. I live
+  in a terminal.", model eleven_multilingual_v2, settings stability 0.5, similarity_boost 0.75, style 0,
+  use_speaker_boost true, speed 1.0, output mp3_44100_128, seed 1; files in out/voice-candidates/ with
+  candidates.txt:
+  1. Miffy Mouse - Squeaky, Upbeat Cartoon (M5t0724ORuAGCh3p3DUR), 3.111474 s — provisional voice;
+  2. River - Relaxed, Neutral, Informative (SAz9YHcvj6GT2YYXdXww), 2.229116 s;
+  3. Callum - Husky Trickster (N2lVS1w4EtoT3dr4eOWO), 3.065034 s.
+- Development phrases with the provisional voice, /with-timestamps, alignment next to each file: P1 1.950476 s,
+  P2 2.786395 s, P3 2.507755 s (ffprobe), 44100 Hz mono. Disclosure in audio/SOURCES.json (date from ElevenLabs'
+  Date header).
+- Repeatability: P1 twice with the same settings and seed: different bytes (same size, 32226 bytes; first
+  difference at byte 219). Decoded, both are 86016 samples; 78084 differ, largest |difference| 0.06707808375358582,
+  mean 0.002114315951817548; the character alignments are identical. So the calls are not repeatable at the sample
+  level; each phrase is synthesised once and that take is the one used.
+- Decoding (lib/audio.mjs, `npm run decode`): "ffmpeg version 8.1.1", mono float32 at the file's own rate; logged in
+  audio/decode-log.json with the samples' sha256.
+- Metadata of P1-P3 (audio/dev/*.metadata.txt): MP3, 128 kbps, 44100 Hz, single channel, ID3v2.4 with only
+  EncoderSettings "Lavf60.16.101". No audio file committed.
+
+Lip sync v1
+- lib/lipsync-volume.mjs: RMS of each frame's samples, then rest below 0.01, open from 0.08, small between; no
+  smoothing, hysteresis or look-ahead. rig/lipsync-volume.json says how the thresholds were chosen (RMS percentiles
+  of P1-P3, `npm run lipsync:stats`, out/lipsync-stats.txt). The mouth is a partial pose for combine() after liveness.
+- Clips (`npm run lipsync:clips -- --seed 1 P1 P2 P3`): HyperFrames mp4, video only, then
+  `ffmpeg -i <video> -i <mp3> -map 0:v:0 -map 1:a:0 -c:v copy -c:a copy` (ffmpeg 8.1.1, stream copy, nothing
+  re-encoded). Render: P1 rendered in 5.0s (`time` real 0m6.729s), P2 4.7s (0m6.540s), P3 4.5s (0m5.831s).
+  The mp3 stream in each mp4 reports a slightly longer duration than the decoded samples (P1 1.960000 s against
+  1.9504761904761905 s); not measured further, the offset method is fixed at step 8.
+- `npm run lipsync:report -- P1 P2 P3 --chart P2` (out/lipsync-v1/report.txt, P2-timeline.png):
+  - P1: 59 frames, 16 changes = 8.135593220338983 per second; rest 25, small 25, open 9; 17 runs, shortest 1,
+    median 3, longest 11 frames; 5 runs of one frame; no open frame between two frames under the rest threshold.
+  - P2: 84 frames, 26 changes = 9.285714285714286 per second; rest 26, small 41, open 17; 27 runs, shortest 1,
+    median 3, longest 9; 6 runs of one frame; none.
+  - P3: 76 frames, 17 changes = 6.710526315789474 per second; rest 25, small 31, open 20; 18 runs, shortest 1,
+    median 3.5, longest 11; 4 runs of one frame; none.
+
+What broke
+- scripts/decode-audio.mjs took the "--no-log" flag for a file name; flags are now filtered out.
+- The first P2 chart drew the threshold labels under the loudness bars; they now sit in the left margin.
+- `npm test`: tests 110, pass 110, fail 0, skipped 0, duration_ms 66629.007417.

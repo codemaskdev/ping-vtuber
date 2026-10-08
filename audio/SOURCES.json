@@ -1,0 +1,94 @@
+{
+  "$comment": "Written by scripts/voice.mjs. Per audio file: voice, model, settings, the server's date, the exact text, sha256, duration and sample rate (ffprobe). Audio files are committed only after the author approved their metadata.",
+  "voiceStatus": "provisional",
+  "files": [
+    {
+      "file": "audio/dev/P1.mp3",
+      "alignment": "audio/dev/P1.align.json",
+      "voiceName": "Miffy Mouse - Squeaky, Upbeat Cartoon",
+      "voiceId": "M5t0724ORuAGCh3p3DUR",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Thu, 08 Oct 2026 19:47:07 GMT",
+      "text": "Hello. I am Ping.",
+      "sha256": "d816273dfcad08e3860e583bf8df562734d6e9115343aa5705b1f85d9983746c",
+      "bytes": 32226,
+      "durationS": 1.950476,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "file": "audio/dev/P2.mp3",
+      "alignment": "audio/dev/P2.align.json",
+      "voiceName": "Miffy Mouse - Squeaky, Upbeat Cartoon",
+      "voiceId": "M5t0724ORuAGCh3p3DUR",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Thu, 08 Oct 2026 19:47:07 GMT",
+      "text": "My mouth moves when the sound gets loud.",
+      "sha256": "526d9218783a90db95b62f64a5c48de4e0faf5c55b0d2e82d317583aa0dd2d5b",
+      "bytes": 45601,
+      "durationS": 2.786395,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "file": "audio/dev/P3.mp3",
+      "alignment": "audio/dev/P3.align.json",
+      "voiceName": "Miffy Mouse - Squeaky, Upbeat Cartoon",
+      "voiceId": "M5t0724ORuAGCh3p3DUR",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Thu, 08 Oct 2026 19:47:09 GMT",
+      "text": "Oh wow. We move, you see?",
+      "sha256": "3f6cc70967e67128c02937a3169d777734012421e1f1256e8ad09912f264bd66",
+      "bytes": 41004,
+      "durationS": 2.507755,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    }
+  ],
+  "repeatability": {
+    "text": "Hello. I am Ping.",
+    "take1": {
+      "sha256": "d816273dfcad08e3860e583bf8df562734d6e9115343aa5705b1f85d9983746c",
+      "bytes": 32226
+    },
+    "take2": {
+      "file": "out/voice-repeat/P1-take2.mp3",
+      "sha256": "693fc1af52ae787c0432bc55198a455c03ae864d928e3f3aea919ee906df355e",
+      "bytes": 32226
+    },
+    "identical": false
+  }
+}

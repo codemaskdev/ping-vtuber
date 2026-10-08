@@ -1,0 +1,23 @@
+{
+  "$comment": "Ping's voice. Candidates and settings chosen by Claude (author's prompt #14); the author chooses the voice by ear. Until then the first candidate is provisional, and everything measured with it is measured again after the choice. Settings are chosen values, not measurements.",
+  "candidateLine": "Hello. I am Ping. I live in a terminal.",
+  "candidates": [
+    { "name": "Miffy Mouse - Squeaky, Upbeat Cartoon", "id": "M5t0724ORuAGCh3p3DUR", "why": "small, squeaky cartoon voice, gender-neutral: the closest to a little character" },
+    { "name": "River - Relaxed, Neutral, Informative", "id": "SAz9YHcvj6GT2YYXdXww", "why": "calm, flat, gender-neutral: reads like a machine talking" },
+    { "name": "Callum - Husky Trickster", "id": "N2lVS1w4EtoT3dr4eOWO", "why": "gravelly character voice: the opposite end, a mischievous terminal" }
+  ],
+  "excluded": [{ "id": "uFIXVu9mmnDZ7dTKCBTX", "why": "the CodeMask host's voice (episodes/02-bug-driver/voice.json)" }],
+  "provisional": "M5t0724ORuAGCh3p3DUR",
+  "chosen": null,
+  "modelId": "eleven_multilingual_v2",
+  "settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0, "use_speaker_boost": true, "speed": 1.0 },
+  "settingsWhy": "Chosen: a stable, unstylised reading so the mouth tests are about the method, not about a dramatic take.",
+  "outputFormat": "mp3_44100_128",
+  "seed": 1,
+  "seedWhy": "Chosen: ElevenLabs takes a seed for repeatable sampling on a best-effort basis; whether it repeats is measured (P1 twice).",
+  "phrases": {
+    "P1": "Hello. I am Ping.",
+    "P2": "My mouth moves when the sound gets loud.",
+    "P3": "Oh wow. We move, you see?"
+  }
+}
