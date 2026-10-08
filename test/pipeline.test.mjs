@@ -14,7 +14,9 @@ import { buildReview } from "../scripts/master-review.mjs";
 import { freezeRegions, measureRegions } from "../scripts/regions.mjs";
 import { DISTORTIONS, FIXTURE_RAW, FIXTURE_SIZE, makeFixtures } from "./fixtures/make-fixtures.mjs";
 
-const spec = loadSpec();
+// Fixtures are distorted on purpose (shifts up to 3 px, a tint, a grown screen), so the fixture runs measure with the
+// offset, drift and screen limits unset; the limits are tested on their own below.
+const spec = { ...loadSpec(), checks: { maxOffsetPx: null, maxDrift: null, maxScaleDeltaPx: null } };
 const BUILD = path.join(ROOT, "test", "fixtures", "build", "pipeline-test");
 const run = (name) => path.join(BUILD, name);
 const REGIONS = run("regions.json");
@@ -225,11 +227,12 @@ test("a shape drawn past its region fails, although its layer is cut to the regi
 
 test("once limits are set, offset, drift and scale become pass/fail", () => {
   const strict = JSON.parse(JSON.stringify(spec));
-  strict.checks = { maxOffsetPx: 2, maxDrift: 5, maxScaleDeltaPx: 4 };
+  strict.checks = { maxOffsetPx: 2, maxDrift: 5, maxScaleDeltaPx: 2 };
   const res = checkLayers(strict, FIXTURE_RAW, run("a"), REGIONS, { fixtures: true });
   assert.match(row(res, "mouth_round").problems.join(), /offset > 2 px/);
   assert.match(row(res, "mouth_wide").problems.join(), /drift > 5/);
-  assert.match(row(res, "mouth_wide").problems.join(), /screen size differs by > 4 px/);
+  assert.match(row(res, "mouth_wide").problems.join(), /a screen edge moved by > 2 px/);
+  assert.deepEqual(row(res, "mouth_wide").screenSides, [-3, -3, 3, 3]);
 });
 
 test("a raw of another size than the master fails; nothing is resampled", () => {
@@ -262,8 +265,11 @@ test("logs name only repo-relative paths", () => {
   for (const text of [JSON.stringify(logA), fs.readFileSync(REGIONS, "utf8")]) assert.ok(!text.includes(ROOT));
 });
 
-test("CLI: check:layers on real art says what is missing and exits 1 while art/raw is empty", { skip: fs.readdirSync(path.join(ROOT, "art", "raw")).some((f) => f.endsWith(".png")) }, () => {
+test("CLI: check:layers on the real art runs, prints the table with the limits, and exits 0", () => {
   const r = spawnSync(process.execPath, [path.join(ROOT, "scripts", "check-layers.mjs")], { encoding: "utf8" });
-  assert.equal(r.status, 1);
-  assert.match(r.stderr, /missing in art\/raw\/: 01-master\.png/);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /\| mouth_round \| 07-mouth_round\.png/);
+  assert.match(r.stdout, /offset <= 2 px, drift <= 2\.5, screen edge moved <= 6 px per side/);
+  assert.match(r.stdout, /regions: frozen/);
+  assert.match(r.stdout, /no pass\/fail check failed/);
 });

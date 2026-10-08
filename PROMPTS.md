@@ -418,6 +418,40 @@ Then
    and what failed. Then stop.
 ```
 
+## Prompt #11
+
+```text
+Review of 9bf48aa. I looked at the contact sheet and the composites.
+Everything is accepted as it is, the glow layer included.
+
+Decisions
+
+1. Promote the sources, unmodified, sha256 checked at source and copy:
+   G2-02 -> 02-head.png, G3-02 -> 03-brows.png, G4-01 -> 04-eyes_closed.png,
+   G5-01 -> 05-mouth_small.png, G6-01 -> 06-mouth_open.png,
+   G7-02 -> 07-mouth_round.png, G8-01 -> 08-mouth_wide.png.
+   Their metadata is approved for committing if each dump still shows
+   C2PA only, no EXIF, no XMP, no paths. Otherwise stop.
+2. Limits, chosen after the calibration and labelled so in layers.json
+   and DEVLOG, with the measured values next to them:
+   maxOffsetPx 2, maxDrift 2.5, screen size delta 6 px per side.
+3. Known limitation, write it in DEVLOG and README: the head silhouette
+   (threshold 48) keeps the brightest part of the halo, so the glow
+   layer holds only a faint band (alpha up to 33). The author accepted
+   it; a glow pulse would need new processing or drawing it in code.
+4. Delete or rewrite out/stage2-calibrate.txt: it is from the first run
+   and still says SOME LAYERS FAIL.
+
+Then
+
+1. Process from art/raw/ into art/layers/, run check:layers with the
+   limits, the contact sheet and the composites. Commit the raws, the
+   layers and the process log.
+2. Run the full test suite; the two skipped tests should now run.
+3. Report briefly: the promoted files with sha256, the table with the
+   limits, the test counts, and what failed. Then stop.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

@@ -7,6 +7,55 @@
       "promotedBy": "the author, prompt #8",
       "metadataApproved": true,
       "metadataApprovedBy": "the author, prompt #8 (C2PA only: ChatGPT, gpt-image, OpenAI Media Service API)"
+    },
+    "02-head.png": {
+      "fromAttempt": "G2-02",
+      "sha256": "30bc8b270bccd1d9190a0ac5fb0fa68624074fc523f8f6a64c0fe67ab086fa89",
+      "promotedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)",
+      "metadataApproved": true,
+      "metadataApprovedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)"
+    },
+    "03-brows.png": {
+      "fromAttempt": "G3-02",
+      "sha256": "fd4b12542ca890c4e284aa9120340c87a217781e14eb962c4197a688465ad4aa",
+      "promotedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)",
+      "metadataApproved": true,
+      "metadataApprovedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)"
+    },
+    "04-eyes_closed.png": {
+      "fromAttempt": "G4-01",
+      "sha256": "795f27770cbdd97a71ce67c45644e2fbf9767da9fe86f8529ce835c46a4372e3",
+      "promotedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)",
+      "metadataApproved": true,
+      "metadataApprovedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)"
+    },
+    "05-mouth_small.png": {
+      "fromAttempt": "G5-01",
+      "sha256": "ce04ef178b8e98ac482b945e9881cfcbc85e83c42d3acd3fd38c6823dc4846c6",
+      "promotedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)",
+      "metadataApproved": true,
+      "metadataApprovedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)"
+    },
+    "06-mouth_open.png": {
+      "fromAttempt": "G6-01",
+      "sha256": "f2a395c77435ea68ad9a7d133778391a15aec18681844c936aed44700bca6a11",
+      "promotedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)",
+      "metadataApproved": true,
+      "metadataApprovedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)"
+    },
+    "07-mouth_round.png": {
+      "fromAttempt": "G7-02",
+      "sha256": "b4e0670207a42737fabd9e05f418221f6b4e5e70583e03e88eedd80dbe46845a",
+      "promotedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)",
+      "metadataApproved": true,
+      "metadataApprovedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)"
+    },
+    "08-mouth_wide.png": {
+      "fromAttempt": "G8-01",
+      "sha256": "1d7eff381d3802747eaf51433cb3aae30e41b8d4e662e87ba2b288f54b45dbe0",
+      "promotedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)",
+      "metadataApproved": true,
+      "metadataApprovedBy": "the author, prompt #11 (metadata: C2PA only, no EXIF, no XMP, no paths)"
     }
   },
   "attempts": {
@@ -78,7 +127,8 @@
       "sha256": "30bc8b270bccd1d9190a0ac5fb0fa68624074fc523f8f6a64c0fe67ab086fa89",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G2-02.json",
-      "metadataApproved": false
+      "metadataApproved": false,
+      "promotedTo": "art/raw/02-head.png"
     },
     "G3-01": {
       "prompt": "G3",
@@ -124,7 +174,8 @@
       "sha256": "fd4b12542ca890c4e284aa9120340c87a217781e14eb962c4197a688465ad4aa",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G3-02.json",
-      "metadataApproved": false
+      "metadataApproved": false,
+      "promotedTo": "art/raw/03-brows.png"
     },
     "G4-01": {
       "prompt": "G4",
@@ -147,7 +198,8 @@
       "sha256": "795f27770cbdd97a71ce67c45644e2fbf9767da9fe86f8529ce835c46a4372e3",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G4-01.json",
-      "metadataApproved": false
+      "metadataApproved": false,
+      "promotedTo": "art/raw/04-eyes_closed.png"
     },
     "G5-01": {
       "prompt": "G5",
@@ -170,7 +222,8 @@
       "sha256": "ce04ef178b8e98ac482b945e9881cfcbc85e83c42d3acd3fd38c6823dc4846c6",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G5-01.json",
-      "metadataApproved": false
+      "metadataApproved": false,
+      "promotedTo": "art/raw/05-mouth_small.png"
     },
     "G6-01": {
       "prompt": "G6",
@@ -193,7 +246,8 @@
       "sha256": "f2a395c77435ea68ad9a7d133778391a15aec18681844c936aed44700bca6a11",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G6-01.json",
-      "metadataApproved": false
+      "metadataApproved": false,
+      "promotedTo": "art/raw/06-mouth_open.png"
     },
     "G6-02": {
       "prompt": "G6",
@@ -262,7 +316,8 @@
       "sha256": "b4e0670207a42737fabd9e05f418221f6b4e5e70583e03e88eedd80dbe46845a",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G7-02.json",
-      "metadataApproved": false
+      "metadataApproved": false,
+      "promotedTo": "art/raw/07-mouth_round.png"
     },
     "G8-01": {
       "prompt": "G8",
@@ -285,7 +340,8 @@
       "sha256": "1d7eff381d3802747eaf51433cb3aae30e41b8d4e662e87ba2b288f54b45dbe0",
       "sizeCheck": "ok: 1254x1254, same as the input master",
       "extract": "art/attempts/G8-01.json",
-      "metadataApproved": false
+      "metadataApproved": false,
+      "promotedTo": "art/raw/08-mouth_wide.png"
     }
   }
 }

@@ -14,6 +14,7 @@
     "measure:shapes": "node scripts/measure-shapes.mjs",
     "compare:heads": "node scripts/compare-heads.mjs",
     "prompts:copy": "node scripts/prompts-copy.mjs",
+    "promote": "node scripts/promote.mjs",
     "review": "node scripts/master-review.mjs",
     "process": "node scripts/process.mjs",
     "metadata": "node scripts/metadata.mjs",

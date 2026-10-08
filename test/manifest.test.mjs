@@ -43,8 +43,9 @@ test("raws run G1 master, G2 head, G3 brows, G4 eyes_closed, G5-G8 mouths", () =
   for (const r of spec.raws) assert.ok(used.has(r.file), r.file);
 });
 
-test("offset, drift and scale limits are unset until calibrated on the first real run", () => {
-  assert.deepEqual([spec.checks.maxOffsetPx, spec.checks.maxDrift, spec.checks.maxScaleDeltaPx], [null, null, null]);
+test("offset, drift and screen-edge limits are the ones the author chose after the calibration run", () => {
+  assert.deepEqual([spec.checks.maxOffsetPx, spec.checks.maxDrift, spec.checks.maxScaleDeltaPx], [2, 2.5, 6]);
+  assert.match(spec.checks.$comment, /chosen by the author after the stage 2 calibration/);
 });
 
 test("validation catches broken specs", () => {

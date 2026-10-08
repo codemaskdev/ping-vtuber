@@ -301,3 +301,39 @@ What broke
   the mouth instead. A text replacement of that test also stopped at the first "});" inside a line and left stray
   lines; node --check showed it, fixed.
 - `npm test`: tests 73, pass 71, fail 0, skipped 2 (both wait for promoted raws), duration_ms 55009.385792.
+
+## 2026-10-08 · Sources promoted, limits set, art/layers committed
+
+- Promoted unmodified (`npm run promote`), sha256 the same at source and copy, metadata approved by the author
+  (prompt #11) after checking each dump again: groups ExifTool, System, File, PNG, JUMBF, Jpeg2000, CBOR, Composite
+  only (C2PA), no EXIF, no XMP, no path lines; chunks IHDR caBX IDAT IEND; same as the committed dumps apart from
+  file dates.
+  - G2-02 → art/raw/02-head.png 30bc8b270bccd1d9190a0ac5fb0fa68624074fc523f8f6a64c0fe67ab086fa89
+  - G3-02 → art/raw/03-brows.png fd4b12542ca890c4e284aa9120340c87a217781e14eb962c4197a688465ad4aa
+  - G4-01 → art/raw/04-eyes_closed.png 795f27770cbdd97a71ce67c45644e2fbf9767da9fe86f8529ce835c46a4372e3
+  - G5-01 → art/raw/05-mouth_small.png ce04ef178b8e98ac482b945e9881cfcbc85e83c42d3acd3fd38c6823dc4846c6
+  - G6-01 → art/raw/06-mouth_open.png f2a395c77435ea68ad9a7d133778391a15aec18681844c936aed44700bca6a11
+  - G7-02 → art/raw/07-mouth_round.png b4e0670207a42737fabd9e05f418221f6b4e5e70583e03e88eedd80dbe46845a
+  - G8-01 → art/raw/08-mouth_wide.png 1d7eff381d3802747eaf51433cb3aae30e41b8d4e662e87ba2b288f54b45dbe0
+- Limits chosen by the author after the stage 2 calibration (prompt #11), written in art/layers.json checks with the
+  measured values next to them: maxOffsetPx 2 (measured: every offset 0,0); maxDrift 2.5 (measured 1.2804883075319133
+  to 1.6206076271821384); screen edges 6 px per side (measured: at most 2 px on any side). "Per side" is implemented
+  as a new measure: how far each edge (left, top, right, bottom) of a variant's screen box moved against the master's
+  after alignment; before, only the width and height differences were measured. With all three limits set, rows that
+  pass show "ok" instead of "measured".
+- Known limitation, accepted by the author: the head silhouette (threshold 48) keeps the brightest part of the halo,
+  so the glow layer holds only a faint band: art/layers/glow.png, 38972 pixels with alpha above 0, alpha at most 33.
+  A glow pulse would need new processing or drawing the glow in code. Also in README.
+- `npm run process` → art/layers/ (11 layers) and art/process-log.json; `npm run check:layers` exits 0, every row ok;
+  `npm run sheet` → out/contact-sheet.png sha256 df787a99ac8bc7a1b647092942058f749dd3fa7c8a6d4229f942b94fae65ba61,
+  byte for byte the same as the last calibration's sheet from the same sources, and 7 composites in out/composites/.
+- Fixture runs in test/pipeline.test.mjs now measure with the limits unset (fixtures are distorted on purpose); the
+  limits have their own test. The CLI test that only ran while art/raw was empty now runs check:layers on the real
+  art.
+- out/stage2-calibrate.txt (first run, G2-01 and G3-01/G7-01, "SOME LAYERS FAIL") deleted as asked, and
+  out/stage2-calibrate-b.txt too (second run, sources with G6-02, also "SOME LAYERS FAIL"). out/stage2-calibrate-c.txt
+  is the run on the accepted sources.
+- `npm test` before the commit: 73 tests, 72 pass, 1 fail: "art/layers/glow.png is not committed" (the reprocess test
+  requires the layers to be tracked). After committing: tests 73, pass 73, fail 0, skipped 0, duration_ms
+  67238.940209; the two tests that were skipped (reprocess equals the committed layers; check:layers CLI on the real
+  art) both ran and passed.

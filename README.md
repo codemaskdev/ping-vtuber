@@ -53,6 +53,12 @@ Add `-- --fixtures` to `regions`, `review`, `process`, `check:layers` or `sheet`
 `-- --partial` to `process` or `check:layers` to handle only the layers whose raw is in (the master and
 `02-head.png` are required).
 
+## Known limitation: the glow layer is faint
+
+The head silhouette (threshold 48) keeps the brightest part of the halo around the outline, so the glow layer holds
+only the faint outer band: alpha up to 33 (art/layers/glow.png, 38972 pixels with alpha above 0). The author accepted
+this. A glow pulse would need new processing or drawing the glow in code.
+
 ## How the layers are cut
 
 1. The canvas is the master's pixel size. Every raw must have exactly that size; nothing is resampled. Transparency,

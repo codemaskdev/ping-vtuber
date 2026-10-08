@@ -176,9 +176,9 @@
     "searchStridePx": 2
   },
   "checks": {
-    "$comment": "Canvas size, inside-region and corner alpha are pass/fail from the start. Inside-region has two parts: the layer's alpha box inside its region, and (added after the first real run showed that feature layers are cut to their region, so their box alone could never fail) every blob a variant changed against the master inside the screen lies inside the regions of the layers it is meant to change (lib/pipeline.mjs changedBlobs). Offset, drift and screen scale are only measured until limits are chosen after looking at the first real run; null means not set yet. drift = mean absolute RGB difference from the master outside the changed feature, after alignment, 0..255 scale. scale = the variant's screen box size minus the master's.",
-    "maxOffsetPx": null,
-    "maxDrift": null,
-    "maxScaleDeltaPx": null
+    "$comment": "Canvas size, inside-region and corner alpha are pass/fail from the start. Inside-region has two parts: the layer's alpha box inside its region, and (added after the first real run showed that feature layers are cut to their region, so their box alone could never fail) every blob a variant changed against the master inside the screen lies inside the regions of the layers it is meant to change (lib/pipeline.mjs changedBlobs). Offset, drift and screen scale are only measured until limits are chosen after looking at the first real run; null means not set yet. drift = mean absolute RGB difference from the master outside the changed feature, after alignment, 0..255 scale. maxScaleDeltaPx = how far any edge of a variant's screen box may move against the master's, per side, after alignment. The three limits were chosen by the author after the stage 2 calibration (prompt #11), next to the measured values of the seven promoted sources: offsets all 0,0 (limit 2 px); drift 1.2804883075319133 to 1.6206076271821384 (limit 2.5); screen edges moved at most 2 px on any side (limit 6 px).",
+    "maxOffsetPx": 2,
+    "maxDrift": 2.5,
+    "maxScaleDeltaPx": 6
   }
 }

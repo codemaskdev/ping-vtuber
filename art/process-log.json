@@ -1,0 +1,501 @@
+{
+  "$comment": "Written by scripts/process.mjs. Every automatic step applied to the generator images, with its parameters and measured values. Do not edit by hand.",
+  "runtime": {
+    "node": "24.15.0",
+    "zlib": "1.3.1-e00f703"
+  },
+  "canvas": {
+    "width": 1254,
+    "height": 1254
+  },
+  "regions": {
+    "file": "art/regions.json",
+    "sha256": "e826cea9a303abf9cf8f6f95a33c683c50fa3c2da1f840b58a31950e77c52e3f",
+    "frozen": true
+  },
+  "raws": [
+    {
+      "file": "01-master.png",
+      "prompt": "G1",
+      "steps": [
+        {
+          "op": "read",
+          "file": "art/raw/01-master.png",
+          "sha256": "c095a94da19f4e145eb5e2adee542a8d92cc350dfd25fba302d1c33bcd32a81a",
+          "bytes": 934841,
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "role": "master"
+    },
+    {
+      "file": "02-head.png",
+      "prompt": "G2",
+      "steps": [
+        {
+          "op": "read",
+          "file": "art/raw/02-head.png",
+          "sha256": "30bc8b270bccd1d9190a0ac5fb0fa68624074fc523f8f6a64c0fe67ab086fa89",
+          "bytes": 952398,
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "offset": {
+        "dx": 0,
+        "dy": 0,
+        "atSearchEdge": false
+      },
+      "drift": {
+        "sum": 4753179,
+        "samples": 3712005,
+        "mean": 1.2804883075319133
+      }
+    },
+    {
+      "file": "03-brows.png",
+      "prompt": "G3",
+      "steps": [
+        {
+          "op": "read",
+          "file": "art/raw/03-brows.png",
+          "sha256": "fd4b12542ca890c4e284aa9120340c87a217781e14eb962c4197a688465ad4aa",
+          "bytes": 1052764,
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "offset": {
+        "dx": 0,
+        "dy": 0,
+        "atSearchEdge": false
+      },
+      "drift": {
+        "sum": 6268644,
+        "samples": 4515996,
+        "mean": 1.3880977751087469
+      }
+    },
+    {
+      "file": "04-eyes_closed.png",
+      "prompt": "G4",
+      "steps": [
+        {
+          "op": "read",
+          "file": "art/raw/04-eyes_closed.png",
+          "sha256": "795f27770cbdd97a71ce67c45644e2fbf9767da9fe86f8529ce835c46a4372e3",
+          "bytes": 1041956,
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "offset": {
+        "dx": 0,
+        "dy": 0,
+        "atSearchEdge": false
+      },
+      "drift": {
+        "sum": 6601793,
+        "samples": 4252428,
+        "mean": 1.5524761383379095
+      }
+    },
+    {
+      "file": "05-mouth_small.png",
+      "prompt": "G5",
+      "steps": [
+        {
+          "op": "read",
+          "file": "art/raw/05-mouth_small.png",
+          "sha256": "ce04ef178b8e98ac482b945e9881cfcbc85e83c42d3acd3fd38c6823dc4846c6",
+          "bytes": 1065543,
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "offset": {
+        "dx": 0,
+        "dy": 0,
+        "atSearchEdge": false
+      },
+      "drift": {
+        "sum": 6298349,
+        "samples": 4217652,
+        "mean": 1.4933306493755294
+      }
+    },
+    {
+      "file": "06-mouth_open.png",
+      "prompt": "G6",
+      "steps": [
+        {
+          "op": "read",
+          "file": "art/raw/06-mouth_open.png",
+          "sha256": "f2a395c77435ea68ad9a7d133778391a15aec18681844c936aed44700bca6a11",
+          "bytes": 1084051,
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "offset": {
+        "dx": 0,
+        "dy": 0,
+        "atSearchEdge": false
+      },
+      "drift": {
+        "sum": 6771385,
+        "samples": 4217652,
+        "mean": 1.6054868917587322
+      }
+    },
+    {
+      "file": "07-mouth_round.png",
+      "prompt": "G7",
+      "steps": [
+        {
+          "op": "read",
+          "file": "art/raw/07-mouth_round.png",
+          "sha256": "b4e0670207a42737fabd9e05f418221f6b4e5e70583e03e88eedd80dbe46845a",
+          "bytes": 1059151,
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "offset": {
+        "dx": 0,
+        "dy": 0,
+        "atSearchEdge": false
+      },
+      "drift": {
+        "sum": 6835159,
+        "samples": 4217652,
+        "mean": 1.6206076271821384
+      }
+    },
+    {
+      "file": "08-mouth_wide.png",
+      "prompt": "G8",
+      "steps": [
+        {
+          "op": "read",
+          "file": "art/raw/08-mouth_wide.png",
+          "sha256": "1d7eff381d3802747eaf51433cb3aae30e41b8d4e662e87ba2b288f54b45dbe0",
+          "bytes": 1046515,
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "offset": {
+        "dx": 0,
+        "dy": 0,
+        "atSearchEdge": false
+      },
+      "drift": {
+        "sum": 5962547,
+        "samples": 4217652,
+        "mean": 1.4137124162922878
+      }
+    }
+  ],
+  "silhouette": {
+    "source": "02-head.png",
+    "threshold": 48,
+    "headPixels": 864580,
+    "components": 1
+  },
+  "layers": [
+    {
+      "id": "glow",
+      "file": "art/layers/glow.png",
+      "source": "02-head.png",
+      "extract": "glow",
+      "params": {
+        "silhouetteThreshold": 48,
+        "glowFloor": 16
+      },
+      "alphaBBox": {
+        "x": 137,
+        "y": 141,
+        "w": 980,
+        "h": 971
+      },
+      "sha256": "10824ce689238bbb52286f19d740e36290033b3c68b4e6dcc531a3893667f121",
+      "bytes": 72817
+    },
+    {
+      "id": "head",
+      "file": "art/layers/head.png",
+      "source": "02-head.png",
+      "extract": "silhouette",
+      "params": {
+        "silhouetteThreshold": 48
+      },
+      "alphaBBox": {
+        "x": 148,
+        "y": 153,
+        "w": 957,
+        "h": 948
+      },
+      "sha256": "6fb4c3523b6eeffba96b7449b44c94bce0df805959d771db4419de997261e569",
+      "bytes": 622777
+    },
+    {
+      "id": "cursor",
+      "file": "art/layers/cursor.png",
+      "source": "01-master.png",
+      "extract": "red",
+      "params": {
+        "region": [
+          350,
+          262,
+          117,
+          161
+        ],
+        "redAbove": 24
+      },
+      "alphaBBox": {
+        "x": 379,
+        "y": 291,
+        "w": 59,
+        "h": 103
+      },
+      "sha256": "e1f214140301795855cb95f7496902f6ba1efa8653a0e9f2ee3bf37b672eff4c",
+      "bytes": 12813
+    },
+    {
+      "id": "eyes_open",
+      "file": "art/layers/eyes_open.png",
+      "source": "01-master.png",
+      "extract": "feature",
+      "params": {
+        "base": "02-head.png",
+        "region": [
+          316,
+          503,
+          622,
+          216
+        ],
+        "featureLo": 24,
+        "featureHi": 72,
+        "headLitFrom": 48
+      },
+      "alphaBBox": {
+        "x": 345,
+        "y": 518,
+        "w": 564,
+        "h": 172
+      },
+      "sha256": "df79a4282adfa16df50639e8a0ac712f41b599b8f22517bba2cc7be19ea8bcd3",
+      "bytes": 56769
+    },
+    {
+      "id": "eyes_closed",
+      "file": "art/layers/eyes_closed.png",
+      "source": "04-eyes_closed.png",
+      "extract": "feature",
+      "params": {
+        "base": "02-head.png",
+        "region": [
+          316,
+          503,
+          622,
+          216
+        ],
+        "featureLo": 24,
+        "featureHi": 72,
+        "headLitFrom": 48
+      },
+      "alphaBBox": {
+        "x": 354,
+        "y": 625,
+        "w": 547,
+        "h": 42
+      },
+      "sha256": "4e4e0710976810a9ad6aae3a21ff53b699a23e8f05e52be0eaced63e329e5de4",
+      "bytes": 22406
+    },
+    {
+      "id": "brows",
+      "file": "art/layers/brows.png",
+      "source": "03-brows.png",
+      "extract": "feature",
+      "params": {
+        "base": "02-head.png",
+        "region": [
+          316,
+          423,
+          622,
+          80
+        ],
+        "featureLo": 24,
+        "featureHi": 72,
+        "headLitFrom": 48
+      },
+      "alphaBBox": {
+        "x": 355,
+        "y": 470,
+        "w": 544,
+        "h": 20
+      },
+      "sha256": "f5ec26ba49ccf5962e13645e587189820767d477c9211cfedb010678acdaadab",
+      "bytes": 15394
+    },
+    {
+      "id": "mouth_rest",
+      "file": "art/layers/mouth_rest.png",
+      "source": "01-master.png",
+      "extract": "feature",
+      "params": {
+        "base": "02-head.png",
+        "region": [
+          377,
+          719,
+          500,
+          294
+        ],
+        "featureLo": 24,
+        "featureHi": 72,
+        "headLitFrom": 48
+      },
+      "alphaBBox": {
+        "x": 480,
+        "y": 788,
+        "w": 294,
+        "h": 99
+      },
+      "sha256": "7dd3485c3a3418361b23ab19a28e1662517b872368948bb80748c9a8f789b8fc",
+      "bytes": 19379
+    },
+    {
+      "id": "mouth_small",
+      "file": "art/layers/mouth_small.png",
+      "source": "05-mouth_small.png",
+      "extract": "feature",
+      "params": {
+        "base": "02-head.png",
+        "region": [
+          377,
+          719,
+          500,
+          294
+        ],
+        "featureLo": 24,
+        "featureHi": 72,
+        "headLitFrom": 48
+      },
+      "alphaBBox": {
+        "x": 479,
+        "y": 787,
+        "w": 296,
+        "h": 127
+      },
+      "sha256": "c6c722eeea6e3bb6e21ad369117fa5c184425df271b30e28211bab52a469e5a9",
+      "bytes": 26158
+    },
+    {
+      "id": "mouth_open",
+      "file": "art/layers/mouth_open.png",
+      "source": "06-mouth_open.png",
+      "extract": "feature",
+      "params": {
+        "base": "02-head.png",
+        "region": [
+          377,
+          719,
+          500,
+          294
+        ],
+        "featureLo": 24,
+        "featureHi": 72,
+        "headLitFrom": 48
+      },
+      "alphaBBox": {
+        "x": 486,
+        "y": 759,
+        "w": 282,
+        "h": 176
+      },
+      "sha256": "5fa7e91974485dfaf436f9c6f131b7346a8ed3ba146596390ad330efaca20a5c",
+      "bytes": 29570
+    },
+    {
+      "id": "mouth_round",
+      "file": "art/layers/mouth_round.png",
+      "source": "07-mouth_round.png",
+      "extract": "feature",
+      "params": {
+        "base": "02-head.png",
+        "region": [
+          377,
+          719,
+          500,
+          294
+        ],
+        "featureLo": 24,
+        "featureHi": 72,
+        "headLitFrom": 48
+      },
+      "alphaBBox": {
+        "x": 522,
+        "y": 743,
+        "w": 211,
+        "h": 209
+      },
+      "sha256": "0c4772329cd0c4e8be0a669339b17cbeb5b5e2377739fc201143b0a7cceaed92",
+      "bytes": 28533
+    },
+    {
+      "id": "mouth_wide",
+      "file": "art/layers/mouth_wide.png",
+      "source": "08-mouth_wide.png",
+      "extract": "feature",
+      "params": {
+        "base": "02-head.png",
+        "region": [
+          377,
+          719,
+          500,
+          294
+        ],
+        "featureLo": 24,
+        "featureHi": 72,
+        "headLitFrom": 48
+      },
+      "alphaBBox": {
+        "x": 416,
+        "y": 788,
+        "w": 422,
+        "h": 103
+      },
+      "sha256": "51be470931ca60fd5bbc9b343e60c47d6ba1a27096d73467f324eda8f223e547",
+      "bytes": 29726
+    }
+  ],
+  "mouthAnchors": {
+    "smileTop": 788,
+    "rule": "anchorDy = smileTop - topEdge; topEdge = first row with alpha >= 128",
+    "mouths": {
+      "mouth_rest": {
+        "topEdge": 788,
+        "anchorDy": 0
+      },
+      "mouth_small": {
+        "topEdge": 788,
+        "anchorDy": 0
+      },
+      "mouth_open": {
+        "topEdge": 759,
+        "anchorDy": 29
+      },
+      "mouth_round": {
+        "topEdge": 743,
+        "anchorDy": 45
+      },
+      "mouth_wide": {
+        "topEdge": 789,
+        "anchorDy": -1
+      }
+    }
+  }
+}
