@@ -244,8 +244,8 @@
   "layers": [],
   "regions": {
     "file": "art/regions.json",
-    "sha256": "e6e22765249671ed52b685dc1da2c7b15c75871ca60cd8391bbca73bfc65eb02",
-    "bytes": 4187,
+    "sha256": "e826cea9a303abf9cf8f6f95a33c683c50fa3c2da1f840b58a31950e77c52e3f",
+    "bytes": 8625,
     "frozen": true
   },
   "processLog": null

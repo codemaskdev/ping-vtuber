@@ -10,12 +10,14 @@
     "changedAfterSeeing": "The interior, cursor and head-pixel rules below were changed after seeing G1-01 and G2-01 (author's prompt #8): the first rule also searched the outline, where a redrawn empty screen differs in thin rims, and took the cursor as a red blob, which joined it with a recoloured chevron.",
     "interior": "changed after seeing G1-01 and G2-01: face features are searched only inside the screen (the largest dark area inside the silhouette with everything it encloses), shrunk inward by the margin. Differences on the outline are drift, not regions. Pixels lit in the empty screen (max channel >= processing.silhouetteThreshold: the chevron, the outline) belong to the head, never to a feature; feature extraction skips them too.",
     "cursor": "changed after seeing G1-01 and G2-01: the master's red pixels inside the screen (R minus the larger of G and B above processing.featureLo); their box grown by the margin. The chevron is part of the head.",
-    "eyes": "the blobs except the lowest one; exactly two expected; their joint box grown by the margin",
-    "mouth": "the lowest blob, box w x h. Every mouth shape keeps the closed smile's top edge and opens downward, so the region runs from the box top minus the margin down to the box top plus max(h, ceil(2w / 3)) plus the margin (room for 'open' and 'round', 4 blocks tall under a 6-block smile), and is centred on the box horizontally with half-width ceil(3w / 4) + margin (room for 'wide', 1.5 times as wide)",
-    "brows": "the eyes region's x range; from the eyes region's top up by ceil(eyesHeight / 2) + margin",
-    "overlaps": "eyes and mouth regions are split at the middle of the gap between the measured eyes and mouth boxes; the brows region's top is cut to the cursor region's bottom if they overlap; any overlap left after that rejects the master",
+    "eyes": "the blobs except the lowest one; exactly two expected; their joint box grown by the margin, except the top: changed after seeing the G3, G6 and G7 attempts, the eyes region starts at the eyes box top minus ceil(margin / 2) (before: minus the margin), the boundary it shares with the brows",
+    "changedAfterSeeingG3G6G7": "The mouth top and the brows/eyes boundary below were changed after seeing the G3, G6 and G7 attempts (author's prompt #10). The boxes they replaced are kept in art/regions.json history.",
+    "mouth": "the lowest blob, box w x h. Changed after seeing the G3, G6 and G7 attempts: the region starts at the eyes region's bottom edge (before: the box top minus the margin). It runs down to the box top plus max(h, ceil(2w / 3)) plus the margin (room for 'open' and 'round', 4 blocks tall under a 6-block smile), centred on the box horizontally with half-width ceil(3w / 4) + margin (room for 'wide', 1.5 times as wide). Where a mouth's top edge differs from the smile's, the rig moves it by anchorDy (see mouthAnchor).",
+    "brows": "the eyes region's x range; ends at the brows/eyes boundary (the eyes region's top) and reaches up from it by ceil(eyesHeight / 2) + margin",
+    "overlaps": "the eyes region ends at the middle of the gap between the measured eyes and mouth boxes if it would reach past it, and the mouth region starts where the eyes region ends; the brows region's top is cut to the cursor region's bottom if they overlap; any overlap left after that rejects the master",
     "clamp": "every feature region is clamped to the head region"
   },
+  "mouthAnchor": "A rig rule, not a generator rule (author's prompt #10): every mouth layer's top edge is measured (the first row with alpha >= 128) and anchorDy = the mouth_rest layer's top edge (the smile's, 788 on this master) minus it is written by scripts/process.mjs into the process log. Composites, the contact sheet and the rig draw each mouth moved down by anchorDy; no pixel of a layer is changed. check:layers fails a mouth that, moved, leaves the inside of the screen.",
   "pivotRule": {
     "glow": "centre of the screen box",
     "head": "bottom centre of the screen box",
@@ -52,8 +54,8 @@
       "parent": "head",
       "regionFrom": "cursor",
       "source": "01-master.png",
-      "extract": "feature",
-      "about": "the logo's red cursor block, its own layer so it can blink"
+      "extract": "red",
+      "about": "the logo's red cursor block, its own layer so it can blink; cut from the master's red pixels only (the same rule as its region), so the chevron never gets in"
     },
     {
       "id": "eyes_open",

@@ -66,4 +66,8 @@ Add `-- --fixtures` to `regions`, `review`, `process`, `check:layers` or `sheet`
 4. `head`: the largest shape in the empty-screen image after removing the dark background connected to the image
    border. `glow`: everything outside it, with alpha from brightness.
 5. Each feature: pixels inside its region where the image differs from the empty screen, colour from the image,
-   alpha from the size of the difference.
+   alpha from the size of the difference. Pixels lit in the empty screen (the chevron) are head, never feature. The
+   cursor is cut from the master's red pixels only.
+6. Mouth anchors: every mouth's top edge is measured, and anchorDy = the smile's top edge minus it goes into the
+   process log (`mouthAnchors`). Composites, the contact sheet and the rig draw each mouth moved down by anchorDy;
+   the layers themselves are not changed. Keeping the smile's top edge is a rig rule, not a generator rule.

@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 import { paths } from "../lib/cli.mjs";
 import { drawText } from "../lib/font.mjs";
 import { checkerboard, create, over, resample } from "../lib/image.mjs";
-import { guardDirs } from "../lib/pipeline.mjs";
+import { guardDirs, mouthAnchors } from "../lib/pipeline.mjs";
 import { FIXTURE_KEY, FIXTURE_VALUE, readPng, writePng } from "../lib/png.mjs";
 import { loadSpec, rel } from "../lib/spec.mjs";
 
@@ -30,11 +30,14 @@ export function buildSheet(spec, layersDir, fixtures) {
     imgs.set(l.id, r.img);
   }
   const { width: W, height: H } = imgs.get("head");
+  // Every mouth is drawn moved down by its anchorDy (art/layers.json mouthAnchor); the layers are not changed.
+  const dy = moveOf(spec, imgs);
+  const placed = (id) => { const c = create(W, H); over(c, imgs.get(id), 0, dy(id)); return c; };
   const layers = [...spec.layers].sort((a, b) => a.z - b.z);
   const mouths = spec.layers.filter((l) => l.group === "mouth");
   const composites = mouths.map((m) => {
     const c = create(W, H);
-    for (const id of ["head", "eyes_open", m.id]) over(c, imgs.get(id));
+    for (const id of ["head", "eyes_open", m.id]) over(c, imgs.get(id), 0, dy(id));
     return { id: m.id, img: c };
   });
   const rowsOf = (n) => Math.ceil(n / COLS);
@@ -44,7 +47,7 @@ export function buildSheet(spec, layersDir, fixtures) {
   const sheetW = COLS * TILE + (COLS + 1) * GAP;
   const sheetH = titleH + sec(layers.length) + BAND + sec(composites.length) + BAND + smallH + GAP;
   const sheet = create(sheetW, sheetH, [16, 16, 20, 255]);
-  drawText(sheet, fixtures ? "PING LAYERS - TEST FIXTURE - NOT CHARACTER ART" : "PING LAYERS", GAP, 18, 4, fixtures ? WARN : INK);
+  drawText(sheet, fixtures ? "PING LAYERS - TEST FIXTURE - NOT CHARACTER ART" : "PING LAYERS - MOUTHS MOVED BY ANCHORDY", GAP, 18, 4, fixtures ? WARN : INK);
 
   let y = titleH;
   const grid = (items, y0) => {
@@ -57,7 +60,7 @@ export function buildSheet(spec, layersDir, fixtures) {
     });
     return y0 + sec(items.length);
   };
-  y = grid(layers.map((l) => ({ id: l.id, img: imgs.get(l.id) })), y);
+  y = grid(layers.map((l) => ({ id: dy(l.id) ? `${l.id} DY ${dy(l.id)}` : l.id, img: dy(l.id) ? placed(l.id) : imgs.get(l.id) })), y);
   drawText(sheet, "COMPOSITES: HEAD + EYES_OPEN + MOUTH", GAP, y + 6, 2, INK);
   y = grid(composites, y + BAND);
   drawText(sheet, `COMPOSITES AT ${SMALL} X ${SMALL}`, GAP, y + 6, 2, INK);
@@ -71,7 +74,13 @@ export function buildSheet(spec, layersDir, fixtures) {
   return sheet;
 }
 
-// Full-size composites: name → layer ids, drawn in z order. Nothing is scaled.
+// anchorDy of a layer id (0 for anything but a moved mouth), from lib/pipeline.mjs mouthAnchors on these layers.
+function moveOf(spec, imgs) {
+  const a = imgs.has("mouth_rest") ? mouthAnchors(spec, imgs) : null;
+  return (id) => (a && a.mouths[id] && a.mouths[id].anchorDy) || 0;
+}
+
+// Full-size composites: name → layer ids, drawn in z order, each mouth moved by its anchorDy. Nothing is scaled.
 export function compositeSets(spec) {
   const mouths = spec.layers.filter((l) => l.group === "mouth").map((l) => l.id);
   const sets = mouths.map((m) => [`eyes_open-${m}`, ["glow", "head", "cursor", "eyes_open", m]]);
@@ -83,16 +92,18 @@ export function compositeSets(spec) {
 
 export function writeComposites(spec, layersDir, outDir, fixtures) {
   guardDirs([layersDir, outDir], fixtures);
-  const imgs = new Map(spec.layers.map((l) => [l.id, readPng(path.join(layersDir, l.file))]));
-  for (const [id, r] of imgs) if (r.fixture !== fixtures) throw new Error(`${id}: fixture flag does not match the mode`);
+  const files = new Map(spec.layers.map((l) => [l.id, readPng(path.join(layersDir, l.file))]));
+  for (const [id, r] of files) if (r.fixture !== fixtures) throw new Error(`${id}: fixture flag does not match the mode`);
+  const imgs = new Map([...files].map(([id, r]) => [id, r.img]));
+  const dy = moveOf(spec, imgs);
   fs.mkdirSync(outDir, { recursive: true });
-  const { width: W, height: H } = imgs.get("head").img;
+  const { width: W, height: H } = imgs.get("head");
   return compositeSets(spec).map(({ name, ids }) => {
     const c = create(W, H);
-    for (const id of ids) over(c, imgs.get(id).img);
+    for (const id of ids) over(c, imgs.get(id), 0, dy(id));
     const file = path.join(outDir, `${name}.png`);
     const w = writePng(file, c, fixtures ? { [FIXTURE_KEY]: FIXTURE_VALUE } : {});
-    return { file: rel(file), layers: ids, width: W, height: H, ...w };
+    return { file: rel(file), layers: ids, moved: Object.fromEntries(ids.filter((id) => dy(id)).map((id) => [id, dy(id)])), width: W, height: H, ...w };
   });
 }
 

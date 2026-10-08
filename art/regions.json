@@ -10,6 +10,253 @@
     "sha256": "30bc8b270bccd1d9190a0ac5fb0fa68624074fc523f8f6a64c0fe67ab086fa89",
     "fromAttempt": "G2-02"
   },
+  "baseHistory": [
+    {
+      "file": "02-head.png",
+      "sha256": "923936cdc85c7ff4b38d39426174b4e9f76a000d07e8ac9f03375e2ac837e7b4",
+      "replacedBy": "G2-02",
+      "check": "npm run stage2 -- compare-regions G2-02: 28 of 28 boxes and pivots identical"
+    }
+  ],
+  "history": [
+    {
+      "replacedBecause": "author's prompt #10: mouth region starts at the eyes region's bottom; brows/eyes boundary at eyes box top - ceil(margin / 2); changed after seeing the G3, G6 and G7 attempts",
+      "margin": 29,
+      "measured": {
+        "screen": [
+          147,
+          152,
+          959,
+          950
+        ],
+        "interior": [
+          230,
+          231,
+          794,
+          788
+        ],
+        "cursor": [
+          379,
+          291,
+          59,
+          103
+        ],
+        "eyes": [
+          345,
+          518,
+          564,
+          172
+        ],
+        "mouth": [
+          480,
+          788,
+          294,
+          99
+        ],
+        "blobs": [
+          {
+            "box": [
+              268,
+              285,
+              79,
+              120
+            ],
+            "pixels": 70,
+            "redPixels": 0,
+            "diffMax": 62,
+            "diffSum": 2499,
+            "pixelsOverFeatureHi": 0
+          },
+          {
+            "box": [
+              378,
+              297,
+              2,
+              97
+            ],
+            "pixels": 97,
+            "redPixels": 0,
+            "diffMax": 51,
+            "diffSum": 2867,
+            "pixelsOverFeatureHi": 0
+          },
+          {
+            "box": [
+              345,
+              518,
+              223,
+              172
+            ],
+            "pixels": 28228,
+            "redPixels": 0,
+            "diffMax": 247,
+            "diffSum": 6634972,
+            "pixelsOverFeatureHi": 28076
+          },
+          {
+            "box": [
+              686,
+              518,
+              223,
+              172
+            ],
+            "pixels": 28254,
+            "redPixels": 0,
+            "diffMax": 247,
+            "diffSum": 6644106,
+            "pixelsOverFeatureHi": 28101
+          },
+          {
+            "box": [
+              480,
+              788,
+              294,
+              99
+            ],
+            "pixels": 14820,
+            "redPixels": 0,
+            "diffMax": 247,
+            "diffSum": 3385727,
+            "pixelsOverFeatureHi": 14384
+          }
+        ]
+      },
+      "layers": {
+        "glow": {
+          "region": [
+            0,
+            0,
+            1254,
+            1254
+          ],
+          "pivot": [
+            626,
+            627
+          ]
+        },
+        "head": {
+          "region": [
+            118,
+            123,
+            1017,
+            1008
+          ],
+          "pivot": [
+            626,
+            1102
+          ]
+        },
+        "cursor": {
+          "region": [
+            350,
+            262,
+            117,
+            161
+          ],
+          "pivot": [
+            408,
+            342
+          ]
+        },
+        "eyes_open": {
+          "region": [
+            316,
+            489,
+            622,
+            230
+          ],
+          "pivot": [
+            627,
+            604
+          ]
+        },
+        "eyes_closed": {
+          "region": [
+            316,
+            489,
+            622,
+            230
+          ],
+          "pivot": [
+            627,
+            604
+          ]
+        },
+        "brows": {
+          "region": [
+            316,
+            423,
+            622,
+            66
+          ],
+          "pivot": [
+            627,
+            456
+          ]
+        },
+        "mouth_rest": {
+          "region": [
+            377,
+            759,
+            500,
+            254
+          ],
+          "pivot": [
+            627,
+            837
+          ]
+        },
+        "mouth_small": {
+          "region": [
+            377,
+            759,
+            500,
+            254
+          ],
+          "pivot": [
+            627,
+            837
+          ]
+        },
+        "mouth_open": {
+          "region": [
+            377,
+            759,
+            500,
+            254
+          ],
+          "pivot": [
+            627,
+            837
+          ]
+        },
+        "mouth_round": {
+          "region": [
+            377,
+            759,
+            500,
+            254
+          ],
+          "pivot": [
+            627,
+            837
+          ]
+        },
+        "mouth_wide": {
+          "region": [
+            377,
+            759,
+            500,
+            254
+          ],
+          "pivot": [
+            627,
+            837
+          ]
+        }
+      }
+    }
+  ],
   "canvas": {
     "width": 1254,
     "height": 1254
@@ -55,27 +302,27 @@
       {
         "box": [
           268,
-          285,
-          79,
-          120
+          284,
+          112,
+          110
         ],
-        "pixels": 70,
+        "pixels": 115,
         "redPixels": 0,
-        "diffMax": 62,
-        "diffSum": 2499,
+        "diffMax": 50,
+        "diffSum": 3360,
         "pixelsOverFeatureHi": 0
       },
       {
         "box": [
-          378,
-          297,
-          2,
-          97
+          280,
+          397,
+          1,
+          1
         ],
-        "pixels": 97,
+        "pixels": 1,
         "redPixels": 0,
-        "diffMax": 51,
-        "diffSum": 2867,
+        "diffMax": 28,
+        "diffSum": 28,
         "pixelsOverFeatureHi": 0
       },
       {
@@ -85,11 +332,11 @@
           223,
           172
         ],
-        "pixels": 28228,
+        "pixels": 28224,
         "redPixels": 0,
         "diffMax": 247,
-        "diffSum": 6634972,
-        "pixelsOverFeatureHi": 28076
+        "diffSum": 6623404,
+        "pixelsOverFeatureHi": 28074
       },
       {
         "box": [
@@ -98,11 +345,11 @@
           223,
           172
         ],
-        "pixels": 28254,
+        "pixels": 28253,
         "redPixels": 0,
         "diffMax": 247,
-        "diffSum": 6644106,
-        "pixelsOverFeatureHi": 28101
+        "diffSum": 6630120,
+        "pixelsOverFeatureHi": 28099
       },
       {
         "box": [
@@ -111,11 +358,11 @@
           294,
           99
         ],
-        "pixels": 14820,
+        "pixels": 14821,
         "redPixels": 0,
         "diffMax": 247,
-        "diffSum": 3385727,
-        "pixelsOverFeatureHi": 14384
+        "diffSum": 3379410,
+        "pixelsOverFeatureHi": 14374
       }
     ]
   },
@@ -159,9 +406,9 @@
     "eyes_open": {
       "region": [
         316,
-        489,
+        503,
         622,
-        230
+        216
       ],
       "pivot": [
         627,
@@ -171,9 +418,9 @@
     "eyes_closed": {
       "region": [
         316,
-        489,
+        503,
         622,
-        230
+        216
       ],
       "pivot": [
         627,
@@ -185,19 +432,19 @@
         316,
         423,
         622,
-        66
+        80
       ],
       "pivot": [
         627,
-        456
+        463
       ]
     },
     "mouth_rest": {
       "region": [
         377,
-        759,
+        719,
         500,
-        254
+        294
       ],
       "pivot": [
         627,
@@ -207,9 +454,9 @@
     "mouth_small": {
       "region": [
         377,
-        759,
+        719,
         500,
-        254
+        294
       ],
       "pivot": [
         627,
@@ -219,9 +466,9 @@
     "mouth_open": {
       "region": [
         377,
-        759,
+        719,
         500,
-        254
+        294
       ],
       "pivot": [
         627,
@@ -231,9 +478,9 @@
     "mouth_round": {
       "region": [
         377,
-        759,
+        719,
         500,
-        254
+        294
       ],
       "pivot": [
         627,
@@ -243,22 +490,14 @@
     "mouth_wide": {
       "region": [
         377,
-        759,
+        719,
         500,
-        254
+        294
       ],
       "pivot": [
         627,
         837
       ]
     }
-  },
-  "baseHistory": [
-    {
-      "file": "02-head.png",
-      "sha256": "923936cdc85c7ff4b38d39426174b4e9f76a000d07e8ac9f03375e2ac837e7b4",
-      "replacedBy": "G2-02",
-      "check": "npm run stage2 -- compare-regions G2-02: 28 of 28 boxes and pivots identical"
-    }
-  ]
+  }
 }

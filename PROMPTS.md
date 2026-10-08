@@ -375,6 +375,49 @@ Then
    failed. Then stop.
 ```
 
+## Prompt #10
+
+```text
+Review of 5fb51a8. I looked at G3-02, G6-01, G6-02, G7-02 and the cursor
+layer. No third attempts.
+
+Decisions
+
+1. Sources: G2-02, G3-02, G4-01, G5-01, G6-01, G7-02, G8-01.
+   G6-01 replaces G6-02: G6-02's end blocks stick out 12 px above its
+   top bar and it has visible seams. My rule "closer to 788 wins" in the
+   last review was wrong; record that in DEVLOG.
+2. Two region rules change, labelled in layers.json and DEVLOG as
+   changed after seeing the G3, G6 and G7 attempts. Keep the old frozen
+   boxes in the regions history.
+   a. Mouth: the region's top is the eyes region's bottom edge, not the
+      smile's top minus the margin. The rest of the mouth rule stays.
+   b. Brows and eyes: their shared boundary is the eyes box top minus
+      ceil(margin / 2), not minus the margin. The brows region ends
+      there and the eyes region starts there.
+   Measure again, check there are no overlaps, freeze again.
+3. "Every mouth keeps the closed smile's top edge" becomes a rig rule,
+   not a generator rule. For each mouth layer measure its top edge and
+   store anchorDy = smile top (788) minus that edge, written by the
+   script, never typed by hand. Composites and the contact sheet draw
+   each mouth moved by its anchorDy. No pixel of a layer is changed.
+   Check that every moved mouth stays inside the screen interior.
+   Update the prompts' preamble and README to say this.
+4. Cursor: cut the layer from the master's red pixels only, the same
+   rule as its region. Add a check that the cursor layer has no non-red
+   pixels, and a test.
+5. The overflow check stays as it is. Do not add a tolerance.
+
+Then
+
+1. Run the stage 2 calibration again on the sources in decision 1.
+   Set no limits. Promote nothing, commit no raw file.
+2. Report briefly: old and new region boxes, the table, each mouth's top
+   edge and anchorDy, the lowest row of each moved mouth next to the
+   interior's bottom, the cursor layer's box and non-red pixel count,
+   and what failed. Then stop.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

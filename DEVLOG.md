@@ -252,3 +252,52 @@ What failed
   chevron's tip, which G2-02 draws a little differently at its edge, and the cursor's own left edge. With G2-01 as
   the base the cursor layer box started at x 378. (Counted from out/stage2/layers/cursor.png.)
 - `npm test`: tests 70, pass 68, fail 0, skipped 2 (both wait for promoted raws), duration_ms 43500.067.
+
+## 2026-10-08 · Review of 5fb51a8: G6-01 back, two region rules changed, mouth anchors, red-only cursor
+
+- Sources (author's prompt #10): G2-02, G3-02, G4-01, G5-01, G6-01, G7-02, G8-01. G6-01 replaces G6-02: G6-02's end
+  blocks stick out 12 px above its top bar and it has visible seams. The author's rule in prompt #9, "G6-02 replaces
+  G6-01 only if its top edge is closer to y 788", was wrong by the author's own account: the top edge alone did not
+  judge the shape.
+- Region rules changed after seeing the G3, G6 and G7 attempts, labelled in art/layers.json (regionRule
+  changedAfterSeeingG3G6G7, mouth, eyes): the mouth region starts at the eyes region's bottom edge; brows and eyes
+  share the boundary eyes box top - ceil(margin / 2). Measured again on the master with base G2-02
+  (`npm run stage2 -- remeasure G2-02 --label ...`), no overlaps, frozen again; the old boxes are in
+  art/regions.json history. Old -> new: eyes_open / eyes_closed 316,489,622,230 -> 316,503,622,216; brows
+  316,423,622,66 -> 316,423,622,80 (pivot 627,456 -> 627,463, the region's centre); all mouths 377,759,500,254 ->
+  377,719,500,294. glow, head, cursor unchanged.
+- Mouth anchors, a rig rule (layers.json mouthAnchor): the top edge (first row with alpha >= 128) of each mouth layer
+  and anchorDy = the mouth_rest layer's top edge - it are written into the process log (mouthAnchors). Composites
+  and the contact sheet draw each mouth moved by anchorDy; layers are unchanged. check:layers fails a moved mouth that
+  leaves the inside of the screen. The prompts' preamble and README say so.
+- Cursor: cut from the master's red pixels only (extract "red"), the same rule as its region; check:layers fails any
+  non-red pixel in it; tests for both.
+- Calibration (`npm run stage2 -- calibrate G2-02 G3-02 G4-01 G5-01 G6-01 G7-02 G8-01`), no limits, nothing failed:
+
+```
+| layer       | source             | canvas    | alpha bbox x,y,w,h | region x,y,w,h    | inside | changed blobs (outside) | corner alpha TL,TR,BL,BR | offset dx,dy | drift mean (sum/samples)             | screen w,h (master w,h) | status   |
+|-------------|--------------------|-----------|--------------------|-------------------|--------|-------------------------|--------------------------|--------------|--------------------------------------|-------------------------|----------|
+| glow        | 02-head.png        | 1254x1254 | 137,141,980,971    | 0,0,1254,1254     | yes    | 4 (0)                   | 0,0,0,0                  | 0,0          | 1.2804883075319133 (4753179/3712005) | 957,948 (959,950)       | measured |
+| head        | 02-head.png        | 1254x1254 | 148,153,957,948    | 118,123,1017,1008 | yes    | 4 (0)                   | 0,0,0,0                  | 0,0          | 1.2804883075319133 (4753179/3712005) | 957,948 (959,950)       | measured |
+| cursor      | 01-master.png      | 1254x1254 | 379,291,59,103     | 350,262,117,161   | yes    | master                  | 0,0,0,0                  | master       | master                               | 959,950 (959,950)       | ok       |
+| eyes_open   | 01-master.png      | 1254x1254 | 345,518,564,172    | 316,503,622,216   | yes    | master                  | 0,0,0,0                  | master       | master                               | 959,950 (959,950)       | ok       |
+| eyes_closed | 04-eyes_closed.png | 1254x1254 | 354,625,547,42     | 316,503,622,216   | yes    | 2 (0)                   | 0,0,0,0                  | 0,0          | 1.5524761383379095 (6601793/4252428) | 955,947 (959,950)       | measured |
+| brows       | 03-brows.png       | 1254x1254 | 355,470,544,20     | 316,423,622,80    | yes    | 2 (0)                   | 0,0,0,0                  | 0,0          | 1.3880977751087469 (6268644/4515996) | 957,947 (959,950)       | measured |
+| mouth_rest  | 01-master.png      | 1254x1254 | 480,788,294,99     | 377,719,500,294   | yes    | master                  | 0,0,0,0                  | master       | master                               | 959,950 (959,950)       | ok       |
+| mouth_small | 05-mouth_small.png | 1254x1254 | 479,787,296,127    | 377,719,500,294   | yes    | 1 (0)                   | 0,0,0,0                  | 0,0          | 1.4933306493755294 (6298349/4217652) | 957,948 (959,950)       | measured |
+| mouth_open  | 06-mouth_open.png  | 1254x1254 | 486,759,282,176    | 377,719,500,294   | yes    | 1 (0)                   | 0,0,0,0                  | 0,0          | 1.6054868917587322 (6771385/4217652) | 956,948 (959,950)       | measured |
+| mouth_round | 07-mouth_round.png | 1254x1254 | 522,743,211,209    | 377,719,500,294   | yes    | 1 (0)                   | 0,0,0,0                  | 0,0          | 1.6206076271821384 (6835159/4217652) | 955,948 (959,950)       | measured |
+| mouth_wide  | 08-mouth_wide.png  | 1254x1254 | 416,788,422,103    | 377,719,500,294   | yes    | 1 (0)                   | 0,0,0,0                  | 0,0          | 1.4137124162922878 (5962547/4217652) | 956,948 (959,950)       | measured |
+```
+
+  cursor layer: alpha box 379,291,59,103, non-red pixels 0.
+  Mouth anchors (smile top 788; inside of the screen 200,202,854,846, bottom row 1047):
+  mouth_rest top 788 anchorDy 0, moved lowest row 886; mouth_small 788, 0, 913; mouth_open 759, 29, 963;
+  mouth_round 743, 45, 996; mouth_wide 789, -1, 889. No moved pixel leaves the inside of the screen.
+
+What broke
+- My first anchor test built a shifted mouth with lib/image.mjs translate, which fills the rows it shifts in with
+  opaque black (meant for raw images), so the test layer's top edge became row 0. Rewritten to paint a block above
+  the mouth instead. A text replacement of that test also stopped at the first "});" inside a line and left stray
+  lines; node --check showed it, fixed.
+- `npm test`: tests 73, pass 71, fail 0, skipped 2 (both wait for promoted raws), duration_ms 55009.385792.

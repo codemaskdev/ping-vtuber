@@ -13,8 +13,10 @@ the image tool, the image model where something reports it, the prompt as passed
 What the prompts aim for, from the logo: a square screen, centred, 70 % of the image wide; the prompt chevron and the
 red cursor in its top-left corner; the eyes just below the middle; the pixel-block smile in the lower third. Only the
 screen's outer outline glows; the face shapes and the cursor have crisp edges. A "pixel block" is the square unit
-the logo's smile is built from. Every mouth keeps the closed smile's top edge and opens downward, so the mouth never
-moves up towards the eyes. Regions are measured on the approved master (`npm run regions`) and then frozen.
+the logo's smile is built from. The mouth prompts ask every mouth to keep the closed smile's top edge and open
+downward, but that is a rig rule, not a generator rule (author's prompt #10): where a result's top edge differs, the
+script measures it and writes anchorDy = smile top - mouth top, and the rig draws the mouth moved by it. No pixel is
+changed; check:layers fails a moved mouth that leaves the inside of the screen. Regions are measured on the approved master (`npm run regions`) and then frozen.
 
 ## G1 · master
 

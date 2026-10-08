@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { create, translate } from "../lib/image.mjs";
-import { checkLayers, loadRaws, processAll } from "../lib/pipeline.mjs";
+import { checkLayers, loadRaws, mouthAnchors, processAll, topEdge } from "../lib/pipeline.mjs";
 import { FIXTURE_KEY, FIXTURE_VALUE, readPng, writePng } from "../lib/png.mjs";
 import { ROOT, loadSpec } from "../lib/spec.mjs";
 import { compositeSets, writeComposites } from "../scripts/contact-sheet.mjs";
@@ -45,6 +45,48 @@ test("faces are searched inside the screen only; the cursor is the master's red 
   let lit = 0, red = 0;
   for (let i = 0; i < cursorLayer.data.length; i += 4) if (cursorLayer.data[i + 3] === 255) { lit++; if (cursorLayer.data[i] > cursorLayer.data[i + 1] + 24) red++; }
   assert.ok(lit > 0 && red === lit, "the cursor layer holds only red pixels");
+});
+
+test("region rules after prompt #10: mouth starts at the eyes region's bottom; brows end where the eyes start", () => {
+  const L = regions.layers, m = regions.margin, eyesBox = regions.measured.eyes;
+  assert.equal(L.eyes_open.region[1], eyesBox[1] - Math.ceil(m / 2));
+  assert.equal(L.brows.region[1] + L.brows.region[3], L.eyes_open.region[1]);
+  assert.equal(L.mouth_rest.region[1], L.eyes_open.region[1] + L.eyes_open.region[3]);
+});
+
+test("the cursor layer is the master's red pixels only, and check:layers fails any other pixel", () => {
+  const c = readPng(run("a/cursor.png")).img;
+  let red = 0, other = 0;
+  for (let i = 0; i < c.data.length; i += 4) if (c.data[i + 3]) { if (c.data[i] - Math.max(c.data[i + 1], c.data[i + 2]) > 24) red++; else other++; }
+  assert.ok(red > 0);
+  assert.equal(other, 0);
+  assert.equal(row(checked, "cursor").nonRed, 0);
+  const dir = run("cursor-broken");
+  fs.cpSync(run("a"), dir, { recursive: true });
+  const r = regions.layers.cursor.region;
+  c.data.set([46, 230, 255, 255], ((r[1] + 2) * c.width + r[0] + 2) * 4);
+  writePng(path.join(dir, "cursor.png"), c, mark);
+  assert.match(row(checkLayers(spec, FIXTURE_RAW, dir, REGIONS, { fixtures: true }), "cursor").problems.join(), /1 non-red pixels in the cursor layer/);
+});
+
+test("mouth anchors: anchorDy = smile top - mouth top, written by processing; moved mouths are checked", () => {
+  assert.equal(logA.mouthAnchors.smileTop, topEdge(readPng(run("a/mouth_rest.png")).img));
+  for (const [id, a] of Object.entries(logA.mouthAnchors.mouths)) assert.equal(a.anchorDy, logA.mouthAnchors.smileTop - a.topEdge, id);
+  for (const id of ["mouth_small", "mouth_open", "mouth_round", "mouth_wide"]) assert.equal(row(checked, id).anchor.movedPixelsOutsideScreen, 0, id);
+  // A mouth drawn 40 px too high gets anchorDy 40, and drawn 40 px lower it is still inside the screen.
+  const imgs = new Map(spec.layers.map((l) => [l.id, readPng(run("a/" + l.file)).img]));
+  imgs.set("mouth_round", translate(imgs.get("mouth_round"), 0, 40));
+  const a = mouthAnchors(spec, imgs);
+  assert.equal(a.mouths.mouth_round.anchorDy, logA.mouthAnchors.mouths.mouth_round.anchorDy + 40);
+  // A mouth whose top edge is far above the smile gets a large anchorDy; moved down by it, the ring leaves the screen.
+  const dir = run("anchor-broken");
+  fs.cpSync(run("a"), dir, { recursive: true });
+  const ring = readPng(run("a/mouth_round.png")).img, top = logA.mouthAnchors.smileTop - 300;
+  for (let y = top; y < top + 10; y++) for (let x = 380; x < 420; x++) ring.data.set([46, 230, 255, 255], (y * ring.width + x) * 4);
+  writePng(path.join(dir, "mouth_round.png"), ring, mark);
+  const res = checkLayers(spec, FIXTURE_RAW, dir, REGIONS, { fixtures: true });
+  assert.equal(row(res, "mouth_round").anchor.anchorDy, 300);
+  assert.match(row(res, "mouth_round").problems.join(), /moved by anchorDy 300, \d+ pixels leave the inside of the screen/);
 });
 
 test("feature regions are measured boxes plus the margin, and do not overlap", () => {

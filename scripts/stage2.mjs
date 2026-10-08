@@ -5,6 +5,7 @@
 //
 //   npm run stage2 -- regions G2-01     measure art/regions.json on the master with G2-01 as the provisional head,
 //                                       and draw out/master-review.png (freeze with npm run regions -- --freeze)
+//   npm run stage2 -- remeasure G2-02 --label "..."  new rules: old boxes to history, measure again, unfrozen
 //   npm run stage2 -- compare-regions G2-02  measure regions again with G2-02 as the base, in memory, and compare
 //   npm run stage2 -- calibrate G2-01 G3-01 G4-01 G5-01 G6-01 G7-01 G8-01
 //                                       process, check:layers (calibration), contact sheet, full-size composites
@@ -95,6 +96,31 @@ if (mode === "regions") {
     fs.writeFileSync(REGIONS, JSON.stringify(frozen, null, 2) + "\n");
     console.log(`${rel(REGIONS)}: base is now ${ids[0]} (sha256 ${frozen.base.sha256}); regions and pivots unchanged`);
   }
+} else if (mode === "remeasure") {
+  // After a region rule change the author approved: the frozen boxes move to history, the regions are measured
+  // again on the same master and base, and the file is written unfrozen (freeze with npm run regions -- --freeze).
+  const label = (() => { const i = process.argv.indexOf("--label"); return i >= 0 ? process.argv[i + 1] : null; })();
+  if (ids.length < 1 || !ids[0].startsWith("G2-") || !label) fail('usage: npm run stage2 -- remeasure G2-<nn> --label "<why>"');
+  place([ids[0]]);
+  const old = JSON.parse(fs.readFileSync(REGIONS, "utf8"));
+  const baseSha = sha256(fs.readFileSync(path.join(RAW, spec.processing.base)));
+  if (old.base.sha256 !== baseSha) fail(`${ids[0]} is not the recorded base (${old.base.fromAttempt || old.base.sha256})`);
+  const master = flattenOnBlack(readPng(path.join(RAW, spec.processing.master)).img).img;
+  const base = flattenOnBlack(readPng(path.join(RAW, spec.processing.base)).img).img;
+  let fresh;
+  try { fresh = deriveRegions(spec, master, base); } catch (e) { console.log(`regions: ${e.message}`); process.exit(1); }
+  const next = {
+    $comment: old.$comment, frozen: false, master: old.master, base: old.base,
+    ...(old.baseHistory ? { baseHistory: old.baseHistory } : {}),
+    history: [...(old.history || []), { replacedBecause: label, margin: old.margin, measured: old.measured, layers: old.layers }],
+    ...fresh,
+  };
+  fs.writeFileSync(REGIONS, JSON.stringify(next, null, 2) + "\n");
+  for (const id of Object.keys(fresh.layers)) {
+    const a = old.layers[id].region, b = fresh.layers[id].region;
+    console.log(`${JSON.stringify(a) === JSON.stringify(b) ? "same" : "NEW "}  ${id.padEnd(12)} old ${a.join(",").padEnd(20)} new ${b.join(",").padEnd(20)} pivot ${fresh.layers[id].pivot.join(",")}`);
+  }
+  console.log(`${rel(REGIONS)} written, not frozen; old boxes in history`);
 } else if (mode === "calibrate") {
   if (!ids.length) fail("usage: npm run stage2 -- calibrate <attempt ids>");
   place(ids);
@@ -110,8 +136,12 @@ if (mode === "regions") {
   console.log("\n" + formatTable(res));
   console.log(limitsLine(res.limits));
   console.log(`regions: ${res.regionsFrozen ? "frozen" : "NOT frozen"}`);
+  const cur = res.rows.find((r) => r.id === "cursor");
+  console.log(`cursor layer: alpha box ${cur.bbox ? [cur.bbox.x, cur.bbox.y, cur.bbox.w, cur.bbox.h].join(",") : "-"}, non-red pixels ${cur.nonRed}`);
+  console.log(`mouth anchors (smile top ${res.anchors.smileTop}; inside of the screen ${res.insideBox.join(",")}, bottom row ${res.insideBox[1] + res.insideBox[3] - 1}):`);
+  for (const r of res.rows.filter((x) => x.anchor)) console.log(`  ${r.id.padEnd(12)} top edge ${r.anchor.topEdge}  anchorDy ${r.anchor.anchorDy}  moved lowest row ${r.anchor.movedLowestRow} (inside bottom ${r.anchor.insideBottomRow})  moved pixels outside the screen ${r.anchor.movedPixelsOutsideScreen}`);
   console.log(res.ok ? "no pass/fail check failed" : "SOME LAYERS FAIL");
-  for (const c of writeComposites(spec, layersDir, path.join(OUT, "composites"), false)) console.log(`${c.file}  ${c.width}x${c.height}  ${c.layers.join(" + ")}`);
+  for (const c of writeComposites(spec, layersDir, path.join(OUT, "composites"), false)) console.log(`${c.file}  ${c.width}x${c.height}  ${c.layers.join(" + ")}${Object.keys(c.moved).length ? `  moved ${JSON.stringify(c.moved)}` : ""}`);
   const sheet = buildSheet(spec, layersDir, false);
   const w = writePng(path.join(OUT, "contact-sheet.png"), sheet);
   console.log(`out/stage2/contact-sheet.png  ${sheet.width}x${sheet.height}  sha256 ${w.sha256}`);
