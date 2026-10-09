@@ -1139,3 +1139,30 @@ total closure: v2 16 of 20, v3 20 of 20
   ready 0 in the recording mode too).
 - `npm test`: tests 171, pass 171, fail 0, skipped 0, duration_ms 68868.638958.
 - FACTS.md: 8 facts added for the stage notes (minFrames, P2's M and y times, v2's and v3's phrase starts one by one, the H5-H8 averages, v3 on H2 11 of 11, the blink thresholds, the 128 of 478 points), so that every number in out/footage/numbers.json (26 entries) has its FACTS.md line.
+
+## 2026-10-09 · Prompt #23: footage changes
+
+- Lines (combine rule changed after seeing the contact sheet; `lib/line.mjs` lineMarks and lead, `rig/lines.json`
+  leadTailRule, tests): 0.5 s (15 frames) before the sound and 0.5 s after the end of the audio (the outro 3 s); the
+  tag's mark sits 8 frames before the first letter, so the emotion is complete on it (checked per clip); before and
+  after the speech the mouth is the emotion's and liveness runs. Decided by Claude: a tail that would end in a blink
+  grows until the eyes are open (hook grew 2 frames; the outro is exempt, sleepy shuts the eyes). Clips: hook 2.933 s
+  (88 frames), alive 2.633 s (79), fix 3.2 s (96), emotions 2.033 s (61), webcam 2.433 s (73), outro 4.933 s (148).
+  No ElevenLabs call; the six audio files are the same.
+- Audio offset: muxed by stream copy with -itsoffset 0.5. With ffmpeg's default movie timescale (1000) the edit list
+  is rounded to whole milliseconds and the voice landed 42 samples early (and 3 samples late after correcting by the
+  measurement); with `-movie_timescale 44100` it lands on the sample. Every line clip measures it (audio decoded from
+  time 0, cross-correlated with the mp3 placed at 0.5 s): 0 samples off; shot.json has audioOffsetSeconds 0.5.
+- Strips, sheets, mouths row: 24 px margin, labels 28 px tall (font scale 4), cells as wide as the frame allows,
+  letter labels in lanes that never overlap (the rows are spread over the height); sheets cut each render to the head
+  (stage 250, 250, 1100 x 1100) before scaling; a first crop of 200..1200 cut off the bottom of the heads and was
+  widened after looking at the frame. Blink comparison: ruler, ticks, labels, marks and playhead three times larger.
+- Hold frames: every shot.json has holdFrame (stills: 0; Ping clips: the last frame whose eyes are open on it and
+  two frames either side, read from the pixels; skeleton-sway 45 and layers-apart 90, chosen; the outro: the last
+  frame with the cursor on). No clip ends with the eyes shut except the outro (on purpose); v3-H7, wrapped, ends in a
+  blink and records lastSafeFrame 80.
+- out/render/: the old frame folders (534 MB) deleted; logs and the per-frame sha256 lists kept. The liveness shots
+  stay as they were (their frames are gone) and only got their hold frames.
+- Recording mode: the face oval dropped (the author: the outline is the most recognisable part); lips, eyes and
+  eyebrows, 92 of 478 points; the caption follows `web/record-points.json`; the four headless tests pass.
+- `npm test`: tests 172, pass 172, fail 0, skipped 0, duration_ms 69380.377208.

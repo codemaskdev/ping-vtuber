@@ -10,6 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { decode } from "../lib/audio.mjs";
+import { crossCorrelationLag } from "../lib/audio-dsp.mjs";
 import { speechSpan } from "../lib/emotions.mjs";
 import { drawText, textWidth } from "../lib/font.mjs";
 import { alphaBBox, create, fillRect, over, resample } from "../lib/image.mjs";
@@ -161,6 +162,17 @@ function readMouthsAtPoses(mp4, poses) {
     out.push({ mouth: dist <= M.mouthPixels.maxDistance ? best : "unread", distance: dist, features: f });
   }
   return out;
+}
+
+// How many samples the voice in a clip's audio track sits after (+) or before (-) where it should be: the track decoded
+// from time 0 (silence before its first sample), cross-correlated with the mp3 placed at offset seconds.
+const AR = 44100;
+function audibleLag(mp4, mp3, offset) {
+  const dec = (args) => { const b = execFileSync("ffmpeg", ["-v", "error", ...args, "-f", "f32le", "-ac", "1", "-ar", String(AR), "-"], { cwd: ROOT, maxBuffer: 1 << 30 }); return Float32Array.from(new Float32Array(b.buffer, b.byteOffset, b.length / 4)); };
+  const a = dec(["-i", mp3]), clip = dec(["-i", mp4, "-map", "0:a", "-af", "aresample=first_pts=0"]), at = Math.round(offset * AR);
+  const placed = new Float32Array(at + a.length);
+  placed.set(a, at);
+  return crossCorrelationLag(placed, clip, 3000).lag;
 }
 
 // ---------------------------------------------------------------- A: wrap shots that exist
@@ -353,9 +365,9 @@ function renderPoses(id, poses) {
   render(path.join(tmp, "frames"), "png");
   return poses.map((_, i) => readPng(path.join(tmp, "frames", `frame_${String(i + 1).padStart(6, "0")}.png`)).img);
 }
-// Sheets (author's prompt #23): each render cut to the head (stage 200..1200 on both axes, room for a 6 degree tilt
+// Sheets (author's prompt #23): each render cut to the head (stage 250..1350 on both axes, room for a 6 degree tilt
 // and the glow), the cells as wide as the frame allows with a 24 px margin, labels 28 px tall, centred.
-const HEAD_CROP = [200, 200, 1000, 1000];
+const HEAD_CROP = [250, 250, 1100, 1100];
 function cropImg(im, [x, y, w, h]) {
   const out = create(w, h, [0, 0, 0, 255]);
   for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) for (let c = 0; c < 4; c++) out.data[(j * w + i) * 4 + c] = im.data[((y + j) * im.width + x + i) * 4 + c];
@@ -407,15 +419,24 @@ function lines() {
     tmpDir(sid);
     buildPreview("line", undefined, lineSequence(id, spec, frames));
     const took = render(video, "mp4");
-    const mp4 = path.join(d, `${sid}.mp4`), offset = lead / FPS;
-    ffmpeg(["-i", rel(video), "-itsoffset", String(offset), "-i", `audio/dev/line-${id}.mp3`, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "copy", rel(mp4)]);
+    // The audio, stream-copied, starts lead / 30 s into the clip. With ffmpeg's default movie timescale (1000) the edit
+    // list was rounded to whole milliseconds and the voice landed 42 samples early (then 3 late after a correction);
+    // with 44100 it lands on the sample. The audible start is measured every time (the clip's audio decoded from time
+    // 0, cross-correlated with the mp3 placed at the offset) and corrected if it is off.
+    const mp4 = path.join(d, `${sid}.mp4`), offset = lead / FPS, mp3 = `audio/dev/line-${id}.mp3`;
+    // -movie_timescale 44100: the edit lists count in samples (ffmpeg's default of 1000 rounds them to whole ms).
+    const mux = (o) => ffmpeg(["-i", rel(video), "-itsoffset", String(o), "-i", mp3, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "copy", "-movie_timescale", String(AR), rel(mp4)]);
+    let itsoffset = offset;
+    mux(itsoffset);
+    let lag = audibleLag(mp4, mp3, offset);
+    const tries = [[itsoffset, lag]];
+    while (lag !== 0 && tries.length < 5) { itsoffset -= lag / AR; mux(itsoffset); lag = audibleLag(mp4, mp3, offset); tries.push([itsoffset, lag]); }
     dropTmp(sid);
-    const audioStart = Number(execFileSync("ffprobe", ["-v", "error", "-select_streams", "a:0", "-show_entries", "stream=start_time", "-of", "csv=p=0", mp4]).toString().trim());
     const poses = Array.from({ length: frames }, (_, f) => linePose(rig, LC, EC, spec, f, FPS));
     const ec = readEyesCursor(mp4);
     const seen = readMouthsAtPoses(mp4, poses), dis = seen.map((r, f) => (r.mouth !== poses[f].mouth ? f : null)).filter((f) => f !== null);
     const first = span ? lead + span.first : null;
-    const checks = [check("audio starts at (s)", audioStart, offset), check("pixel mouths (turned back by the pose) that disagree with the pose", dis.length, 0), check("largest distance to the chosen template (px)", Math.max(...seen.map((r) => r.distance)) <= M.mouthPixels.maxDistance, true), check("eyes from pixels that disagree with the pose", ec.filter((e, f) => e.eyes !== poses[f].eyes).length, 0), check("cursor from pixels that disagrees with the pose", ec.filter((e, f) => e.cursor !== poses[f].cursor).length, 0),
+    const checks = [check("audible audio start, samples from where it should be (0.5 s)", lag, 0), check("pixel mouths (turned back by the pose) that disagree with the pose", dis.length, 0), check("largest distance to the chosen template (px)", Math.max(...seen.map((r) => r.distance)) <= M.mouthPixels.maxDistance, true), check("eyes from pixels that disagree with the pose", ec.filter((e, f) => e.eyes !== poses[f].eyes).length, 0), check("cursor from pixels that disagrees with the pose", ec.filter((e, f) => e.cursor !== poses[f].cursor).length, 0),
       check("the emotion is complete on the first letter", marks.every((m) => m.frame + EC.transitionFrames <= first), true),
       check("lead and tail show the emotion's mouth (or rest)", poses.every((p, f) => (f >= first && f <= lead + span.last) || p.mouth === linePose(rig, LC, EC, { ...spec, span: null }, f, FPS).mouth), true)];
     const c = closureScore(al, seen.map((r, f) => ({ t: (f - lead) / FPS, mouth: r.mouth })), FPS);
@@ -429,7 +450,7 @@ function lines() {
       hold = { mode: "frame", frame: hf, why: "sleepy shuts the eyes on purpose: the last frame with the cursor on" };
     }
     out.push(finish(sid, { scene: { hook: "hook", alive: "alive", fix: "fix", emotions: "emotions", webcam: "webcam", outro: "outro" }[id], line: [line.scriptLine], size: [SW, SH], expectFrames: frames, checks, hold, audioOffsetSeconds: offset,
-      made: { text: line.text, sent: src.text, audio: `audio/dev/line-${id}.mp3`, raw: src.file, alignment: `audio/raw/line-${id}.align.json`, voice: `${src.voiceName} (${src.voiceId})`, lipSync: "v3 (frozen 40ae504)", combine: "lib/line.mjs (lead and tail changed after seeing the contact sheet, prompt #23)", emotion: marks, seed: L.livenessSeed, leadFrames: lead, audioFrames: n, tailFrames: tail, tailGrewForABlink: tail - tail0, mux: `ffmpeg -itsoffset ${offset} on the audio, both streams copied`, render: took } }));
+      made: { text: line.text, sent: src.text, audio: `audio/dev/line-${id}.mp3`, raw: src.file, alignment: `audio/raw/line-${id}.align.json`, voice: `${src.voiceName} (${src.voiceId})`, lipSync: "v3 (frozen 40ae504)", combine: "lib/line.mjs (lead and tail changed after seeing the contact sheet, prompt #23)", emotion: marks, seed: L.livenessSeed, leadFrames: lead, audioFrames: n, tailFrames: tail, tailGrewForABlink: tail - tail0, mux: `ffmpeg -itsoffset ${itsoffset} on the audio, both streams copied; tries [itsoffset, samples off]: ${JSON.stringify(tries)}`, render: took } }));
   }
   return out;
 }
@@ -533,7 +554,7 @@ const NUMBERS = [
   { line: 182, onScreen: "v1 9 / 16 · v2 12 / 16 · v3 16 / 16", facts: ["Closures: v1 9 of 16, v2 12 of 16, v3 16 of 16"] },
   { line: 186, onScreen: "v3 phrase starts −58, −74, −79, −84 ms (at least); about two and a half frames", facts: ["Phrase starts in H5-H8, the same in v2 and v3"], rounded: "−57.868480725623584 → −58, −73.83219954648526 → −74, −78.82086167800453 → −79, −83.80952380952381 → −84; in frames −1.7360544217687075 to −2.5142857142857142" },
   { line: 188, onScreen: "v1 10.43 · v3 9.52; v3 one-frame runs 0", facts: ["Mouth changes per second averaged over H5-H8", "One-frame flickers: v1 4, 7, 8 and 16 per phrase"], rounded: "10.43033627960287 → 10.43, 9.523012742127113 → 9.52" },
-  { line: 210, onScreen: "128 of 478 points shown (the page's caption)", facts: ["The recording mode of the page shows 128 of the 478 points"] },
+  { line: 210, onScreen: "92 of 478 points shown (the page's caption)", facts: ["The recording mode of the page shows 92 of the 478 points"] },
   { line: 214, onScreen: "3 758 596 bytes", facts: ["model 3758596 bytes"] },
   { line: 216, onScreen: "\"tiltGain\": 0.6", facts: ["Head tilt follows at 0.6 times"] },
   { line: 218, onScreen: "\"closeAbove\": 0.55", facts: ["Ping's eyes shut when the mean blink score goes above 0.55"] },
