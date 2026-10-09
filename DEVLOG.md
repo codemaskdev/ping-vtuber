@@ -717,3 +717,44 @@ What broke
 
 ### Tests
 - `npm test`: tests 144, pass 144, fail 0, skipped 0, duration_ms 66523.676709 (includes the headless browser test).
+
+## 2026-10-09 · Prompt #17: the last rule change, the freeze, the measurement
+
+### Part A: a frame takes the character that covers most of it; then the freeze
+- `rig/lipsync-text.json` frameRule (mode "majority"), labelled "changed after seeing output" with what the author
+  saw in words.txt ("moves" and "move" rest for the whole word; "mouth" loses its open "o"). A frame takes the
+  character that covers most of its time window; class priority only breaks exact ties; the minimum-run rule is
+  unchanged. Decided without asking: spaces and punctuation compete like letters (class gap), and so does time no
+  character covers, so a frame that is mostly pause stays at rest as before. `lib/lipsync-text.mjs` keeps the old
+  behaviour for rules without frameRule, so `lipsync:compare` runs the rules of e2a7f56 from git on the same audio.
+- v2 clips made again (renders in out/lipsync-v2-clips.txt). Closure score: before 6 of 6, after 6 of 6 (P1 2 of 2,
+  P2 3 of 3, P3 1 of 1). v1 unchanged: 2 of 6.
+
+| phrase | v2 | changes/s | rest | small | open | round | wide | shortest | median | 1-frame runs |
+|---|---|---|---|---|---|---|---|---|---|---|
+| P1 | before | 6 | 15 | 8 | 6 | 6 | 5 | 2 | 3 | 0 |
+| P1 | after | 6.75 | 21 | 10 | 2 | 3 | 4 | 2 | 3 | 0 |
+| P2 | before | 7.727272727272727 | 22 | 23 | 8 | 9 | 4 | 2 | 3.5 | 0 |
+| P2 | after | 6.8181818181818175 | 24 | 13 | 8 | 19 | 2 | 2 | 2.5 | 0 |
+| P3 | before | 6 | 17 | 0 | 3 | 17 | 8 | 2 | 3.5 | 0 |
+| P3 | after | 6.666666666666667 | 23 | 0 | 2 | 12 | 8 | 2 | 2 | 0 |
+
+- Words that changed (out/lipsync-v2/words-before.txt against words.txt):
+  - Hello: `small small small wide wide small small round round round round round` → `… small round round round rest`
+  - I: `open open open` → `rest open open`
+  - am: `open open rest rest` → `rest rest rest rest`
+  - Ping: `rest rest rest wide wide wide small small small` → `rest rest rest wide wide small small small small`
+  - My: `rest rest rest rest open open` → `rest ×6` (M covers most of the frames, y one frame, removed by the minimum run)
+  - mouth: `rest rest rest round round small small small` → `rest rest open open open small small rest`
+  - moves: `rest ×6 wide wide` → `rest rest round round round round round round`
+  - when: `round round round small` → `round ×4`; the: `small small small` → `round round round`
+  - sound: `small small open open round round small small` → `round round open open round round small small`
+  - gets: `… small small small` → `… small small rest`; loud: `small open open open open round round small ×4` →
+    `small small open open open round round small small small rest`
+  - Oh: `round ×7` → `round ×6 rest`; wow: `round round open open open round round` → `rest round round open open round round`
+  - you: `rest round round` → `rest rest rest`; see: `round wide ×5` → `rest wide ×5`
+  The closure score did not drop, so nothing else was changed. "My", "am" and "you" now lose their vowel the same way
+  "moves" did before (one frame, then the minimum run).
+- Freeze: `rig/frozen.json` (`scripts/freeze.mjs`) holds the sha256 of the v1 thresholds and code, the v2 rules and
+  code, the voice settings (chosen, modelId, settings, outputFormat, seed) and the processing (chain, gainRule,
+  peakCeiling, encode); `test/freeze.test.mjs` fails if any of them changes.

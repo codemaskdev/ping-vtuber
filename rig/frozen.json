@@ -1,0 +1,12 @@
+{
+  "$comment": "Written by scripts/freeze.mjs. Frozen by the author's prompt #17: these do not change after the commit that wrote this file.",
+  "frozenBy": "the author, prompt #17",
+  "sha256": {
+    "rig/lipsync-volume.json (v1 thresholds)": "ab518e0b4081e2c8622f7a1f2e76468f03614c738d521be1754120edd4d885b5",
+    "lib/lipsync-volume.mjs (v1)": "94f4e7f7bca36b80b124a0de2c4cd90591b201d882ecb36cd28351ac92b14140",
+    "rig/lipsync-text.json (v2 rules)": "73b3a4210726b6867a6be01eaf2e22ab1c3472f5a885af784349aecc46dcc4d2",
+    "lib/lipsync-text.mjs (v2)": "7dfe97d6c82a33248d1e7c7aa85d7e1e192769637b55b5f19e251e098813b1ff",
+    "audio/voice.json chosen, modelId, settings, outputFormat, seed (voice settings)": "eab3ba16281b545f4c386e7f474fe7490bbd68ea006c60a2e1f4daf65844a41a",
+    "audio/voice.json processing chain, gainRule, peakCeiling, encode (filter chain)": "dfa93d51b6d32a8b7f546c08f705819a43424c814e0f136c125b91692abe870d"
+  }
+}

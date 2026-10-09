@@ -1,5 +1,5 @@
 {
-  "$comment": "Lip sync v2 rules for lib/lipsync-text.mjs (author's prompt #15; two rules changed after seeing output, author's prompt #16, see changedAfterSeeing). Chosen values, labelled so. Input: the character alignment ElevenLabs returns with the audio, letters with start and end times, not phonemes.",
+  "$comment": "Lip sync v2 rules for lib/lipsync-text.mjs (author's prompt #15; rules changed after seeing output in prompts #16 and #17, see changedAfterSeeing). FROZEN since prompt #17 (rig/frozen.json). Chosen values, labelled so. Input: the character alignment ElevenLabs returns with the audio, letters with start and end times, not phonemes.",
   "classes": {
     "closure": {
       "mouth": "rest",
@@ -196,7 +196,7 @@
     "small",
     "gap"
   ],
-  "priorityWhy": "when letters of two classes fall in one frame, the higher one wins: closures and roundings are the shapes a viewer misses most when they are skipped, an open jaw next; small is the default; gaps lose to any letter",
+  "priorityWhy": "since prompt #17 only for exact ties: when letters of two classes fall in one frame, the higher one wins: closures and roundings are the shapes a viewer misses most when they are skipped, an open jaw next; small is the default; gaps lose to any letter",
   "minFrames": 2,
   "minFramesRule": "a run shorter than minFrames takes frames from the run after it if it outranks that run and that run would keep at least minFrames; otherwise it takes the mouth of the run before it (or after it at the start). Repeated until no run is shorter.",
   "minFramesWhy": "a mouth held for one frame at 30 fps reads as flicker (v1 had 4 to 6 such runs per phrase)",
@@ -212,7 +212,20 @@
       "seen": "out/lipsync-v2/words.txt (provisional voice, rules of commit 0b9efef)",
       "what": "\"mouth\", \"sound\", \"loud\", \"wow\" came out round only; the sound starts open.",
       "change": "pairs ou and ow: first letter open, second round; \"you\" and \"your\" stay round."
+    },
+    {
+      "by": "the author, prompt #17",
+      "seen": "out/lipsync-v2/words.txt (River, rules of commit e2a7f56)",
+      "what": "\"moves\" and \"move\" are rest for the whole word; \"mouth\" loses its open \"o\" the same way.",
+      "change": "frameRule: a frame takes the character that covers most of its time; class priority only breaks ties. The minimum-run rule is unchanged."
     }
   ],
-  "rulesBefore": "commit 0b9efef (prompt #15), unchanged until prompt #16; npm run lipsync:compare reads it from git to show v2 before and after on the same audio"
+  "rulesBefore": "commit e2a7f56 (prompt #16), unchanged until prompt #17; npm run lipsync:compare reads it from git to show v2 before and after on the same audio",
+  "frameRule": {
+    "mode": "majority",
+    "rule": "a frame takes the character that covers most of its time window; class priority only breaks exact ties. Spaces and punctuation compete like letters (their class is gap), and so does time no character covers (gap).",
+    "readAs": "Decided by Claude: the author's rule says 'the letter'; spaces and punctuation are read as characters that compete too, so a frame that is mostly a pause stays at rest, as it did before.",
+    "changedAfterSeeing": "the author's prompt #17, after reading out/lipsync-v2/words.txt: \"moves\" and \"move\" are rest for the whole word: a frame shared by two letters takes the higher-priority class, so the \"o\" between m and v keeps one frame and the minimum-run rule removes it. \"mouth\" loses its open \"o\" the same way.",
+    "before": "the highest-priority class among the characters overlapping the frame (rules up to commit e2a7f56)"
+  }
 }

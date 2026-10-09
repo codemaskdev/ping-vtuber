@@ -840,6 +840,84 @@ after the rule change, the closure scores, test counts, what broke,
 questions. Do not start the measurement step.
 ```
 
+## Prompt #17
+
+```text
+Prompt 16 is accepted at e2a7f56. I read words.txt, the rules, compare.txt
+and the worker code.
+
+## Answers
+1. "mouth": no special case. The cause is general, see Part A.
+2. Yes: take the detector's timestamps from the video itself with
+   requestVideoFrameCallback (mediaTime), so skipped frames keep real
+   time and no frame is sent twice. Keep a fallback for browsers
+   without it and say on the page which one is in use.
+3. Leave the loudness after mp3 as it is.
+4. The extra mp3 length goes into the measurement below.
+
+## Part A: one last rule change, then freeze
+In words.txt "moves" and "move" are rest for the whole word: a frame
+shared by two letters takes the higher-priority class, so the "o"
+between m and v keeps one frame and the minimum-run rule removes it.
+"mouth" loses its open "o" the same way.
+
+Change, labelled "changed after seeing output" with what was seen: a
+frame takes the letter that covers most of its time; class priority only
+breaks ties. Keep the minimum-run rule as it is. Report v2 before and
+after on P1 to P3 (closure score, table, the words that changed). If the
+closure score drops, report it and change nothing else.
+
+Then freeze: v1 thresholds, v2 rules, the filter chain and the voice
+settings do not change after this commit.
+
+## Part B: the measurement method, committed before any new audio
+Write MEASUREMENT.md and the measuring code, test the code on P1 to P3
+only, and commit. Only after that commit, synthesise the held-out
+phrases, once each:
+- H1: Okay, okay. Are you ready? Open the window.
+- H2: Bob brought a big map, a pump, and a lamp.
+- H3: Why is the sky so loud now? I have no idea.
+- H4: Evolution is slow, but it never gets bored.
+
+Method:
+1. Measure on the finished mp4 of each clip, v1 and v2: decode its video
+   frames and its audio track from that one file.
+2. Mouth per frame: read from the pixels of the mouth region (which
+   mouth layer is shown), not from the draw list. Check on P1 to P3 that
+   the pixels and the draw list agree.
+3. Acoustic reference: onsets and ends of sound from the loudness of the
+   mp4's own audio. Look for onsets.mjs in the CodeMask repo and say how
+   it works; use it or write the same idea here. Choose its window,
+   threshold and the minimum pause on P1 to P3 only, and write them in
+   MEASUREMENT.md before the commit.
+4. Onset offset, in ms: for each word that follows a pause and does not
+   start with m, b, p, f or v, (time of the first frame where the mouth
+   is not rest) minus (acoustic onset). Positive means the mouth is
+   late.
+5. End offset, in ms: before each pause, (time of the first frame from
+   which the mouth stays rest) minus (acoustic end).
+6. Closure score and the changes-per-second table, as before.
+7. Yardsticks, chosen now: one frame, 33.3 ms; and 45 ms late / 125 ms
+   early.
+
+Say in MEASUREMENT.md what is not independent: v1 is made from the same
+loudness the reference uses; the closure score uses the ElevenLabs
+letter times that v2 is built from; the resolution is one frame.
+
+## Part C: run it
+Process H1 to H4 through the audio script, render v1 and v2 clips and
+the side-by-side clips, measure. Report every single value, then per
+version: count, median, largest absolute value, how many within each
+yardstick. Change nothing after seeing the numbers. If the measuring
+code has a bug, fix the bug, log it, and report both results.
+
+## STOP here
+Commit, then report briefly: the rule change before and after, the
+commit that froze the method, the reference parameters, the tables for
+H1 to H4, where pixels and draw list disagreed, test counts, what broke,
+questions.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

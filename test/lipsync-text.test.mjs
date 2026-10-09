@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
-import { enforceMinFrames, letterClasses, lipsyncText } from "../lib/lipsync-text.mjs";
+import { enforceMinFrames, frameClasses, letterClasses, lipsyncText } from "../lib/lipsync-text.mjs";
 import { ROOT } from "../lib/spec.mjs";
 
 const rules = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "lipsync-text.json"), "utf8"));
@@ -42,7 +42,7 @@ test("ou and ow: the first letter open, the second round; you and your stay roun
   assert.deepEqual(cls("you"), ["small", "round", "round"]);
   assert.deepEqual(cls("your"), ["small", "round", "round", "small"]);
   for (const p of rules.pairs.filter((x) => ["ou", "ow"].includes(x.letters))) assert.ok(p.changedAfterSeeing && p.before, p.letters);
-  assert.equal(rules.changedAfterSeeing.length, 2);
+  assert.equal(rules.changedAfterSeeing.length, 3);
 });
 
 test("pairs, silent final e and the pronoun I", () => {
@@ -76,4 +76,21 @@ test("same input, same output; runs in a browser (no imports, no Node API)", () 
   assert.deepEqual(lipsyncText(a, 30, rules), lipsyncText(JSON.parse(JSON.stringify(a)), 30, rules));
   const src = fs.readFileSync(path.join(ROOT, "lib", "lipsync-text.mjs"), "utf8");
   assert.ok(!/^\s*import\s/m.test(src) && !/\bprocess\.|\bBuffer\b|node:/.test(src));
+});
+
+test("a frame takes the character that covers most of it; priority only breaks ties (author's prompt #17)", () => {
+  assert.equal(rules.frameRule.mode, "majority");
+  assert.ok(rules.frameRule.changedAfterSeeing && rules.frameRule.before);
+  // m 0..0.02, o 0.02..0.1, v 0.1..0.12 at 30 fps: frame 0 (0..0.0333) is mostly m, frames 1 and 2 are o, frame 3
+  // (0.1..0.1333) is mostly v (20 ms against 13.3 ms that no character covers).
+  const align = { characters: ["m", "o", "v"], character_start_times_seconds: [0, 0.02, 0.1], character_end_times_seconds: [0.02, 0.1, 0.12] };
+  const { classes } = frameClasses(align, 30, rules, 4);
+  assert.deepEqual(classes, ["closure", "round", "round", "closure"]);
+  // An exact tie goes to the higher priority (closure beats round).
+  const tie = { characters: ["o", "m"], character_start_times_seconds: [0, 0.5], character_end_times_seconds: [0.5, 1] };
+  assert.equal(frameClasses(tie, 1, rules, 1).classes[0], "closure");
+  // The rules before prompt #17 (no frameRule): any overlap, highest priority.
+  const before = { ...rules };
+  delete before.frameRule;
+  assert.equal(frameClasses(align, 30, before, 1).classes[0], "closure");
 });

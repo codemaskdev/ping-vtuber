@@ -108,5 +108,6 @@
         "why": "chosen: a telephone-like band, more bit-crush, a light metallic comb; still above 5 kHz cut-offs that keep consonants clear"
       }
     ]
-  }
+  },
+  "frozen": "Since the author's prompt #17 the voice settings (chosen, modelId, settings, outputFormat, seed) and processing (chain, gainRule, peakCeiling, encode) do not change: rig/frozen.json, test/freeze.test.mjs."
 }
