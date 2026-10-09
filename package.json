@@ -33,6 +33,7 @@
     "lipsync:clips": "node scripts/lipsync-clips.mjs",
     "lipsync:report": "node scripts/lipsync-report.mjs",
     "lipsync:compare": "node scripts/lipsync-compare.mjs",
+    "lipsync:v3-compare": "node scripts/lipsync-v3-compare.mjs",
     "measure": "node scripts/measure.mjs",
     "web:vendor": "node scripts/web-vendor.mjs",
     "web:serve": "node scripts/serve-web.mjs",

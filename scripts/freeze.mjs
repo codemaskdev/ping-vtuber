@@ -2,7 +2,8 @@
 // settings do not change. rig/frozen.json holds the sha256 of each; test/freeze.test.mjs fails if one moves.
 // The code that applies the rules (lib/lipsync-volume.mjs, lib/lipsync-text.mjs) is frozen with them. The measurement
 // method (MEASUREMENT.md, measurement.json, lib/measure.mjs, scripts/measure.mjs) was added to the freeze in the commit
-// that wrote it, before any held-out phrase existed.
+// that wrote it, before any held-out phrase existed. Lip sync v3 (rig/lipsync-v3.json, lib/lipsync-v3.mjs) was added in
+// the commit that froze it (author's prompt #18): the last version for this episode, only bugs get fixed.
 //
 //   node scripts/freeze.mjs            compare with rig/frozen.json
 //   node scripts/freeze.mjs --write    write rig/frozen.json (only when the author unfreezes)
@@ -27,6 +28,8 @@ export function frozenState() {
     "audio/voice.json chosen, modelId, settings, outputFormat, seed (voice settings)": sha256(Buffer.from(JSON.stringify(voice))),
     "audio/voice.json processing chain, gainRule, peakCeiling, encode (filter chain)": sha256(Buffer.from(JSON.stringify(processing))),
     "MEASUREMENT.md (method)": file("MEASUREMENT.md"),
+    "rig/lipsync-v3.json (v3 rules)": file("rig/lipsync-v3.json"),
+    "lib/lipsync-v3.mjs (v3)": file("lib/lipsync-v3.mjs"),
     "measurement.json (method parameters)": file("measurement.json"),
     "lib/measure.mjs (method)": file("lib/measure.mjs"),
     "scripts/measure.mjs (method)": file("scripts/measure.mjs"),

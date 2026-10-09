@@ -1,15 +1,17 @@
-// Lip sync clips (v1: lib/lipsync-volume.mjs; v2 with --method v2: lib/lipsync-text.mjs on the alignment): for each
+// Lip sync clips (v1: lib/lipsync-volume.mjs; v2 with --method v2: lib/lipsync-text.mjs on the alignment; v3 with
+// --method v3: lib/lipsync-v3.mjs and rig/lipsync-v3.json): for each
 // development phrase, the mouths, a HyperFrames render
 // (mp4, video only) of neutral + liveness (seed in the log) + mouth, then the phrase's audio muxed in with ffmpeg,
 // stream copy (no re-encoding of the audio or the video).
 //
-//   npm run lipsync:clips -- --seed 1 [--method v1|v2] [P1 P2 P3]
+//   npm run lipsync:clips -- --seed 1 [--method v1|v2|v3] [P1 P2 P3]
 import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { decode } from "../lib/audio.mjs";
 import { frameCount, lipsyncVolume } from "../lib/lipsync-volume.mjs";
 import { lipsyncText } from "../lib/lipsync-text.mjs";
+import { lipsyncV3 } from "../lib/lipsync-v3.mjs";
 import { ROOT, rel } from "../lib/spec.mjs";
 import { buildPreview, lipsyncSequence } from "./build-preview.mjs";
 
@@ -17,9 +19,10 @@ const args = process.argv.slice(2);
 const i = args.indexOf("--seed"), seed = i >= 0 ? Number(args[i + 1]) : 1;
 const phrases = args.filter((a) => /^[PH]\d+$/.test(a));
 const mi = args.indexOf("--method"), method = mi >= 0 ? args[mi + 1] : "v1";
-if (!["v1", "v2"].includes(method)) throw new Error("--method v1 or v2");
+if (!["v1", "v2", "v3"].includes(method)) throw new Error("--method v1, v2 or v3");
 const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "lipsync-volume.json"), "utf8"));
 const textRules = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "lipsync-text.json"), "utf8"));
+const v3Rules = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "lipsync-v3.json"), "utf8"));
 const out = path.join(ROOT, "out", `lipsync-${method}`);
 fs.mkdirSync(out, { recursive: true });
 const ffmpeg = execFileSync("ffmpeg", ["-version"]).toString().split("\n")[0];
@@ -29,10 +32,10 @@ for (const p of phrases.length ? phrases : ["P1", "P2", "P3"]) {
   const frames = frameCount(d.samples.length, d.sampleRate, 30);
   const mouths = method === "v1"
     ? lipsyncVolume(d.samples, d.sampleRate, 30, cfg).mouths
-    : lipsyncText(JSON.parse(fs.readFileSync(path.join(ROOT, "audio", "raw", `${p}.align.json`), "utf8")).alignment, 30, textRules, frames).mouths;
+    : (method === "v2" ? lipsyncText : lipsyncV3)(JSON.parse(fs.readFileSync(path.join(ROOT, "audio", "raw", `${p}.align.json`), "utf8")).alignment, 30, method === "v2" ? textRules : v3Rules, frames).mouths;
   const b = buildPreview("lipsync", seed, lipsyncSequence(p, seed, mouths));
   const video = path.join(out, `${p}.video.mp4`), final = path.join(out, `${p}.mp4`), log = path.join(out, `${p}.log`);
-  const lines = [`lip sync ${method}, phrase ${p}, liveness seed ${seed}, ${b.frames} frames at 30 fps (${mouths.length} with audio + 15 at rest)`, `decoder: ${d.decoder}`, method === "v1" ? `thresholds: restBelow ${cfg.restBelow}, openFrom ${cfg.openFrom}` : "rules: rig/lipsync-text.json on audio/raw/" + p + ".align.json (the alignment of the raw audio; the audio is audio/dev/" + p + ".mp3)"];
+  const lines = [`lip sync ${method}, phrase ${p}, liveness seed ${seed}, ${b.frames} frames at 30 fps (${mouths.length} with audio + 15 at rest)`, `decoder: ${d.decoder}`, method === "v1" ? `thresholds: restBelow ${cfg.restBelow}, openFrom ${cfg.openFrom}` : `rules: rig/${method === "v2" ? "lipsync-text" : "lipsync-v3"}.json on audio/raw/` + p + ".align.json (the alignment of the raw audio; the audio is audio/dev/" + p + ".mp3)"];
   const r = spawnSync("bash", ["-c", `time npx --yes hyperframes@0.8.134 render -o ${JSON.stringify(path.relative(path.join(ROOT, "rig", "preview"), video))}`], { cwd: path.join(ROOT, "rig", "preview"), encoding: "utf8" });
   lines.push(`render exit ${r.status}`, ...(r.stdout + r.stderr).split("\n").filter((l) => /rendered in|capture ·|real|total$/.test(l)).map((l) => l.trim()));
   const mux = ["-v", "error", "-y", "-i", rel(video), "-i", rel(audio), "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "copy", rel(final)];

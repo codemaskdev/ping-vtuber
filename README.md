@@ -155,8 +155,14 @@ pronoun I to five mouths, says which mouth wins when two letters share a frame, 
 y as a word's only vowel is open; ou and ow go open then round); the file says so, and `lipsync:compare` shows v2
 before and after the change on the same audio.
 
+Lip sync v3 (`rig/lipsync-v3.json`, `lib/lipsync-v3.mjs`, author's prompt #18): v2's letters and majority rule,
+then every m, b, p, f, v left without a frame takes the frame it overlaps most, and a run shorter than the minimum
+grows from a neighbour before it is removed (closure runs are never removed). v1, v2 and v3 are frozen
+(`rig/frozen.json`); v3 is the last version for this episode.
+
 ```
-npm run lipsync:clips -- --seed 1 --method v2       out/lipsync-v2/P<n>.mp4
+npm run lipsync:clips -- --seed 1 --method v2       out/lipsync-v2/P<n>.mp4 (v3: --method v3)
+npm run lipsync:v3-compare -- P1 H1 --name x        v2 against v3 from the code
 npm run lipsync:compare                             closure score, run table, words.txt, P2 chart, side-by-side clips
 ```
 

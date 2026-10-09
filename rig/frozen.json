@@ -9,6 +9,8 @@
     "audio/voice.json chosen, modelId, settings, outputFormat, seed (voice settings)": "eab3ba16281b545f4c386e7f474fe7490bbd68ea006c60a2e1f4daf65844a41a",
     "audio/voice.json processing chain, gainRule, peakCeiling, encode (filter chain)": "dfa93d51b6d32a8b7f546c08f705819a43424c814e0f136c125b91692abe870d",
     "MEASUREMENT.md (method)": "050ccb6f08a8457335f9e69dddc69691c9287b6323d555908a83527f752ea59f",
+    "rig/lipsync-v3.json (v3 rules)": "9f14424f7ae232b08df1bd67bde7cbd73c2ebe08aa4e2559ff86e6579d36908e",
+    "lib/lipsync-v3.mjs (v3)": "6ae744d1740797b0bb8c3073170ced6f6cc7129e2b47508ce51c96e29879b7b4",
     "measurement.json (method parameters)": "0ea97579461330367c3bcc1845ef7bcde70814dabd2436b1834e0a4af9fee1f6",
     "lib/measure.mjs (method)": "291e541d0845093d2691ba4bdd06687227d123779d2728d3e2f0f44b7c2d8d24",
     "scripts/measure.mjs (method)": "b0b88434736f80a404745cfe21190159f6d7e619c160ee23ad4d2fd426925a1d"

@@ -851,3 +851,95 @@ What broke
   first letter at 0 s, before the sound); H2's "lamp" ends with m and p, so its rest from the m on counts as an
   early end (−132.0178072562359 ms) though rest is the right mouth for m and p. No measuring-code bug found.
 - `npm test`: tests 152, pass 152, fail 0, skipped 0, duration_ms 68392.216125.
+
+## 2026-10-09 · Prompt #18: lip sync v3, then a second exam (H5-H8)
+
+- The H1-H4 exam stands as measured: v2 scored 10 of 14 closures. The cause was the author's majority rule of prompt
+  #17: a short b or p never covers most of a frame, so it lost every frame (b in "Bob brought a big", p in "Open").
+  Nothing is re-scored.
+- Footnote to every end offset (frozen method, unchanged): a word that ends on m, b or p (H2 "lamp") is counted; its
+  mouth is meant to be closed from the m on, so such an end reads early by construction.
+- The early mouth at phrase starts (the alignment puts the first letter at 0 s, before the sound) stays: an
+  observation.
+
+### Part A: lip sync v3
+- Own files: `rig/lipsync-v3.json` (v2's letter rules copied unchanged and checked equal by a test; the three v3
+  rules; labelled "changed after seeing P1 to P3 and H1 to H4" with what was seen) and `lib/lipsync-v3.mjs`, which
+  imports only v2's letterClasses. `lib/lipsync-text.mjs` and `rig/lipsync-text.json` were not touched. Before
+  writing v3, v2's mouths on all seven seen phrases were recorded (`test/v2-snapshot.json`); a test checks v2 still
+  gives exactly those, and that v3's rule 1 gives v2's classes before rescue and runs.
+- Decided without asking: rule 2 on a tie takes the earlier frame, and skips a frame that already shows a closure.
+  Rule 3: runs are checked from the phrase start, again after every change; a removed run takes the class of the run
+  before it (after it at the start), as in v2.
+- Found by a test before the freeze, decided without asking: rule 3 as first written let a short run grow into a
+  closure run and take the only closure frame of H2's "brought" b (closure 10 of 11). Rule 2 says a letter that
+  "ends up" with no frame, so a closure frame that is the last closure frame overlapping an m, b, p, f or v cannot be
+  given. Written into the rules file.
+- v2 against v3 on the seven seen phrases (`npm run lipsync:v3-compare -- P1 P2 P3 H1 H2 H3 H4 --name seen`, from
+  the code; the pixels were shown to equal the code on every v1 and v2 clip): closure v2 16 of 20, v3 20 of 20.
+  "am" (P1) stays rest in v3: its a wins one frame, neither neighbour can give one (a 2-frame pause before, the
+  1-frame m after), so that run is removed and the m grows into it. The full output:
+
+```
+P1: "Hello. I am Ping.", 40 frames
+  v2: closure 2 of 2 (m@0.639, P@0.731); changes 9 = 6.75/s; rest 21, small 10, open 2, round 3, wide 4; shortest 2, median 3, 1-frame runs 0
+  v3: closure 2 of 2 (m@0.639, P@0.731); changes 9 = 6.75/s; rest 21, small 10, open 2, round 3, wide 4; shortest 2, median 3, 1-frame runs 0
+P2: "My mouth moves when the sound gets loud.", 66 frames
+  v2: closure 3 of 3 (M@0, m@0.232, m@0.511); changes 15 = 6.8181818181818175/s; rest 24, small 13, open 8, round 19, wide 2; shortest 2, median 2.5, 1-frame runs 0
+  v3: closure 3 of 3 (M@0, m@0.232, m@0.511); changes 23 = 10.454545454545453/s; rest 25, small 20, open 9, round 8, wide 4; shortest 2, median 2, 1-frame runs 0
+  changed: My (frames 0..5): v2 rest rest rest rest rest rest → v3 rest rest rest open open rest
+  changed: mouth (frames 6..13): v2 rest rest open open open small small rest → v3 rest rest rest open open small small rest
+  changed: moves (frames 15..22): v2 rest rest round round round round round round → v3 rest rest round round rest rest small small
+  changed: when (frames 23..26): v2 round round round round → v3 round round small small
+  changed: the (frames 27..29): v2 round round round → v3 small wide wide
+  changed: sound (frames 30..37): v2 round round open open round round small small → v3 small small open open round round small small
+  changed: gets (frames 39..44): v2 small wide wide small small rest → v3 wide wide small small small rest
+P3: "Oh wow. We move, you see?", 45 frames
+  v2: closure 1 of 1 (m@0.708); changes 10 = 6.666666666666667/s; rest 23, small 0, open 2, round 12, wide 8; shortest 2, median 2, 1-frame runs 0
+  v3: closure 1 of 1 (m@0.708); changes 13 = 8.666666666666666/s; rest 19, small 4, open 2, round 13, wide 7; shortest 2, median 2, 1-frame runs 0
+  changed: Oh (frames 0..6): v2 round round round round round round rest → v3 round round round round small small rest
+  changed: you (frames 27..29): v2 rest rest rest → v3 rest round round
+  changed: see (frames 31..36): v2 rest wide wide wide wide wide → v3 small small wide wide wide wide
+H1: "Okay, okay. Are you ready? Open the window.", 65 frames
+  v2: closure 0 of 1 (p@1.3 NOT rest); changes 14 = 6.461538461538462/s; rest 26, small 9, open 5, round 12, wide 13; shortest 2, median 3, 1-frame runs 0
+  v3: closure 1 of 1 (p@1.3); changes 22 = 10.153846153846155/s; rest 23, small 13, open 5, round 13, wide 11; shortest 2, median 2, 1-frame runs 0
+  changed: Okay (frames 0..9): v2 round round round round round small small small small rest → v3 round round round round round small small wide wide rest
+  changed: Are (frames 19..22): v2 rest rest rest rest → v3 rest small small small
+  changed: you (frames 22..25): v2 rest rest rest rest → v3 small round round small
+  changed: ready (frames 26..32): v2 rest wide wide wide wide wide rest → v3 small wide wide wide wide wide rest
+  changed: Open (frames 36..42): v2 rest round round round wide wide wide → v3 rest round round rest rest wide wide
+  changed: the (frames 43..45): v2 wide wide wide → v3 small small rest
+  changed: window (frames 46..54): v2 wide wide small small small open open round round → v3 rest wide wide small small open open round round
+H2: "Bob brought a big map, a pump, and a lamp.", 66 frames
+  v2: closure 8 of 11 (B@0, b@0.221 NOT rest, b@0.302 NOT rest, b@0.569 NOT rest, m@0.778, p@0.917, p@1.173, m@1.289, p@1.335, m@1.776, p@1.823); changes 13 = 5.909090909090908/s; rest 37, small 11, open 6, round 10, wide 2; shortest 2, median 3.5, 1-frame runs 0
+  v3: closure 11 of 11 (B@0, b@0.221, b@0.302, b@0.569, m@0.778, p@0.917, p@1.173, m@1.289, p@1.335, m@1.776, p@1.823); changes 18 = 8.181818181818182/s; rest 42, small 9, open 7, round 6, wide 2; shortest 2, median 2, 1-frame runs 0
+  changed: Bob (frames 0..7): v2 rest rest rest rest round round round round → v3 rest rest rest rest round round rest rest
+  changed: brought (frames 9..14): v2 round round round small small small → v3 rest round round small small open
+  changed: a (frames 15..16): v2 small small → v3 open rest
+  changed: big (frames 17..21): v2 small wide wide small small → v3 rest wide wide small small
+  changed: lamp (frames 49..57): v2 rest open open open rest rest rest rest rest → v3 small small open open rest rest rest rest rest
+H3: "Why is the sky so loud now? I have no idea.", 72 frames
+  v2: closure 0 of 0; changes 14 = 5.833333333333334/s; rest 39, small 9, open 4, round 13, wide 7; shortest 2, median 4, 1-frame runs 0
+  v3: closure 0 of 0; changes 26 = 10.833333333333334/s; rest 27, small 11, open 14, round 11, wide 9; shortest 2, median 2, 1-frame runs 0
+  changed: Why (frames 0..5): v2 round round round round round round → v3 round round round round open open
+  changed: is (frames 7..10): v2 rest rest rest rest → v3 rest small small small
+  changed: the (frames 11..13): v2 small small small → v3 small wide wide
+  changed: sky (frames 14..21): v2 small small small small open open open open → v3 rest rest small small open open open open
+  changed: loud (frames 28..34): v2 rest rest rest round round round rest → v3 rest open open round round round rest
+  changed: now (frames 35..40): v2 rest rest rest round round rest → v3 rest open open round round rest
+  changed: I (frames 44..45): v2 rest rest → v3 open rest
+  changed: have (frames 47..50): v2 rest rest rest rest → v3 open open rest rest
+  changed: no (frames 52..54): v2 rest rest rest → v3 small small rest
+H4: "Evolution is slow, but it never gets bored.", 73 frames
+  v2: closure 2 of 2 (b@1.068, b@1.788); changes 16 = 6.575342465753425/s; rest 30, small 20, open 3, round 8, wide 12; shortest 2, median 3, 1-frame runs 0
+  v3: closure 2 of 2 (b@1.068, b@1.788); changes 25 = 10.273972602739727/s; rest 31, small 18, open 3, round 8, wide 13; shortest 2, median 2, 1-frame runs 0
+  changed: Evolution (frames 0..15): v2 wide wide wide wide rest rest rest small small round round small small small small small → v3 wide wide wide wide rest rest rest small small round round small small round round rest
+  changed: is (frames 17..19): v2 small small small → v3 small small rest
+  changed: slow (frames 20..29): v2 small small small small open open open round round rest → v3 rest small small small open open open round round rest
+  changed: but (frames 32..36): v2 rest rest rest rest rest → v3 rest rest small small wide
+  changed: it (frames 37..39): v2 rest rest rest → v3 wide wide rest
+  changed: never (frames 41..46): v2 rest wide wide wide wide rest → v3 rest wide wide rest rest rest
+  changed: bored (frames 53..63): v2 small rest rest round round round round wide wide small small → v3 small rest rest round round small small wide wide small small
+total closure: v2 16 of 20, v3 20 of 20
+```
+- `npm test` at the v3 freeze: tests 160, pass 160, fail 0, skipped 0, duration_ms 68669.113167.

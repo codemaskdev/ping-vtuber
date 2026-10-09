@@ -918,6 +918,55 @@ H1 to H4, where pixels and draw list disagreed, test counts, what broke,
 questions.
 ```
 
+## Prompt #18
+
+```text
+The H1 to H4 exam is accepted as it stands: v2 scored 10 of 14 closures
+and nothing gets re-scored. My majority rule from prompt 17 caused it;
+say so in DEVLOG. The H1 to H4 metadata commit is fine.
+
+## Answers
+1. Do not unfreeze v2. The fix is a new version, v3, below. v2 stays
+   byte for byte as frozen, for comparison.
+2. The early mouth at phrase starts stays: an observation, not a fix.
+3. Do not change the frozen method. Ends on m, b or p stay counted and
+   get a footnote.
+
+## Part A: lip sync v3, then freeze
+Rules in their own file; lib changes must leave v2's output unchanged
+(test it). Label v3 "changed after seeing P1 to P3 and H1 to H4", with
+what was seen: majority lost short closures (b in "Bob brought a big",
+p in "Open") and the minimum-run rule erased short vowels ("My", "am",
+"you").
+1. Frames still take the letter that covers most of their time.
+2. Every m, b, p, f, v that ends up with no frame takes the frame it
+   overlaps most.
+3. A run shorter than the minimum first tries to grow: it takes one
+   frame from a neighbouring run that would still keep the minimum
+   (the longer neighbour; on a tie, the later one). Only if neither can
+   give a frame is it removed. A closure run is never removed; it may
+   stay one frame long.
+Report v2 against v3 on P1 to P3 and H1 to H4, which are now all seen
+data: closure scores, the table, every word that changed. Then freeze
+v3 and commit. v3 is the last version for this episode whatever the
+next exam shows; only bugs get fixed.
+
+## Part B: a new exam, same frozen method
+After the v3 freeze commit, synthesise once each:
+- H5: Alright. Let's try again. One more go.
+- H6: Is this thing on? Testing. One, two, three.
+- H7: I like big maps. Nobody reads those. I do.
+- H8: Keep it simple. Open the box. A robot pops up, happy.
+Process, render v1, v2 and v3, and measure all three with the method of
+5332a8c, unchanged. Side-by-side clips: v1 | v3 and v2 | v3.
+
+## STOP here
+Commit, then report briefly: v2 against v3 on the seen phrases, the v3
+freeze commit, then for H5 to H8 every single value and the summary
+table for v1, v2 and v3, closure scores, one-frame runs, what broke,
+questions. Change nothing after seeing the numbers.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

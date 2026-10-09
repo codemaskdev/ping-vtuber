@@ -1,0 +1,33 @@
+{
+ "$comment": "v2 mouths per frame on every seen phrase, recorded before v3 was written (prompt #18), with lib/lipsync-text.mjs and rig/lipsync-text.json as frozen in 3df3c97. test/lipsync-v3.test.mjs checks that v2 still gives exactly these.",
+ "phrases": {
+  "P1": {
+   "frames": 40,
+   "mouths": "small small small wide wide small small small round round round rest rest rest open open rest rest rest rest rest rest rest rest wide wide small small small small rest rest rest rest rest rest rest rest rest rest"
+  },
+  "P2": {
+   "frames": 66,
+   "mouths": "rest rest rest rest rest rest rest rest open open open small small rest rest rest rest round round round round round round round round round round round round round round round open open round round small small small small wide wide small small rest rest small small open open open round round small small small rest rest rest rest rest rest rest rest rest rest"
+  },
+  "P3": {
+   "frames": 45,
+   "mouths": "round round round round round round rest rest round round open open round round rest rest round round wide wide wide rest rest rest rest rest rest rest rest rest rest rest wide wide wide wide wide rest rest rest rest rest rest rest rest"
+  },
+  "H1": {
+   "frames": 65,
+   "mouths": "round round round round round small small small small rest rest round round small small open open open rest rest rest rest rest rest rest rest rest wide wide wide wide wide rest rest rest rest rest round round round wide wide wide wide wide wide wide wide small small small open open round round rest rest rest rest rest rest rest rest rest rest"
+  },
+  "H2": {
+   "frames": 66,
+   "mouths": "rest rest rest rest round round round round round round round round small small small small small small wide wide small small small rest rest open open open rest rest rest rest rest rest rest rest rest round round rest rest rest rest rest small small rest rest rest rest open open open rest rest rest rest rest rest rest rest rest rest rest rest rest"
+  },
+  "H3": {
+   "frames": 72,
+   "mouths": "round round round round round round rest rest rest rest rest small small small small small small small open open open open rest rest rest round round rest rest rest rest round round round rest rest rest rest round round rest rest rest rest rest rest rest rest rest rest rest rest rest rest rest rest wide wide small small wide wide wide wide wide rest rest rest rest rest rest rest"
+  },
+  "H4": {
+   "frames": 73,
+   "mouths": "wide wide wide wide rest rest rest small small round round small small small small small small small small small small small small small open open open round round rest rest rest rest rest rest rest rest rest rest rest rest rest wide wide wide wide rest rest rest wide wide small small small rest rest round round round round wide wide small small rest rest rest rest rest rest rest rest rest"
+  }
+ }
+}
