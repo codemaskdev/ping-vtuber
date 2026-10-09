@@ -34,7 +34,7 @@ test("a final render never carries the debug skeleton", () => {
 test("the pose sheet has every cell the author asked for, and every sequence's poses pass the limits", () => {
   const labels = rigSequences()["pose-sheet"].entries.map((e) => e.label);
   for (const want of ["neutral", "eyes closed", "mouth rest", "mouth small", "mouth open", "mouth round", "mouth wide", "cursor off", "neutral + skeleton"]) assert.ok(labels.includes(want), want);
-  for (const prefix of ["brows as drawn", "brows at browsRestDy", "brows raised", "head tilt -", "head tilt 4", "head shift"]) assert.ok(labels.some((l) => l.startsWith(prefix)), prefix);
+  for (const prefix of ["brows as drawn", "brows at browsRestDy", "brows raised", "head tilt -", "head tilt 12", "head shift"]) assert.ok(labels.some((l) => l.startsWith(prefix)), prefix);
   for (const [name, s] of Object.entries(rigSequences())) assert.doesNotThrow(() => checkSequence(name, s), name);
 });
 

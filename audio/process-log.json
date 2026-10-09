@@ -1,0 +1,152 @@
+{
+  "$comment": "Written by scripts/audio-process.mjs (npm run audio:process).",
+  "files": [
+    {
+      "input": "audio/raw/P1.mp3",
+      "inputSha256": "32be59453630e320fe56cdf045c9f7d4216961abd90383f11728fb95667d86b6",
+      "output": "audio/dev/P1.mp3",
+      "outputSha256": "89dc4543899aea61d021791dde29fcb4d7de9891349845c1b979d77ab3d62080",
+      "outputBytes": 22195,
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "decode": "ffmpeg -v error -i <file> -ac 1 -ar 44100 -f f32le -",
+      "filter": "ffmpeg -v error -f f32le -ar 44100 -ac 1 -i pipe:0 -af highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22 -f f32le pipe:1",
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/P1.mp3",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "sampleRate": 44100,
+      "samples": {
+        "raw": 57344,
+        "filtered": 57652,
+        "result": 57652
+      },
+      "rms": {
+        "raw": 0.0665092084904448,
+        "filtered": 0.02124206081506653,
+        "gained": 0.06650920852191707,
+        "result": 0.0632565123849845
+      },
+      "peak": {
+        "raw": 0.6177604794502258,
+        "filtered": 0.1495206505060196,
+        "gained": 0.46815139055252075,
+        "result": 0.4460398256778717
+      },
+      "gain": 3.1310148798402495,
+      "gainWanted": 3.1310148798402495,
+      "gainLimitedByCeiling": false,
+      "peakCeiling": 0.95,
+      "lagSamples": {
+        "method": "normalised cross-correlation, lags -2205..2205 samples; positive = processed later than raw",
+        "chainOnly": {
+          "lag": 1,
+          "r": 0.5892679731478089,
+          "rAtZero": 0.5861221721266935,
+          "maxLag": 2205
+        },
+        "afterEncode": {
+          "lag": 1,
+          "r": 0.5891852126881356,
+          "rAtZero": 0.5859903944384258,
+          "maxLag": 2205
+        }
+      }
+    },
+    {
+      "input": "audio/raw/P2.mp3",
+      "inputSha256": "240834e80756d3a48cb0508a85a07bf3e6b045002fb3c020d596d28e373d3f76",
+      "output": "audio/dev/P2.mp3",
+      "outputSha256": "f4a062b901fca37244eea78c4c37832eacfa81fcfdc5daadb6f5e2adcc49cbd7",
+      "outputBytes": 35988,
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "decode": "ffmpeg -v error -i <file> -ac 1 -ar 44100 -f f32le -",
+      "filter": "ffmpeg -v error -f f32le -ar 44100 -ac 1 -i pipe:0 -af highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22 -f f32le pipe:1",
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/P2.mp3",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "sampleRate": 44100,
+      "samples": {
+        "raw": 96256,
+        "filtered": 96564,
+        "result": 96564
+      },
+      "rms": {
+        "raw": 0.06067107421197575,
+        "filtered": 0.019269599918362364,
+        "gained": 0.060671074249299885,
+        "result": 0.0577031351604808
+      },
+      "peak": {
+        "raw": 0.8133830428123474,
+        "filtered": 0.21342678368091583,
+        "gained": 0.6719824075698853,
+        "result": 0.6390900611877441
+      },
+      "gain": 3.1485383437650483,
+      "gainWanted": 3.1485383437650483,
+      "gainLimitedByCeiling": false,
+      "peakCeiling": 0.95,
+      "lagSamples": {
+        "method": "normalised cross-correlation, lags -2205..2205 samples; positive = processed later than raw",
+        "chainOnly": {
+          "lag": 1,
+          "r": 0.641816991499808,
+          "rAtZero": 0.6242252260637347,
+          "maxLag": 2205
+        },
+        "afterEncode": {
+          "lag": 1,
+          "r": 0.6412997200189053,
+          "rAtZero": 0.6236683914971303,
+          "maxLag": 2205
+        }
+      }
+    },
+    {
+      "input": "audio/raw/P3.mp3",
+      "inputSha256": "8b9a9fcdb408c534159efb1be0c128eab8b50c19f6ec4ec50b10bdf0be664863",
+      "output": "audio/dev/P3.mp3",
+      "outputSha256": "6d6d9e094153b954761ea85257755beaf5851412afa3daee33706102ae10e6c2",
+      "outputBytes": 25121,
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "decode": "ffmpeg -v error -i <file> -ac 1 -ar 44100 -f f32le -",
+      "filter": "ffmpeg -v error -f f32le -ar 44100 -ac 1 -i pipe:0 -af highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22 -f f32le pipe:1",
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/P3.mp3",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "sampleRate": 44100,
+      "samples": {
+        "raw": 65536,
+        "filtered": 65844,
+        "result": 65844
+      },
+      "rms": {
+        "raw": 0.07049507968095198,
+        "filtered": 0.02111612822398933,
+        "gained": 0.07049507965732833,
+        "result": 0.06694050880586776
+      },
+      "peak": {
+        "raw": 0.6491456031799316,
+        "filtered": 0.18313109874725342,
+        "gained": 0.6113734841346741,
+        "result": 0.5794536471366882
+      },
+      "gain": 3.3384472254181934,
+      "gainWanted": 3.3384472254181934,
+      "gainLimitedByCeiling": false,
+      "peakCeiling": 0.95,
+      "lagSamples": {
+        "method": "normalised cross-correlation, lags -2205..2205 samples; positive = processed later than raw",
+        "chainOnly": {
+          "lag": 0,
+          "r": 0.613102780157535,
+          "rAtZero": 0.613102780157535,
+          "maxLag": 2205
+        },
+        "afterEncode": {
+          "lag": 0,
+          "r": 0.6131927306834367,
+          "rAtZero": 0.6131927306834367,
+          "maxLag": 2205
+        }
+      }
+    }
+  ]
+}

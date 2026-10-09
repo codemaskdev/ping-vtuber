@@ -43,7 +43,7 @@ for (const r of results) {
 
 if (chartFor) {
   const r = results.find((x) => x.p === chartFor) || analyse(chartFor);
-  const align = JSON.parse(fs.readFileSync(path.join(ROOT, "audio", "dev", `${chartFor}.align.json`), "utf8")).alignment;
+  const align = JSON.parse(fs.readFileSync(path.join(ROOT, "audio", "raw", `${chartFor}.align.json`), "utf8")).alignment;
   const PX = 18, L = 150, Rm = 30, n = r.mouths.length, Wd = L + n * PX + Rm;
   const TOP = 70, CH = 360, MH = 60, TXT = 70, Hd = TOP + CH + 30 + MH + 30 + TXT + 60;
   const img = create(Wd, Hd, [16, 16, 20, 255]);

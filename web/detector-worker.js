@@ -1,6 +1,8 @@
 // MediaPipe Face Landmarker in a module worker, everything loaded from this repository (web/vendor, web/models).
-// It receives ImageBitmaps (made by privacy.js handOff from the video) and sends back numbers only.
+// It receives ImageBitmaps (made by privacy.js handOff from the video) and sends back numbers only. Once the model has
+// loaded, worker-privacy.js locks the network and pixel export inside the worker, before "ready" is sent.
 import { FaceLandmarker, FilesetResolver } from "./vendor/tasks-vision/vision_bundle.mjs";
+import { lockDown } from "./worker-privacy.js";
 
 const fileset = await FilesetResolver.forVisionTasks(new URL("./vendor/tasks-vision/wasm", import.meta.url).href, true);
 const landmarker = await FaceLandmarker.createFromOptions(fileset, {
@@ -10,6 +12,7 @@ const landmarker = await FaceLandmarker.createFromOptions(fileset, {
   outputFaceBlendshapes: true,
   outputFacialTransformationMatrixes: true,
 });
+lockDown(self);
 self.postMessage({ type: "ready" });
 
 self.onmessage = (e) => {

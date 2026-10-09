@@ -23,6 +23,12 @@ test("static: the page code never draws, stores, records or sends the video", ()
   assert.ok(!/createImageBitmap\(/.test(main), "main.js makes no ImageBitmap itself");
   assert.match(fs.readFileSync(path.join(ROOT, "web", "index.html"), "utf8"), /<script src="\/web\/privacy.js"><\/script>\s*<script src="\/rig\/adapter.js">/);
   assert.ok(!/https?:\/\//.test(webJs.map(([, s]) => s).join("\n")), "no absolute URL, no CDN");
+  // The worker locks itself down after the model has loaded and before it says ready, and has no dynamic import.
+  const worker = webJs[1][1];
+  assert.ok(worker.indexOf("lockDown(self);") > worker.indexOf("createFromOptions") && worker.indexOf("lockDown(self);") < worker.indexOf('postMessage({ type: "ready" })'));
+  assert.ok(!/\bimport\s*\(/.test(worker), "no dynamic import() in the worker");
+  const guards = fs.readFileSync(path.join(ROOT, "web", "worker-privacy.js"), "utf8");
+  for (const name of ["fetch", "importScripts", "XMLHttpRequest", "WebSocket", "EventSource", "convertToBlob"]) assert.ok(guards.includes(`"${name}"`), name);
 });
 
 test("headless: no request after ready, the video never drawn or attached, nothing stored, guards refuse", { skip, timeout: 180000 }, async () => {
@@ -63,6 +69,26 @@ test("headless: no request after ready, the video never drawn or attached, nothi
       out.tries = tries;
       return out;
     });
+    // Inside the detector worker, after ready: every way out is refused, and nothing reaches the server.
+    const atWorker = log.length;
+    const [worker] = page.workers();
+    assert.ok(worker, "the detector worker is running");
+    const w = await worker.evaluate(async () => {
+      const tries = {};
+      for (const [name, fn] of Object.entries({
+        fetch: () => fetch("/web/index.html"),
+        XMLHttpRequest: () => { const x = new XMLHttpRequest(); x.open("GET", "/web/index.html"); x.send(); },
+        WebSocket: () => new WebSocket("ws://127.0.0.1:9/"),
+        importScripts: () => importScripts("/web/privacy.js"),
+        convertToBlob: () => new OffscreenCanvas(4, 4).convertToBlob(),
+      })) { try { await fn(); tries[name] = "allowed"; } catch (e) { tries[name] = String(e.message).startsWith("privacy:") ? "refused" : `other: ${e.message}`; } }
+      return { tries, refused: self.__pingWorkerPrivacy.refused.length };
+    });
+    assert.deepEqual(w.tries, { fetch: "refused", XMLHttpRequest: "refused", WebSocket: "refused", importScripts: "refused", convertToBlob: "refused" });
+    assert.equal(w.refused, 5);
+    assert.deepEqual(log.slice(atWorker), [], "nothing from the worker reached the server");
+    r.worker = w;
+    r.ticks = await page.evaluate(() => ({ ticks: window.__pingTicks, busySkips: window.__pingBusySkips, handoffs: window.__pingPrivacy.videoHandoffs, frames: window.__pingFrames }));
     const after = log.slice(atReady);
     assert.deepEqual(errors, []);
     assert.deepEqual(after, [], `requests after ready: ${after.join(", ")}`);

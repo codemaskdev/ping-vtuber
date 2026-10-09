@@ -82,7 +82,7 @@ test("combine: head offsets add, eyes closed and cursor off win, the last setter
   assert.equal(p.cursor, false);
   assert.equal(p.mouth, "round");
   assert.deepEqual(base, neutralPose(rig), "the base pose is not changed");
-  assert.throws(() => combine(rig, base, { head: { tilt: 3 } }, { head: { tilt: 2 } }), /pose rejected: head.tilt 5/);
+  assert.throws(() => combine(rig, base, { head: { tilt: 8 } }, { head: { tilt: 5 } }), /pose rejected: head.tilt 13/);
   assert.throws(() => combine(rig, base, { nose: 1 }), /unknown field nose/);
 });
 

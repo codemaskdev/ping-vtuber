@@ -42,7 +42,12 @@ test("audio/SOURCES.json discloses every development phrase", () => {
     for (const k of ["voiceName", "voiceId", "modelId", "settings", "serverDate", "text", "sha256", "durationS", "sampleRate"]) assert.ok(f[k] !== undefined && f[k] !== null, `${f.file}: ${k}`);
     assert.ok(fs.existsSync(path.join(ROOT, f.alignment)), f.alignment);
   }
-  assert.equal(typeof s.repeatability.identical, "boolean");
+  assert.equal(typeof s.repeatabilityEarlier.identical, "boolean");
+  assert.equal(s.voiceStatus, "chosen");
+  for (const f of s.files) {
+    assert.equal(f.voiceId, V.chosen, f.file);
+    assert.match(f.file, /^audio\/raw\//, "SOURCES.json files are what ElevenLabs returned");
+  }
 });
 
 test("no audio file is committed before its metadata was approved", () => {

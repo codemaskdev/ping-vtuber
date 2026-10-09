@@ -22,15 +22,32 @@ test("letters map as the rules say, and every rule has a reason", () => {
   assert.ok(rules.priorityWhy && rules.minFramesWhy);
 });
 
-test("y: a consonant before a vowel at a word start, a vowel elsewhere", () => {
+test("y: a consonant before a vowel at a word start, a vowel elsewhere; open when it is a word's only vowel", () => {
   assert.equal(letterClasses("you", rules)[0].rule, "y consonant");
-  assert.equal(letterClasses("my", rules)[1].rule, "y vowel");
-  assert.equal(letterClasses("my", rules)[1].cls, "wide");
+  assert.equal(letterClasses("very", rules)[3].rule, "y vowel");
+  assert.equal(letterClasses("very", rules)[3].cls, "wide");
+  // Changed after seeing words.txt (author's prompt #16): "My" came out wide; it sounds like "I".
+  for (const w of ["my", "by", "why", "My"]) {
+    const y = letterClasses(w, rules).at(-1);
+    assert.deepEqual([y.cls, y.rule], ["open", "y only vowel"], w);
+  }
+  assert.ok(rules.y.onlyVowel.changedAfterSeeing);
+});
+
+test("ou and ow: the first letter open, the second round; you and your stay round (author's prompt #16)", () => {
+  assert.deepEqual(cls("mouth"), ["closure", "open", "round", "small", "small"]);
+  assert.deepEqual(cls("sound"), ["small", "open", "round", "small", "small"]);
+  assert.deepEqual(cls("loud"), ["small", "open", "round", "small"]);
+  assert.deepEqual(cls("wow"), ["round", "open", "round"]);
+  assert.deepEqual(cls("you"), ["small", "round", "round"]);
+  assert.deepEqual(cls("your"), ["small", "round", "round", "small"]);
+  for (const p of rules.pairs.filter((x) => ["ou", "ow"].includes(x.letters))) assert.ok(p.changedAfterSeeing && p.before, p.letters);
+  assert.equal(rules.changedAfterSeeing.length, 2);
 });
 
 test("pairs, silent final e and the pronoun I", () => {
   assert.deepEqual(cls("the"), ["small", "small", "wide"]);
-  assert.deepEqual(cls("loud"), ["small", "round", "round", "small"]);
+  assert.deepEqual(cls("soon"), ["small", "round", "round", "small"]);
   assert.deepEqual(cls("move"), ["closure", "round", "closure", "closure"]); // silent e takes v's class
   assert.equal(letterClasses("live", rules)[3].rule, "silent final e");
   assert.equal(letterClasses("see", rules)[2].rule, "pair ee");

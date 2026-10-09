@@ -776,6 +776,70 @@ counts, render times, and the questions I must answer in the morning,
 most important first.
 ```
 
+## Prompt #16
+
+```text
+Review of the overnight run. I read out/overnight-report.md, the rules,
+words.txt, the emotions sheet and the web code. Merge `overnight` into
+`main` (fast-forward) and continue on main.
+
+## Decisions
+1. Voice: candidate 6 of round 2. Ping's voice is River with the
+   "stronger" filter chain.
+2. Tilt: one stage of 1600 x 1600 with the art centred, tilt limit 12
+   degrees, for every render and for the web page. Update rig.json, the
+   fit check, face.json (gain 0.6) and the renders that change.
+3. Lip sync v2 rules change after seeing words.txt, labelled so in the
+   config and DEVLOG with what was seen:
+   - "My" came out wide; it sounds like "I". When y is the only vowel
+     of a word (my, by, why), it is open.
+   - "mouth", "sound", "loud", "wow" came out round only; the sound
+     starts open. The pairs "ou" and "ow": first letter open, second
+     round. Exception: "you" and "your" stay round.
+4. The wasm and model files stay out of git; keep the vendor script.
+   Before the page is published the model's licence must be checked
+   against its model card: add that to a PUBLISH-CHECKLIST.md.
+
+## Part A: the voice pipeline
+1. audio/raw/ holds what ElevenLabs returned, untouched. audio/dev/
+   holds the processed files. One script, `npm run audio:process`,
+   makes the second from the first: decode, the filter chain, a gain
+   that brings the RMS back to the raw file's RMS without clipping, and
+   one encode. Never mp3 -> mp3 twice. Log the tool version, the chain,
+   the gain and both RMS values per file.
+2. Run the script twice on the same input and compare bytes. Report.
+3. Synthesise P1 to P3 once each with River, and the candidate line
+   once more through the new pipeline into out/voice-final-check.mp3 so
+   that I can hear the final sound at normal loudness.
+4. The alignment belongs to the raw audio. Measure whether the filter
+   chain shifts the sound in time (cross-correlate raw and processed)
+   and report the lag in samples. Correct nothing yet.
+5. Disclosure in audio/SOURCES.json: voice, model, settings, and the
+   processing. Metadata dumps of the new files: approved for committing
+   if they show the encoder tag only; otherwise stop.
+
+## Part B: redo on the final voice
+1. v1 thresholds chosen again on the processed P1 to P3, v1 report.
+2. v2 with the changed rules: closure score, the table, words.txt, the
+   clips, the side-by-side clips, the P2 timeline. Report v2 before and
+   after the rule change on the same audio.
+
+## Part C: web page
+1. The detector worker gets the camera frames, and privacy.js guards
+   only the window. Put the same guards in the worker after the model
+   has loaded: fetch, XMLHttpRequest, WebSocket, importScripts,
+   OffscreenCanvas capture. Add a test that a request made from inside
+   the worker after ready is refused.
+2. Timestamps passed to the detector are frame count / 30. Say what
+   happens when frames are skipped while the detector is busy.
+
+## STOP here
+Commit, then report briefly: the gain and RMS per file, whether
+processing is repeatable, the lag, the new thresholds, v2 before and
+after the rule change, the closure scores, test counts, what broke,
+questions. Do not start the measurement step.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

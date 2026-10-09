@@ -117,7 +117,7 @@ export function buildPreview(name, seed, extra) {
     ";\nwindow.PING_LIVENESS = " + JSON.stringify(livenessConfig) +
     ";\nwindow.PING_EMOTIONS = " + JSON.stringify(emotionsConfig) +
     ";\nwindow.PING_SEQUENCE = " + JSON.stringify({ name, ...seq, frames, duration }) + ";\n");
-  const W = rig.canvas.width, H = rig.canvas.height;
+  const W = rig.stage.width, H = rig.stage.height;
   const imgs = rig.layers.map((l, i) => `      <img id="layer-${i}" data-file="${l.file}" src="${l.file}" alt="" />`).join("\n");
   const html = `<!doctype html>
 <html lang="en">

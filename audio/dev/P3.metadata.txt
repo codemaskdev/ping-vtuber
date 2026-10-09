@@ -1,13 +1,12 @@
-
-=== audio/dev/P3.mp3  41004 bytes  sha256 3f6cc70967e67128c02937a3169d777734012421e1f1256e8ad09912f264bd66
+=== audio/dev/P3.mp3  25121 bytes  sha256 6d6d9e094153b954761ea85257755beaf5851412afa3daee33706102ae10e6c2
 --- exiftool -a -u -G1 -s
 [ExifTool]      ExifToolVersion                 : 13.55
 [System]        FileName                        : P3.mp3
 [System]        Directory                       : audio/dev
-[System]        FileSize                        : 41 kB
-[System]        FileModifyDate                  : 2026:10:08 19:47:10+00:00
-[System]        FileAccessDate                  : 2026:10:08 19:47:10+00:00
-[System]        FileInodeChangeDate             : 2026:10:08 19:47:10+00:00
+[System]        FileSize                        : 25 kB
+[System]        FileModifyDate                  : 2026:10:09 08:20:48+00:00
+[System]        FileAccessDate                  : 2026:10:09 08:20:48+00:00
+[System]        FileInodeChangeDate             : 2026:10:09 08:20:48+00:00
 [System]        FilePermissions                 : -rw-r--r--
 [File]          FileType                        : MP3
 [File]          FileTypeExtension               : mp3
@@ -23,9 +22,7 @@
 [MPEG]          CopyrightFlag                   : False
 [MPEG]          OriginalMedia                   : False
 [MPEG]          Emphasis                        : None
-[ID3v2_4]       EncoderSettings                 : Lavf60.16.101
-[Composite]     Duration                        : 2.56 s (approx)
---- c2patool
-c2patool not installed
---- PNG chunks (lib/png.mjs)
-not a PNG file
+[ID3v2_4]       EncoderSettings                 : Lavf62.12.101
+[Composite]     Duration                        : 1.57 s (approx)
+--- embedded tags: [ID3v2_4] EncoderSettings = Lavf62.12.101
+--- encoder tag only: yes

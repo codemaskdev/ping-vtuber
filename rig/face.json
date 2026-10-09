@@ -3,8 +3,8 @@
   "mirror": true,
   "mirrorWhy": "Chosen: Ping moves like a mirror image of the viewer (tilt your head to your left, Ping tilts to the screen's left).",
   "head": {
-    "tiltGain": 0.2,
-    "tiltGainWhy": "Chosen: a real head rolls about ±20 degrees; ×0.2 fits that into the rig's ±4 degree limit. Beyond it the tilt saturates and the state says so. See stageProposal.",
+    "tiltGain": 0.6,
+    "tiltGainWhy": "Set by the author (prompt #16; was 0.2, chosen by Claude for the old ±4 degree limit): a real head rolls about ±20 degrees; ×0.6 maps ±20 to ±12, the rig's limit on the 1600 x 1600 stage. Beyond it the tilt saturates and the state says so.",
     "shiftPxPerCm": 3,
     "shiftWhy": "Chosen: the face matrix translation is in centimetres; ±10 cm of head movement gives ±30 px, the rig's shift limit.",
     "smoothing": 0.35,
@@ -30,5 +30,5 @@
     "downFull": 0.7,
     "why": "Chosen: brows appear when browInnerUp, the mean outer-up or the mean browDown passes 0.3 and hide below 0.2 (hysteresis); up moves them toward the rig's highest brow position (browsDy min) at a score of 0.8, down toward its lowest (browsDy max) at 0.7, from browsRestDy."
   },
-  "stageProposal": "Not applied (author's rule: do not change the art). The rig's ±4 degree tilt fits a 1254 px stage. With the art centred on a 1600 x 1600 stage (173 px more room on every side) the same arc bound used in rig.json fitCheck allows about 14 degrees (room 137 + 173 - 42 px over the 1078 px farthest corner); a ±12 degree limit with tiltGain 0.6 would follow a real head much more closely."
+  "stage": "Applied (author's prompt #16): every render and this page draw on rig.json stage, 1600 x 1600 with the art centred; tilt limit ±12 degrees."
 }

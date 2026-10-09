@@ -1,0 +1,28 @@
+=== audio/raw/P3.mp3  24703 bytes  sha256 8b9a9fcdb408c534159efb1be0c128eab8b50c19f6ec4ec50b10bdf0be664863
+--- exiftool -a -u -G1 -s
+[ExifTool]      ExifToolVersion                 : 13.55
+[System]        FileName                        : P3.mp3
+[System]        Directory                       : audio/raw
+[System]        FileSize                        : 25 kB
+[System]        FileModifyDate                  : 2026:10:09 08:20:35+00:00
+[System]        FileAccessDate                  : 2026:10:09 08:20:35+00:00
+[System]        FileInodeChangeDate             : 2026:10:09 08:20:35+00:00
+[System]        FilePermissions                 : -rw-r--r--
+[File]          FileType                        : MP3
+[File]          FileTypeExtension               : mp3
+[File]          MIMEType                        : audio/mpeg
+[File]          ID3Size                         : 45
+[MPEG]          MPEGAudioVersion                : 1
+[MPEG]          AudioLayer                      : 3
+[MPEG]          AudioBitrate                    : 128 kbps
+[MPEG]          SampleRate                      : 44100
+[MPEG]          ChannelMode                     : Single Channel
+[MPEG]          MSStereo                        : Off
+[MPEG]          IntensityStereo                 : Off
+[MPEG]          CopyrightFlag                   : False
+[MPEG]          OriginalMedia                   : False
+[MPEG]          Emphasis                        : None
+[ID3v2_4]       EncoderSettings                 : Lavf60.16.101
+[Composite]     Duration                        : 1.54 s (approx)
+--- embedded tags: [ID3v2_4] EncoderSettings = Lavf60.16.101
+--- encoder tag only: yes

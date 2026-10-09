@@ -1,5 +1,5 @@
 {
-  "$comment": "Ping's voice. Candidates and settings chosen by Claude (author's prompt #14); the author chooses the voice by ear. Until then the first candidate is provisional, and everything measured with it is measured again after the choice. Settings are chosen values, not measurements.",
+  "$comment": "Ping's voice: River (ElevenLabs library) with the stronger filter chain, chosen by the author in prompt #16. Settings are chosen values, not measurements.",
   "candidateLine": "Hello. I am Ping. I live in a terminal.",
   "candidates": [
     {
@@ -19,21 +19,48 @@
     }
   ],
   "excluded": "the CodeMask host's voice (its id is deliberately not recorded in this repository)",
-  "provisional": "M5t0724ORuAGCh3p3DUR",
-  "chosen": null,
+  "provisionalBefore": "M5t0724ORuAGCh3p3DUR",
+  "provisionalBeforeNote": "Miffy Mouse was provisional from prompt #14 to prompt #16; its P1-P3 are in the history of audio/dev/ before prompt #16.",
+  "chosen": "SAz9YHcvj6GT2YYXdXww",
+  "chosenBy": "the author, prompt #16: candidate 6 of round 2, River with the \"stronger\" filter chain",
+  "processing": {
+    "$comment": "Ping's sound: what ElevenLabs returns (audio/raw/) goes through this once (npm run audio:process) into audio/dev/. Chain chosen by Claude in prompt #15 (round2.processed stronger), chosen by the author in prompt #16; gain rule and codec from prompt #16; peakCeiling chosen by Claude.",
+    "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+    "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+    "peakCeiling": 0.95,
+    "peakCeilingWhy": "Chosen: 5 % below full scale before the mp3 encode, so the encoder's overshoot does not clip; the decoded result's peak is logged.",
+    "encode": [
+      "-c:a",
+      "libmp3lame",
+      "-b:a",
+      "128k"
+    ],
+    "encodeWhy": "Chosen: the same codec, bit rate and sample rate as ElevenLabs' mp3_44100_128; one encode, from floats, never mp3 to mp3"
+  },
   "metadataApproved": [
+    "audio/raw/P1.mp3",
+    "audio/raw/P2.mp3",
+    "audio/raw/P3.mp3",
     "audio/dev/P1.mp3",
     "audio/dev/P2.mp3",
     "audio/dev/P3.mp3"
   ],
-  "metadataApprovedBy": "the author, prompt #15 (encoder tag only)",
+  "metadataApprovedBy": "the author's rule in prompt #16 (approved if the dump shows the encoder tag only), applied with npm run audio:metadata: each file's <name>.metadata.txt says \"encoder tag only: yes\"",
+  "metadataApprovedBefore": {
+    "files": [
+      "audio/dev/P1.mp3",
+      "audio/dev/P2.mp3",
+      "audio/dev/P3.mp3"
+    ],
+    "by": "the author, prompt #15 (encoder tag only)"
+  },
   "modelId": "eleven_multilingual_v2",
   "settings": {
     "stability": 0.5,
     "similarity_boost": 0.75,
     "style": 0,
     "use_speaker_boost": true,
-    "speed": 1.0
+    "speed": 1
   },
   "settingsWhy": "Chosen: a stable, unstylised reading so the mouth tests are about the method, not about a dramatic take.",
   "outputFormat": "mp3_44100_128",

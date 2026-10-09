@@ -585,3 +585,135 @@ What broke
   largest |tilt| 4 (saturated in 31 frames), |x| 16.445415981231584, |y| 6.885732103368328. Rendered through
   HyperFrames as a poses clip: out/face-synthetic-seed-1.mp4, rendered in 9.4s (`time` 11.234 s).
 - `npm test`: tests 136, pass 136, fail 0, skipped 0, duration_ms 67211.651292 (includes the headless browser test).
+
+## 2026-10-09 · Review of the overnight run (prompt #16)
+
+`overnight` merged into `main` by fast-forward (3b84fd3..0ba1087); work continues on `main`.
+
+### Decisions applied
+- Voice: River (SAz9YHcvj6GT2YYXdXww) with the "stronger" chain, round 2 candidate 6 (`audio/voice.json` chosen,
+  chosenBy, processing). Miffy Mouse is recorded as provisionalBefore.
+- Stage: `scripts/build-rig.mjs` writes `rig.json` stage 1600 x 1600, artOffset 173,173 (the 1254 x 1254 art
+  centred); tilt limit -12..12 degrees. The draw list's translate is now the head's shift plus artOffset; rotation
+  stays in art pixels. Fit check on the stage: smallest room 41.6485422055714 px (glow). `rig/face.json` tiltGain 0.6
+  (the author's value), stageProposal replaced by a note that it is applied. The webcam page's canvas takes the stage
+  size from `rig.json`; `build-preview` sizes the composition from it.
+- Renders made again on the stage (`npm run stage:renders`, out/stage-renders.txt; hyperframes@0.8.134):
+  - pose sheet: 15 frames rendered in 5.3s (`time` 7.280 s), out/pose-sheet.png 1316x1496 sha256
+    46f86ea96a61a81fb8e6ae55443bfdc6c48d4c087e0dd495a2a64d2e9db89d16; tilt -12 and 12 seen on the sheet.
+  - step 2 test clip twice: 26.8s (28.297 s) and 26.6s (28.213 s); 120 frames, 120 identical by sha256.
+  - reconstruction: rendered in 1.2s; the art cut out of the stage at 173,173; the 987484 stage pixels around the art
+    have a largest channel value of 0. Against the master the numbers are the same as in step 2: outside the outline
+    mean 1.0156350876396396, max 23; on the outline mean 5.854277324607164, max 142; inside the screen mean
+    1.105652724750751, max 64.
+  - liveness seed 1 twice: 1m 2.9s (1m4.275s) and 1m 3.0s (1m4.650s); 300 of 300 frames identical; blink strip
+    frames 82..87 (closed 83..86).
+  - emotions sheet: 5 frames in 2.2s (3.831 s), sha256 44a48fbf3355e70cfad4d89c4b7bb89929d286d56cd37ca2f04517ed5b3efc2e.
+  - emotions walk-through twice: 1m 3.0s (1m4.329s) and 1m 2.8s (1m4.491s); 300 of 300 identical;
+    out/emotions-seed-1.mp4.
+  - synthetic face stream seed 1 with gain 0.6: largest |tilt| 12, saturated in 31 frames; clip rendered in 9.9s
+    (11.802 s). It used to be rendered by a command typed in the shell; it is now part of the script.
+- `PUBLISH-CHECKLIST.md`: the model licence against its model cards (author's prompt #16), the vendor hashes, and the
+  12 real-camera checks moved there from the uncommitted overnight report (tilt now ±12 with gain 0.6). The wasm and
+  the model stay out of git; `npm run web:vendor` stays.
+
+### Part A: the voice pipeline
+- `audio/raw/` holds what ElevenLabs returned, untouched, with the alignment (`P<n>.align.json`); the alignment files
+  left `audio/dev/`. `npm run audio:process` (`scripts/audio-process.mjs`) makes `audio/dev/` from it: ffmpeg decode
+  to mono float, the chain on floats (`-f f32le` in and out), one gain in JavaScript, one libmp3lame 128k encode from
+  floats. Gain rule (author's): the RMS back to the raw file's RMS, lowered if a sample would pass peakCeiling 0.95
+  (chosen; no file needed lowering). Logged in `audio/process-log.json` and summarised in `audio/SOURCES.json`.
+- ElevenLabs: 4 calls (P1, P2, P3 and the candidate line), River, eleven_multilingual_v2, settings as before, seed 1.
+  character-cost reported 17, 40, 25 and 39. Server dates Fri, 09 Oct 2026 08:20:32 to 08:20:35 GMT.
+- Per file (tool: ffmpeg version 8.1.1; RMS of all samples, linear, full scale 1):
+
+| file | RMS raw | RMS after chain | gain | RMS gained (floats) | RMS decoded result | peak gained | peak result |
+|---|---|---|---|---|---|---|---|
+| P1 | 0.0665092084904448 | 0.02124206081506653 | 3.1310148798402495 | 0.06650920852191707 | 0.0632565123849845 | 0.46815139055252075 | 0.4460398256778717 |
+| P2 | 0.06067107421197575 | 0.019269599918362364 | 3.1485383437650483 | 0.060671074249299885 | 0.0577031351604808 | 0.6719824075698853 | 0.6390900611877441 |
+| P3 | 0.07049507968095198 | 0.02111612822398933 | 3.3384472254181934 | 0.07049507965732833 | 0.06694050880586776 | 0.6113734841346741 | 0.5794536471366882 |
+| final check | 0.07002654051490918 | 0.021443491582736823 | 3.2656314502104853 | 0.07002654052322813 | 0.06651225198129584 | 0.461969256401062 | 0.4383390247821808 |
+
+  The gained floats match the raw RMS; after the one mp3 encode the decoded RMS is lower: result / raw =
+  0.9510940487898364 (P1), 0.9510814817432536 (P2), 0.9495770358559552 (P3), 0.9498149057804002 (final check). Not
+  corrected: matching after the encode would need a second encode.
+- Repeatable: `npm run audio:process` twice on the same raw files gave identical bytes for P1, P2, P3 and
+  `audio/process-log.json` (sha256 89dc4543…, f4a062b9…, 6d6d9e09…, 6074a762…; out/audio-repeat/). A test does
+  it again on P1 and compares with the committed file.
+- Time shift (normalised cross-correlation of the raw samples with the processed ones, lags -2205..2205): P1 1
+  sample, P2 1 sample, P3 0 samples, final check 0 samples, the same for the chain's floats and for the decoded mp3.
+  Correlation at the best lag 0.5892679731478089 / 0.641816991499808 / 0.613102780157535 (at lag 0
+  0.5861221721266935 / 0.6242252260637347 / 0.613102780157535): the chain changes the sound a lot but does not move
+  it. The chain's echo adds 308 samples of tail at the end (raw 57344 → 57652, 96256 → 96564, 65536 → 65844). The
+  encode adds no delay: with ffmpeg's default LAME header the decoded length equals the encoded floats' length.
+  Nothing corrected.
+- out/voice-final-check.mp3 (not committed): the candidate line through the same pipeline. Its raw take has the same
+  size (36824 bytes) and the same alignment as round 1's River take, but different bytes.
+- Metadata (`npm run audio:metadata`, exiftool 13.55): all six committed files show one embedded tag,
+  `[ID3v2_4] EncoderSettings` (Lavf60.16.101 for ElevenLabs' files, Lavf62.12.101 for ours). Approved by the
+  author's rule; `audio/voice.json` metadataApproved lists them.
+
+### Part B: lip sync on the final voice
+- v1 thresholds chosen again on the processed P1-P3 (out/lipsync-stats.txt): 48 of 151 frames under 0.0075, the
+  next frame 0.01064, so restBelow stays 0.01; openFrom 0.07 (was 0.08): 32 of 151 frames at or above it (0.2119205298013245),
+  close to the share before (46 of 219, 0.2100456621004566). v1 report: P1 8.25 changes/s, 1-frame runs 3; P2 8.181818181818182, 7; P3
+  7.333333333333333, 2.
+- Rules changed after seeing words.txt (author's prompt #16), labelled in `rig/lipsync-text.json`
+  (changedAfterSeeing, before): y as a word's only vowel is open; ou and ow: first letter open, second round, "you"
+  and "your" stay round. `lipsync:compare` reads the earlier rules from git (commit 0b9efef) and runs both on the same
+  audio.
+- Closure score (m, b, p): v1 2 of 6, v2 before 6 of 6, v2 after 6 of 6.
+
+| phrase | version | changes/s | rest | small | open | round | wide | shortest | median | 1-frame runs |
+|---|---|---|---|---|---|---|---|---|---|---|
+| P1 | v1 | 8.25 | 15 | 14 | 11 | 0 | 0 | 1 | 3 | 3 |
+| P1 | v2 before | 6 | 15 | 8 | 6 | 6 | 5 | 2 | 3 | 0 |
+| P1 | v2 after | 6 | 15 | 8 | 6 | 6 | 5 | 2 | 3 | 0 |
+| P2 | v1 | 8.181818181818182 | 18 | 36 | 12 | 0 | 0 | 1 | 2 | 7 |
+| P2 | v2 before | 6.8181818181818175 | 22 | 23 | 0 | 15 | 6 | 2 | 4 | 0 |
+| P2 | v2 after | 7.727272727272727 | 22 | 23 | 8 | 9 | 4 | 2 | 3.5 | 0 |
+| P3 | v1 | 7.333333333333333 | 15 | 21 | 9 | 0 | 0 | 1 | 3 | 2 |
+| P3 | v2 before | 4.666666666666667 | 17 | 0 | 0 | 20 | 8 | 2 | 4.5 | 0 |
+| P3 | v2 after | 6 | 17 | 0 | 3 | 17 | 8 | 2 | 3.5 | 0 |
+
+- Words that changed (words-before.txt against words.txt): My `rest×4 wide wide` → `rest×4 open open`; sound
+  `small small round round round round small small` → `small small open open round round small small`; loud
+  `small round×6 small×4` → `small open×4 round round small×4`; wow `round×7` → `round round open open open round
+  round`. "mouth" did not change: its o lasts 0.279..0.325 s and shares frame 8 with m (closure outranks open) and
+  frame 9 with u (round outranks open), so open never wins a frame. Not changed (a priority rule, the author's to
+  decide).
+- Clips: out/lipsync-v1/ and out/lipsync-v2/ P1-P3 on the stage (renders 5.9s/5.1s/4.1s for v1, 5.5s/4.8s/4.2s for
+  v2), side-by-side clips, out/lipsync-v2/P2-timeline.png with the rows V1, V2 OLD, V2. The mp3 inside each mp4 is
+  longer than the decoded audio by 0.025691412698412686 s (P1), 0.0053511360544216124 s (P2) and
+  0.022947775510204105 s (P3); with the provisional voice's files straight from ElevenLabs it was 0.00952380952380949 s,
+  0.00961444217687113 s and 0.00024989795918362034 s. Not measured
+  further and not corrected (that is the measurement step).
+
+### Part C: the web page
+- `web/worker-privacy.js` lockDown(self), called in the detector worker after the model has loaded and before
+  "ready": fetch, importScripts, XMLHttpRequest, WebSocket, EventSource, WebTransport, Worker, SharedWorker and
+  OffscreenCanvas convertToBlob throw and are recorded. A dynamic import() cannot be replaced (syntax); a static
+  test checks the worker has none.
+- Headless test (stubbed camera): from inside the worker after ready, fetch, XMLHttpRequest, WebSocket, importScripts
+  and convertToBlob were all refused (5 refusals recorded) and the server saw no request; detection kept running
+  after the lockdown. 25 requests before ready (worker-privacy.js is new), 0 after.
+- Timestamps: the page counts hand-offs, not camera frames: `timestampMs = handOffCount * 1000 / 30`. When the
+  detector is busy the tick hands nothing over and the count does not move, so the next frame's timestamp is only
+  33.3 ms later however long the detector took: the detector's clock runs slower than the camera. Timestamps stay
+  strictly increasing, so MediaPipe accepts them; what changes is everything it does with time (its smoothing and
+  tracking see slower motion than there is). The other way round: ticks come from requestAnimationFrame, not from new
+  camera frames, so a fast detector can be handed the same camera frame twice, 33.3 ms apart. face-to-pose smooths
+  per result, so its smoothing also stretches when results come slower. Measured headless (synthetic picture, no
+  face, CPU): 23 ticks with a playable video, 6 skipped because the detector was busy, 17 hand-offs. New counters
+  `window.__pingTicks` and `window.__pingBusySkips` are in the real-camera checklist. Not changed: a fix would take
+  timestamps from the video itself (requestVideoFrameCallback's mediaTime), which is a question for the author.
+
+### What broke
+- A lip sync test asserted the old rule for "loud" (round round); it now tests "soon" for the round pair, and the
+  new rules have their own tests.
+- `scripts/audio-metadata.mjs` had no main guard, so the first test run that imported it rewrote the dumps; guarded.
+- My first gain test used numbers that never reached the ceiling; fixed the numbers.
+- Tests and the pose sheet had the old 4 degree tilt written in them (a combine test, a preview label).
+
+### Tests
+- `npm test`: tests 144, pass 144, fail 0, skipped 0, duration_ms 66523.676709 (includes the headless browser test).

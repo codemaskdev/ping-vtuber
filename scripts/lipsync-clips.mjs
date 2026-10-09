@@ -29,10 +29,10 @@ for (const p of phrases.length ? phrases : ["P1", "P2", "P3"]) {
   const frames = frameCount(d.samples.length, d.sampleRate, 30);
   const mouths = method === "v1"
     ? lipsyncVolume(d.samples, d.sampleRate, 30, cfg).mouths
-    : lipsyncText(JSON.parse(fs.readFileSync(path.join(ROOT, "audio", "dev", `${p}.align.json`), "utf8")).alignment, 30, textRules, frames).mouths;
+    : lipsyncText(JSON.parse(fs.readFileSync(path.join(ROOT, "audio", "raw", `${p}.align.json`), "utf8")).alignment, 30, textRules, frames).mouths;
   const b = buildPreview("lipsync", seed, lipsyncSequence(p, seed, mouths));
   const video = path.join(out, `${p}.video.mp4`), final = path.join(out, `${p}.mp4`), log = path.join(out, `${p}.log`);
-  const lines = [`lip sync ${method}, phrase ${p}, liveness seed ${seed}, ${b.frames} frames at 30 fps (${mouths.length} with audio + 15 at rest)`, `decoder: ${d.decoder}`, method === "v1" ? `thresholds: restBelow ${cfg.restBelow}, openFrom ${cfg.openFrom}` : "rules: rig/lipsync-text.json on audio/dev/" + p + ".align.json"];
+  const lines = [`lip sync ${method}, phrase ${p}, liveness seed ${seed}, ${b.frames} frames at 30 fps (${mouths.length} with audio + 15 at rest)`, `decoder: ${d.decoder}`, method === "v1" ? `thresholds: restBelow ${cfg.restBelow}, openFrom ${cfg.openFrom}` : "rules: rig/lipsync-text.json on audio/raw/" + p + ".align.json (the alignment of the raw audio; the audio is audio/dev/" + p + ".mp3)"];
   const r = spawnSync("bash", ["-c", `time npx --yes hyperframes@0.8.134 render -o ${JSON.stringify(path.relative(path.join(ROOT, "rig", "preview"), video))}`], { cwd: path.join(ROOT, "rig", "preview"), encoding: "utf8" });
   lines.push(`render exit ${r.status}`, ...(r.stdout + r.stderr).split("\n").filter((l) => /rendered in|capture ·|real|total$/.test(l)).map((l) => l.trim()));
   const mux = ["-v", "error", "-y", "-i", rel(video), "-i", rel(audio), "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "copy", rel(final)];

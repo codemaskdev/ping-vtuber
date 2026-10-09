@@ -24,6 +24,15 @@ test("rig.json comes from the frozen regions, the process log and art/layers.jso
   assert.ok(rig.fitCheck.layers.every((f) => f.smallestRoomPx >= 0));
 });
 
+test("one 1600 x 1600 stage with the art centred, tilt limit 12 degrees (author's prompt #16)", () => {
+  assert.deepEqual([rig.stage.width, rig.stage.height], [1600, 1600]);
+  assert.deepEqual(rig.stage.artOffset, [(1600 - rig.canvas.width) / 2, (1600 - rig.canvas.height) / 2]);
+  assert.ok(rig.stage.artOffset.every(Number.isInteger));
+  assert.deepEqual(rig.limits.headTiltDeg, [-12, 12]);
+  assert.deepEqual(rig.fitCheck.stage, [1600, 1600]);
+  assert.equal(rig.fitCheck.thetaRad, (12 * Math.PI) / 180);
+});
+
 test("neutral pose: brows hidden like the logo and the master; every other default layer once, in z order", () => {
   assert.equal(rig.neutralPose.brows, "hidden");
   const d = drawList(rig, N());
@@ -31,7 +40,7 @@ test("neutral pose: brows hidden like the logo and the master; every other defau
   for (let i = 1; i < d.length; i++) assert.ok(d[i].z >= d[i - 1].z);
   for (const x of d) {
     assert.deepEqual(x.rotate, { deg: 0, centre: rig.headPivot });
-    assert.deepEqual(x.translate, [0, 0]);
+    assert.deepEqual(x.translate, rig.stage.artOffset);
     assert.equal(x.file, rig.layers.find((l) => l.id === x.id).file);
   }
   assert.deepEqual(item(d, "mouth_rest").offset, [0, 0]);
@@ -44,7 +53,7 @@ test("head: tilt and shift apply to the head and every child", () => {
   const p = N(); p.head = { tilt: -3.5, x: 12, y: -7 };
   for (const x of drawList(rig, p)) {
     assert.deepEqual(x.rotate, { deg: -3.5, centre: rig.headPivot }, x.id);
-    assert.deepEqual(x.translate, [12, -7], x.id);
+    assert.deepEqual(x.translate, [rig.stage.artOffset[0] + 12, rig.stage.artOffset[1] - 7], x.id);
   }
 });
 
@@ -130,6 +139,7 @@ test("skeleton: a pivot and a box per layer, parent links, the smile line, under
   assert.equal(s.items.filter((i) => i.type === "line" && i.label !== "smile top").length, rig.layers.filter((l) => l.parent).length);
   assert.ok(s.items.some((i) => i.label === "smile top" && i.from[1] === rig.smileTop));
   assert.deepEqual(s.rotate, { deg: 4, centre: rig.headPivot });
+  assert.deepEqual(s.translate, rig.stage.artOffset);
 });
 
 test("lib/rig.mjs runs in a browser: no imports, no Node globals, no trigonometry", () => {

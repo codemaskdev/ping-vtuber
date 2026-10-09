@@ -20,10 +20,18 @@ await new Promise((resolve, reject) => {
   worker.onerror = (e) => reject(new Error(`detector worker: ${e.message}`));
 });
 
-const pingCtx = document.getElementById("ping").getContext("2d");
+const pingCanvas = document.getElementById("ping");
+// The stage from rig.json (1600 x 1600, the art centred), the same as every render.
+pingCanvas.width = rig.stage.width;
+pingCanvas.height = rig.stage.height;
+const pingCtx = pingCanvas.getContext("2d");
 const pointsCanvas = document.getElementById("points"), pointsCtx = pointsCanvas.getContext("2d");
 let state = null, frame = 0, busy = false, video = null;
 window.__pingFrames = 0;
+// Counted for the report on skipped frames (author's prompt #16): animation ticks with a playable video, and those
+// ticks that handed nothing over because the detector was still busy.
+window.__pingTicks = 0;
+window.__pingBusySkips = 0;
 
 function show(face, points) {
   const r = faceToPose(rig, faceConfig, face, state);
@@ -45,6 +53,8 @@ worker.onmessage = (e) => {
 
 async function tick() {
   if (!video) return;
+  if (video.readyState >= 2) window.__pingTicks++;
+  if (busy && video.readyState >= 2) window.__pingBusySkips++;
   if (!busy && video.readyState >= 2) {
     busy = true;
     const bitmap = await P.handOff(video);

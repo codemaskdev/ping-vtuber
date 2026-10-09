@@ -81,7 +81,7 @@ this. A glow pulse would need new processing or drawing the glow in code.
 ## Step 2: the rig
 
 ```
-rig/rig.json          layers, parents, z, pivots, regions, mouth anchors, browsRest, chosen pose limits (npm run rig)
+rig/rig.json          layers, parents, z, pivots, regions, mouth anchors, browsRest, the stage, pose limits (npm run rig)
 lib/rig.mjs           pose -> draw list (pure, no imports; runs in Node and in the browser)
 rig/adapter.js        paints a draw list on a canvas inside a HyperFrames composition; debug skeleton overlay
 rig/preview/          the HyperFrames project (hyperframes@0.8.134, pinned like the episodes pipeline)
@@ -94,12 +94,17 @@ npm run preview:build -- pose-sheet      write rig/preview/ for a sequence: pose
 npm run pose-sheet                       out/pose-sheet.png from the pose-sheet render
 npm run frame-hashes -- out/render/clip-1 out/render/clip-2
 npm run reconstruction                   neutral pose without brows against the master
+npm run stage:renders                    every render above, the liveness and emotions clips and the face stream clip
 ```
+
+Every render and the webcam page draw on one stage of 1600 x 1600 pixels with the 1254 x 1254 art centred on it
+(`rig.json` stage, author's prompt #16); that room lets the head tilt up to ±12 degrees and shift ±30 px.
 
 A pose is `{ head: { tilt, x, y }, eyes, brows: { dy } | "hidden", mouth, cursor, glow }`; every field is required
 and anything outside `rig.json` limits is rejected. The draw list gives, per drawn layer in z order, its file, own
-offset (mouth anchorDy, brows dy), the head's rotation and centre, the head's translation, and opacity. The adapter
-draws `translate + rotate(p + offset)`; the rotation is done by the canvas, not by the rig.
+offset (mouth anchorDy, brows dy), the head's rotation and centre (art pixels), the translation (the head's shift plus
+the art's place on the stage), and opacity. The adapter draws `translate + rotate(p + offset)`; the rotation is done
+by the canvas, not by the rig.
 
 ## Step 3: liveness
 
@@ -117,16 +122,24 @@ npm run liveness:strip -- --seed 1                out/liveness-strip.png, one bl
 
 ## Step 4: voice and lip sync v1
 
+Ping's voice is River (ElevenLabs library) with the "stronger" filter chain, chosen by the author (prompt #16).
+
 ```
-audio/voice.json            voice candidates, the provisional voice, model, settings, seed, the development phrases
-audio/dev/                  P1-P3 (.mp3 not committed until the author approves their metadata) and .align.json
-audio/SOURCES.json          per audio file: voice, model, settings, server date, text, sha256, duration, sample rate
+audio/voice.json            the chosen voice, the processing (chain, gain rule, encode), model, settings, phrases
+audio/raw/                  P1-P3 exactly as ElevenLabs returned them, and their alignment (.align.json)
+audio/dev/                  P1-P3 processed: what every render uses (npm run audio:process)
+audio/process-log.json      per processed file: ffmpeg version, chain, gain, RMS raw and processed, peaks, time lag
+audio/SOURCES.json          per raw file: voice, model, settings, server date, text, sha256, duration, sample rate;
+                            per processed file: how it was made
+*.metadata.txt              exiftool dump next to every committed mp3 (npm run audio:metadata)
 rig/lipsync-volume.json     chosen loudness thresholds
 lib/lipsync-volume.mjs      samples -> one mouth per frame (rest, small, open); naive on purpose
 ```
 
 ```
-npm run voice -- candidates | phrases     ElevenLabs (key read like the episodes pipeline; never written)
+npm run voice -- phrases | final-check   ElevenLabs (key read like the episodes pipeline; never written)
+npm run audio:process                     audio/raw/ -> audio/dev/: decode, chain, RMS gain, one mp3 encode
+npm run audio:metadata                    metadata dumps; committed audio must show the encoder tag only
 npm run decode -- audio/dev/P1.mp3 ...    ffmpeg decode, logged in audio/decode-log.json
 npm run lipsync:stats                     RMS percentiles of the development phrases
 npm run lipsync:clips -- --seed 1         out/lipsync-v1/P<n>.mp4: HyperFrames render, audio muxed with ffmpeg (copy)
@@ -135,10 +148,12 @@ npm run lipsync:report -- P1 P2 P3 --chart P2
 
 ## Step 5: lip sync v2 (character timings)
 
-Input: the character alignment ElevenLabs returns with the audio (`audio/dev/P<n>.align.json`): **letters with start
-and end times, not phonemes**. `rig/lipsync-text.json` maps letters, a few letter pairs, y, the silent final e and the
+Input: the character alignment ElevenLabs returns with the audio (`audio/raw/P<n>.align.json`; it belongs to the raw
+audio): **letters with start and end times, not phonemes**. `rig/lipsync-text.json` maps letters, a few letter pairs, y, the silent final e and the
 pronoun I to five mouths, says which mouth wins when two letters share a frame, and holds every mouth for at least
-2 frames. `lib/lipsync-text.mjs` applies it.
+2 frames. `lib/lipsync-text.mjs` applies it. Two rules were changed by the author after seeing output (prompt #16:
+y as a word's only vowel is open; ou and ow go open then round); the file says so, and `lipsync:compare` shows v2
+before and after the change on the same audio.
 
 ```
 npm run lipsync:clips -- --seed 1 --method v2       out/lipsync-v2/P<n>.mp4
@@ -171,12 +186,14 @@ npm run face:stream -- --seed 1     a synthetic face stream through lib/face-to-
 
 - `web/privacy.js` runs first: the video can only reach the detector through one hand-off call; drawImage,
   texImage, createImageBitmap, attaching the video, MediaRecorder and captureStream refuse it; after the page is ready
-  every network API refuses. `test/web.test.mjs` checks this in headless Chrome, and that the server sees no request
-  after ready.
+  every network API refuses. `web/worker-privacy.js` does the same inside the detector worker once the model has
+  loaded (fetch, XMLHttpRequest, WebSocket, EventSource, WebTransport, importScripts, nested workers,
+  OffscreenCanvas convertToBlob). `test/web.test.mjs` checks this in headless Chrome, from the page and from inside the
+  worker, and that the server sees no request after ready.
 - MediaPipe Face Landmarker runs in a module worker (`web/detector-worker.js`, CPU delegate); the main thread gets
   numbers only. `lib/face-to-pose.mjs` turns them into a pose with the chosen values in `rig/face.json`.
 - Model: `face_landmarker.task` from
   https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task,
   sha256 and licence in `web/VENDOR.json`.
 
-To check with a real camera: see `out/overnight-report.md`, "What to check in the morning".
+Before the page is published: `PUBLISH-CHECKLIST.md` (the real-camera checks and the model licence).

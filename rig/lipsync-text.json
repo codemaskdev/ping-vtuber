@@ -1,46 +1,218 @@
 {
-  "$comment": "Lip sync v2 rules for lib/lipsync-text.mjs (author's prompt #15). Chosen values, labelled so. Input: the character alignment ElevenLabs returns with the audio, letters with start and end times, not phonemes.",
+  "$comment": "Lip sync v2 rules for lib/lipsync-text.mjs (author's prompt #15; two rules changed after seeing output, author's prompt #16, see changedAfterSeeing). Chosen values, labelled so. Input: the character alignment ElevenLabs returns with the audio, letters with start and end times, not phonemes.",
   "classes": {
-    "closure": { "mouth": "rest", "why": "lips together (m, b, p) or upper teeth on the lip (f, v): on this face both read as the closed smile" },
-    "round": { "mouth": "round", "why": "lips pushed forward" },
-    "open": { "mouth": "open", "why": "jaw down" },
-    "wide": { "mouth": "wide", "why": "lips spread" },
-    "small": { "mouth": "small", "why": "the ordinary speaking shape" },
-    "gap": { "mouth": "rest", "why": "spaces, punctuation and time no letter covers: the mouth at rest" }
+    "closure": {
+      "mouth": "rest",
+      "why": "lips together (m, b, p) or upper teeth on the lip (f, v): on this face both read as the closed smile"
+    },
+    "round": {
+      "mouth": "round",
+      "why": "lips pushed forward"
+    },
+    "open": {
+      "mouth": "open",
+      "why": "jaw down"
+    },
+    "wide": {
+      "mouth": "wide",
+      "why": "lips spread"
+    },
+    "small": {
+      "mouth": "small",
+      "why": "the ordinary speaking shape"
+    },
+    "gap": {
+      "mouth": "rest",
+      "why": "spaces, punctuation and time no letter covers: the mouth at rest"
+    }
   },
   "letters": {
-    "m": { "class": "closure", "why": "lips close" },
-    "b": { "class": "closure", "why": "lips close" },
-    "p": { "class": "closure", "why": "lips close" },
-    "f": { "class": "closure", "why": "upper teeth on the lower lip; Ping has no teeth, so F and V map to rest (step 1 decision)" },
-    "v": { "class": "closure", "why": "as f" },
-    "o": { "class": "round", "why": "o is said with rounded lips" },
-    "u": { "class": "round", "why": "u is said with rounded lips" },
-    "w": { "class": "round", "why": "w starts from rounded lips" },
-    "e": { "class": "wide", "why": "e is said with spread lips" },
-    "i": { "class": "wide", "why": "i is said with spread lips" },
-    "a": { "class": "open", "why": "a opens the jaw" }
+    "m": {
+      "class": "closure",
+      "why": "lips close"
+    },
+    "b": {
+      "class": "closure",
+      "why": "lips close"
+    },
+    "p": {
+      "class": "closure",
+      "why": "lips close"
+    },
+    "f": {
+      "class": "closure",
+      "why": "upper teeth on the lower lip; Ping has no teeth, so F and V map to rest (step 1 decision)"
+    },
+    "v": {
+      "class": "closure",
+      "why": "as f"
+    },
+    "o": {
+      "class": "round",
+      "why": "o is said with rounded lips"
+    },
+    "u": {
+      "class": "round",
+      "why": "u is said with rounded lips"
+    },
+    "w": {
+      "class": "round",
+      "why": "w starts from rounded lips"
+    },
+    "e": {
+      "class": "wide",
+      "why": "e is said with spread lips"
+    },
+    "i": {
+      "class": "wide",
+      "why": "i is said with spread lips"
+    },
+    "a": {
+      "class": "open",
+      "why": "a opens the jaw"
+    }
   },
-  "y": { "vowel": "wide", "consonant": "small", "rule": "consonant at the start of a word before a vowel (you, yes), vowel everywhere else (my, very)", "why": "y before a vowel at a word start is a glide; elsewhere it is said like i or ee" },
-  "otherLetters": { "class": "small", "why": "other consonants: tongue and teeth, mouth a little open" },
+  "y": {
+    "vowel": "wide",
+    "consonant": "small",
+    "rule": "consonant at the start of a word before a vowel (you, yes), vowel everywhere else (my, very)",
+    "why": "y before a vowel at a word start is a glide; elsewhere it is said like i or ee",
+    "onlyVowel": {
+      "class": "open",
+      "rule": "when y is the only vowel letter of a word (no a, e, i, o or u): my, by, why",
+      "why": "said like 'I', which opens the jaw",
+      "changedAfterSeeing": "the author's prompt #16, after reading out/lipsync-v2/words.txt: \"My\" came out wide; it sounds like \"I\"."
+    }
+  },
+  "otherLetters": {
+    "class": "small",
+    "why": "other consonants: tongue and teeth, mouth a little open"
+  },
   "pairs": [
-    { "letters": "th", "class": "small", "why": "tongue between the teeth: a little open, not wide" },
-    { "letters": "sh", "class": "round", "why": "lips pushed forward" },
-    { "letters": "ch", "class": "round", "why": "lips pushed forward" },
-    { "letters": "wh", "class": "round", "why": "what, when: rounded start" },
-    { "letters": "ph", "class": "closure", "why": "said as f" },
-    { "letters": "oo", "class": "round", "why": "one rounded vowel" },
-    { "letters": "ou", "class": "round", "why": "mouth, loud, you: rounded" },
-    { "letters": "ow", "class": "round", "why": "now, wow: ends rounded" },
-    { "letters": "ee", "class": "wide", "why": "one spread vowel" },
-    { "letters": "ea", "class": "wide", "why": "each, read: said as ee, not as a" },
-    { "letters": "ng", "class": "small", "why": "back of the tongue, mouth a little open; not two shapes" }
+    {
+      "letters": "th",
+      "class": "small",
+      "why": "tongue between the teeth: a little open, not wide"
+    },
+    {
+      "letters": "sh",
+      "class": "round",
+      "why": "lips pushed forward"
+    },
+    {
+      "letters": "ch",
+      "class": "round",
+      "why": "lips pushed forward"
+    },
+    {
+      "letters": "wh",
+      "class": "round",
+      "why": "what, when: rounded start"
+    },
+    {
+      "letters": "ph",
+      "class": "closure",
+      "why": "said as f"
+    },
+    {
+      "letters": "oo",
+      "class": "round",
+      "why": "one rounded vowel"
+    },
+    {
+      "letters": "ou",
+      "why": "mouth, sound, loud, wow: the sound starts open and ends round, so the first letter is open and the second round",
+      "classes": [
+        "open",
+        "round"
+      ],
+      "exceptions": [
+        "you",
+        "your"
+      ],
+      "exceptionClass": "round",
+      "exceptionsWhy": "said as one rounded vowel",
+      "changedAfterSeeing": "the author's prompt #16, after reading out/lipsync-v2/words.txt: \"mouth\", \"sound\", \"loud\", \"wow\" came out round only; the sound starts open.",
+      "before": {
+        "class": "round",
+        "why": "mouth, loud, you: rounded"
+      }
+    },
+    {
+      "letters": "ow",
+      "why": "mouth, sound, loud, wow: the sound starts open and ends round, so the first letter is open and the second round",
+      "classes": [
+        "open",
+        "round"
+      ],
+      "exceptions": [
+        "you",
+        "your"
+      ],
+      "exceptionClass": "round",
+      "exceptionsWhy": "said as one rounded vowel",
+      "changedAfterSeeing": "the author's prompt #16, after reading out/lipsync-v2/words.txt: \"mouth\", \"sound\", \"loud\", \"wow\" came out round only; the sound starts open.",
+      "before": {
+        "class": "round",
+        "why": "now, wow: ends rounded"
+      }
+    },
+    {
+      "letters": "ee",
+      "class": "wide",
+      "why": "one spread vowel"
+    },
+    {
+      "letters": "ea",
+      "class": "wide",
+      "why": "each, read: said as ee, not as a"
+    },
+    {
+      "letters": "ng",
+      "class": "small",
+      "why": "back of the tongue, mouth a little open; not two shapes"
+    }
   ],
-  "silentFinalE": { "rule": "a word that ends in a consonant followed by e and has three or more letters, other than words ending in ee and the exceptions", "exceptions": ["the", "she"], "exceptionsWhy": "the final e is said in these short words; found by a unit test before anything was rendered", "class": "as the letter before", "why": "move, live: the final e is not said, so it must not spread the lips" },
-  "pronounI": { "rule": "the one-letter word i", "class": "open", "why": "said like 'eye', which opens the jaw before it spreads" },
-  "priority": ["closure", "round", "open", "wide", "small", "gap"],
+  "silentFinalE": {
+    "rule": "a word that ends in a consonant followed by e and has three or more letters, other than words ending in ee and the exceptions",
+    "exceptions": [
+      "the",
+      "she"
+    ],
+    "exceptionsWhy": "the final e is said in these short words; found by a unit test before anything was rendered",
+    "class": "as the letter before",
+    "why": "move, live: the final e is not said, so it must not spread the lips"
+  },
+  "pronounI": {
+    "rule": "the one-letter word i",
+    "class": "open",
+    "why": "said like 'eye', which opens the jaw before it spreads"
+  },
+  "priority": [
+    "closure",
+    "round",
+    "open",
+    "wide",
+    "small",
+    "gap"
+  ],
   "priorityWhy": "when letters of two classes fall in one frame, the higher one wins: closures and roundings are the shapes a viewer misses most when they are skipped, an open jaw next; small is the default; gaps lose to any letter",
   "minFrames": 2,
   "minFramesRule": "a run shorter than minFrames takes frames from the run after it if it outranks that run and that run would keep at least minFrames; otherwise it takes the mouth of the run before it (or after it at the start). Repeated until no run is shorter.",
-  "minFramesWhy": "a mouth held for one frame at 30 fps reads as flicker (v1 had 4 to 6 such runs per phrase)"
+  "minFramesWhy": "a mouth held for one frame at 30 fps reads as flicker (v1 had 4 to 6 such runs per phrase)",
+  "changedAfterSeeing": [
+    {
+      "by": "the author, prompt #16",
+      "seen": "out/lipsync-v2/words.txt (provisional voice, rules of commit 0b9efef)",
+      "what": "\"My\" came out wide; it sounds like \"I\".",
+      "change": "y.onlyVowel: when y is the only vowel of a word (my, by, why), it is open."
+    },
+    {
+      "by": "the author, prompt #16",
+      "seen": "out/lipsync-v2/words.txt (provisional voice, rules of commit 0b9efef)",
+      "what": "\"mouth\", \"sound\", \"loud\", \"wow\" came out round only; the sound starts open.",
+      "change": "pairs ou and ow: first letter open, second round; \"you\" and \"your\" stay round."
+    }
+  ],
+  "rulesBefore": "commit 0b9efef (prompt #15), unchanged until prompt #16; npm run lipsync:compare reads it from git to show v2 before and after on the same audio"
 }

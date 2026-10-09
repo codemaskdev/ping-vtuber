@@ -1,12 +1,13 @@
 {
-  "$comment": "Written by scripts/voice.mjs. Per audio file: voice, model, settings, the server's date, the exact text, sha256, duration and sample rate (ffprobe). Audio files are committed only after the author approved their metadata.",
-  "voiceStatus": "provisional",
+  "$comment": "Written by scripts/voice.mjs (raw files) and scripts/audio-process.mjs (processed). Per raw file: what ElevenLabs returned, untouched: voice, model, settings, the server's date, the exact text, sha256, duration and sample rate (ffprobe), its alignment. Per processed file: how it was made from the raw one. Audio files are committed only after their metadata was approved.",
+  "voiceStatus": "chosen",
+  "chosenBy": "the author, prompt #16: candidate 6 of round 2, River with the \"stronger\" filter chain",
   "files": [
     {
-      "file": "audio/dev/P1.mp3",
-      "alignment": "audio/dev/P1.align.json",
-      "voiceName": "Miffy Mouse - Squeaky, Upbeat Cartoon",
-      "voiceId": "M5t0724ORuAGCh3p3DUR",
+      "file": "audio/raw/P1.mp3",
+      "alignment": "audio/raw/P1.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
       "modelId": "eleven_multilingual_v2",
       "settings": {
         "stability": 0.5,
@@ -17,21 +18,24 @@
       },
       "outputFormat": "mp3_44100_128",
       "seed": 1,
-      "serverDate": "Thu, 08 Oct 2026 19:47:07 GMT",
+      "serverDate": "Fri, 09 Oct 2026 08:20:32 GMT",
       "text": "Hello. I am Ping.",
-      "sha256": "d816273dfcad08e3860e583bf8df562734d6e9115343aa5705b1f85d9983746c",
-      "bytes": 32226,
-      "durationS": 1.950476,
+      "creditsReported": {
+        "character-cost": "17"
+      },
+      "sha256": "32be59453630e320fe56cdf045c9f7d4216961abd90383f11728fb95667d86b6",
+      "bytes": 21777,
+      "durationS": 1.300317,
       "sampleRate": 44100,
       "channels": 1,
       "codec": "mp3",
       "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
     },
     {
-      "file": "audio/dev/P2.mp3",
-      "alignment": "audio/dev/P2.align.json",
-      "voiceName": "Miffy Mouse - Squeaky, Upbeat Cartoon",
-      "voiceId": "M5t0724ORuAGCh3p3DUR",
+      "file": "audio/raw/P2.mp3",
+      "alignment": "audio/raw/P2.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
       "modelId": "eleven_multilingual_v2",
       "settings": {
         "stability": 0.5,
@@ -42,21 +46,24 @@
       },
       "outputFormat": "mp3_44100_128",
       "seed": 1,
-      "serverDate": "Thu, 08 Oct 2026 19:47:07 GMT",
+      "serverDate": "Fri, 09 Oct 2026 08:20:33 GMT",
       "text": "My mouth moves when the sound gets loud.",
-      "sha256": "526d9218783a90db95b62f64a5c48de4e0faf5c55b0d2e82d317583aa0dd2d5b",
-      "bytes": 45601,
-      "durationS": 2.786395,
+      "creditsReported": {
+        "character-cost": "40"
+      },
+      "sha256": "240834e80756d3a48cb0508a85a07bf3e6b045002fb3c020d596d28e373d3f76",
+      "bytes": 35988,
+      "durationS": 2.182676,
       "sampleRate": 44100,
       "channels": 1,
       "codec": "mp3",
       "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
     },
     {
-      "file": "audio/dev/P3.mp3",
-      "alignment": "audio/dev/P3.align.json",
-      "voiceName": "Miffy Mouse - Squeaky, Upbeat Cartoon",
-      "voiceId": "M5t0724ORuAGCh3p3DUR",
+      "file": "audio/raw/P3.mp3",
+      "alignment": "audio/raw/P3.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
       "modelId": "eleven_multilingual_v2",
       "settings": {
         "stability": 0.5,
@@ -67,18 +74,65 @@
       },
       "outputFormat": "mp3_44100_128",
       "seed": 1,
-      "serverDate": "Thu, 08 Oct 2026 19:47:09 GMT",
+      "serverDate": "Fri, 09 Oct 2026 08:20:34 GMT",
       "text": "Oh wow. We move, you see?",
-      "sha256": "3f6cc70967e67128c02937a3169d777734012421e1f1256e8ad09912f264bd66",
-      "bytes": 41004,
-      "durationS": 2.507755,
+      "creditsReported": {
+        "character-cost": "25"
+      },
+      "sha256": "8b9a9fcdb408c534159efb1be0c128eab8b50c19f6ec4ec50b10bdf0be664863",
+      "bytes": 24703,
+      "durationS": 1.486077,
       "sampleRate": 44100,
       "channels": 1,
       "codec": "mp3",
       "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
     }
   ],
-  "repeatability": {
+  "processed": [
+    {
+      "file": "audio/dev/P1.mp3",
+      "sha256": "89dc4543899aea61d021791dde29fcb4d7de9891349845c1b979d77ab3d62080",
+      "from": "audio/raw/P1.mp3",
+      "fromSha256": "32be59453630e320fe56cdf045c9f7d4216961abd90383f11728fb95667d86b6",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.1310148798402495,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.0665092084904448,
+      "rmsResult": 0.0632565123849845,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/P1.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/P2.mp3",
+      "sha256": "f4a062b901fca37244eea78c4c37832eacfa81fcfdc5daadb6f5e2adcc49cbd7",
+      "from": "audio/raw/P2.mp3",
+      "fromSha256": "240834e80756d3a48cb0508a85a07bf3e6b045002fb3c020d596d28e373d3f76",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.1485383437650483,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.06067107421197575,
+      "rmsResult": 0.0577031351604808,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/P2.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/P3.mp3",
+      "sha256": "6d6d9e094153b954761ea85257755beaf5851412afa3daee33706102ae10e6c2",
+      "from": "audio/raw/P3.mp3",
+      "fromSha256": "8b9a9fcdb408c534159efb1be0c128eab8b50c19f6ec4ec50b10bdf0be664863",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.3384472254181934,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.07049507968095198,
+      "rmsResult": 0.06694050880586776,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/P3.mp3",
+      "log": "audio/process-log.json"
+    }
+  ],
+  "repeatabilityEarlier": {
     "text": "Hello. I am Ping.",
     "take1": {
       "sha256": "d816273dfcad08e3860e583bf8df562734d6e9115343aa5705b1f85d9983746c",
@@ -89,6 +143,7 @@
       "sha256": "693fc1af52ae787c0432bc55198a455c03ae864d928e3f3aea919ee906df355e",
       "bytes": 32226
     },
-    "identical": false
+    "identical": false,
+    "note": "measured in step 4 (prompt #14) with the provisional voice, P1 twice; not measured again: prompt #16 asks for one take per phrase"
   }
 }

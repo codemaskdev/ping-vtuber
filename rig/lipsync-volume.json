@@ -1,7 +1,13 @@
 {
-  "$comment": "Lip sync v1 thresholds for lib/lipsync-volume.mjs. Chosen values, not measurements (author's prompt #14). Loudness is the RMS of one frame's samples, linear, full scale 1.",
+  "$comment": "Lip sync v1 thresholds for lib/lipsync-volume.mjs. Chosen values, not measurements (author's prompts #14 and #16). Loudness is the RMS of one frame's samples, linear, full scale 1.",
   "restBelow": 0.01,
-  "openFrom": 0.08,
-  "howChosen": "Chosen after looking at the RMS of every frame (30 fps) of P1, P2 and P3 with the provisional voice (npm run lipsync:stats, out/lipsync-stats.txt): 66 of 219 frames are under 0.005 and 10 more under 0.01 (silence and breath); speech sits from about 0.02 up; 46 frames are at 0.08 or above (the loud vowels). restBelow 0.01 (about -40 dBFS) puts silence at rest; openFrom 0.08 (about -22 dBFS) opens the mouth only on the loudest fifth. To be chosen again once the author has picked the voice.",
-  "voiceAtChoice": "M5t0724ORuAGCh3p3DUR (provisional)"
+  "openFrom": 0.07,
+  "howChosen": "Chosen again on the processed P1-P3 of the chosen voice (author's prompt #16; npm run lipsync:stats, out/lipsync-stats.txt), with the same rule as before: 48 of 151 frames are under 0.0075 (silence and breath) and the next louder frame is 0.01064, so restBelow stays 0.01, in that gap; openFrom 0.07 opens the mouth on the loudest fifth: 32 of 151 frames are at 0.07 or above (0.2119205298013245 of them; with the provisional voice 46 of 219 frames, 0.2100456621004566, were at 0.08 or above).",
+  "voiceAtChoice": "SAz9YHcvj6GT2YYXdXww (chosen), processed (audio/dev/)",
+  "before": {
+    "restBelow": 0.01,
+    "openFrom": 0.08,
+    "howChosen": "Chosen after looking at the RMS of every frame (30 fps) of P1, P2 and P3 with the provisional voice (npm run lipsync:stats, out/lipsync-stats.txt): 66 of 219 frames are under 0.005 and 10 more under 0.01 (silence and breath); speech sits from about 0.02 up; 46 frames are at 0.08 or above (the loud vowels). restBelow 0.01 (about -40 dBFS) puts silence at rest; openFrom 0.08 (about -22 dBFS) opens the mouth only on the loudest fifth. To be chosen again once the author has picked the voice.",
+    "voiceAtChoice": "M5t0724ORuAGCh3p3DUR (provisional)"
+  }
 }

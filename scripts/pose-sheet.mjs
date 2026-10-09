@@ -10,7 +10,7 @@ import { drawText } from "../lib/font.mjs";
 import { create, over, resample } from "../lib/image.mjs";
 import { readPng, writePng } from "../lib/png.mjs";
 import { ROOT } from "../lib/spec.mjs";
-import { rigSequences } from "./build-preview.mjs";
+import { rig, rigSequences } from "./build-preview.mjs";
 
 const entries = rigSequences()["pose-sheet"].entries.map((e) => e.label);
 const dir = path.join(ROOT, "out", "render", "pose-sheet");
@@ -23,7 +23,7 @@ const find = (prefix) => entries.find((e) => e.startsWith(prefix));
 const ROWS = [
   ["neutral", "eyes closed", "cursor off", "neutral + skeleton"],
   ["mouth rest", "mouth small", "mouth open", "mouth round"],
-  ["mouth wide", find("head tilt -"), find("head tilt 4"), find("head shift")],
+  ["mouth wide", find("head tilt -"), find(`head tilt ${rig.limits.headTiltDeg[1]}`), find("head shift")],
   [find("brows as drawn"), find("brows at browsRestDy"), find("brows raised")],
 ];
 const CELL = 314, GAP = 12, BAND = 30, TITLE = 60, INK = [230, 230, 236, 255];

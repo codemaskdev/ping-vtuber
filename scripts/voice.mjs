@@ -1,13 +1,17 @@
 // Ping's voice through ElevenLabs (lib/elevenlabs.mjs; the key is never printed or written).
 //
 //   npm run voice -- candidates          the candidate line with every candidate → out/voice-candidates/ (not committed)
-//   npm run voice -- phrases             P1-P3 with the provisional (or chosen) voice → audio/dev/, plus a second take of
-//                                        P1 in out/voice-repeat/ to see whether the call repeats; updates audio/SOURCES.json
-// Every file gets its alignment (character timestamps) next to it as <name>.align.json.
+//   npm run voice -- phrases             P1-P3, one take each, with the chosen voice → audio/raw/ (exactly what ElevenLabs
+//                                        returned); writes audio/SOURCES.json. npm run audio:process makes audio/dev/.
+//   npm run voice -- final-check         the candidate line once with the chosen voice → out/voice-final-check.raw.mp3,
+//                                        then through the same processing → out/voice-final-check.mp3 (not committed)
+// Every file gets its alignment (character timestamps) next to it as <name>.align.json. The alignment belongs to the
+// raw audio (author's prompt #16).
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { ttsWithTimestamps } from "../lib/elevenlabs.mjs";
+import { processFile } from "./audio-process.mjs";
 import { sha256 } from "../lib/png.mjs";
 import { ROOT, rel } from "../lib/spec.mjs";
 
@@ -27,7 +31,7 @@ async function synth(voice, text, base) {
   return {
     file: rel(`${base}.mp3`), alignment: rel(`${base}.align.json`), voiceName: voice.name, voiceId: voice.id, modelId: V.modelId,
     settings: V.settings, outputFormat: V.outputFormat, seed: V.seed, serverDate: r.serverDate, text,
-    sha256: sha256(r.audio), bytes: r.audio.length, ...probe(`${base}.mp3`), probedWith: ffprobeVersion(),
+    creditsReported: Object.keys(r.costHeaders || {}).length ? r.costHeaders : "not reported", sha256: sha256(r.audio), bytes: r.audio.length, ...probe(`${base}.mp3`), probedWith: ffprobeVersion(),
   };
 }
 
@@ -43,24 +47,32 @@ if (mode === "candidates") {
   fs.writeFileSync(path.join(ROOT, "out", "voice-candidates", "candidates.txt"), lines.join("\n"));
   console.log("out/voice-candidates/candidates.txt");
 } else if (mode === "phrases") {
-  const id = V.chosen || V.provisional;
-  const voice = V.candidates.find((c) => c.id === id);
+  if (!V.chosen) throw new Error("no voice chosen in audio/voice.json");
+  const voice = V.candidates.find((c) => c.id === V.chosen);
   const entries = [];
   for (const [p, text] of Object.entries(V.phrases)) {
-    entries.push(await synth(voice, text, path.join(ROOT, "audio", "dev", p)));
+    entries.push(await synth(voice, text, path.join(ROOT, "audio", "raw", p)));
     console.log(`${entries.at(-1).file}  ${entries.at(-1).durationS} s  sha256 ${entries.at(-1).sha256}`);
   }
-  const again = await synth(voice, V.phrases.P1, path.join(ROOT, "out", "voice-repeat", "P1-take2"));
-  const same = again.sha256 === entries[0].sha256;
-  console.log(`P1 twice: ${same ? "identical bytes" : "different bytes"} (${entries[0].sha256} vs ${again.sha256}; ${entries[0].bytes} vs ${again.bytes} bytes)`);
-  fs.writeFileSync(path.join(ROOT, "audio", "SOURCES.json"), JSON.stringify({
-    $comment: "Written by scripts/voice.mjs. Per audio file: voice, model, settings, the server's date, the exact text, sha256, duration and sample rate (ffprobe). Audio files are committed only after the author approved their metadata.",
-    voiceStatus: V.chosen ? "chosen" : "provisional",
+  const sourcesFile = path.join(ROOT, "audio", "SOURCES.json");
+  const before = fs.existsSync(sourcesFile) ? JSON.parse(fs.readFileSync(sourcesFile, "utf8")) : {};
+  fs.writeFileSync(sourcesFile, JSON.stringify({
+    $comment: "Written by scripts/voice.mjs (raw files) and scripts/audio-process.mjs (processed). Per raw file: what ElevenLabs returned, untouched: voice, model, settings, the server's date, the exact text, sha256, duration and sample rate (ffprobe), its alignment. Per processed file: how it was made from the raw one. Audio files are committed only after their metadata was approved.",
+    voiceStatus: "chosen",
+    chosenBy: V.chosenBy,
     files: entries,
-    repeatability: { text: V.phrases.P1, take1: { sha256: entries[0].sha256, bytes: entries[0].bytes }, take2: { file: again.file, sha256: again.sha256, bytes: again.bytes }, identical: same },
+    processed: [],
+    repeatabilityEarlier: before.repeatability ? { ...before.repeatability, note: "measured in step 4 (prompt #14) with the provisional voice, P1 twice; not measured again: prompt #16 asks for one take per phrase" } : before.repeatabilityEarlier,
   }, null, 2) + "\n");
   console.log("audio/SOURCES.json");
+} else if (mode === "final-check") {
+  if (!V.chosen) throw new Error("no voice chosen in audio/voice.json");
+  const voice = V.candidates.find((c) => c.id === V.chosen);
+  const r = await synth(voice, V.candidateLine, path.join(ROOT, "out", "voice-final-check.raw"));
+  const e = processFile(path.join(ROOT, "out", "voice-final-check.raw.mp3"), path.join(ROOT, "out", "voice-final-check.mp3"));
+  fs.writeFileSync(path.join(ROOT, "out", "voice-final-check.txt"), JSON.stringify({ raw: r, processing: e }, null, 2) + "\n");
+  console.log(`${r.file} ${r.durationS} s → ${e.output}; RMS raw ${e.rms.raw}, result ${e.rms.result}; gain ${e.gain}; out/voice-final-check.txt`);
 } else {
-  console.error("usage: npm run voice -- candidates | phrases");
+  console.error("usage: npm run voice -- candidates | phrases | final-check");
   process.exit(1);
 }

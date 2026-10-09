@@ -1,8 +1,17 @@
 {
-  "$comment": "Written by scripts/build-rig.mjs from art/layers.json, art/regions.json, art/process-log.json and art/layers/. Do not edit by hand. Coordinates are canvas pixels.",
+  "$comment": "Written by scripts/build-rig.mjs from art/layers.json, art/regions.json, art/process-log.json and art/layers/. Do not edit by hand. Coordinates are art pixels (the layers' own canvas); the draw list moves them onto the stage by stage.artOffset.",
   "canvas": {
     "width": 1254,
     "height": 1254
+  },
+  "stage": {
+    "$comment": "Chosen by the author (prompt #16): one stage for every render and for the web page, the art centred. artOffset is where the art's top-left pixel lands on the stage.",
+    "width": 1600,
+    "height": 1600,
+    "artOffset": [
+      173,
+      173
+    ]
   },
   "headPivot": [
     626,
@@ -219,10 +228,10 @@
     "browsRestDy": -22
   },
   "limits": {
-    "$comment": "Chosen values, not measurements (author's prompt #12). A pose outside them is rejected, never clamped. headTiltDeg and headShiftPx were chosen so that every layer stays on the canvas (fitCheck); browsDy so that the brows stay inside their frozen region.",
+    "$comment": "Chosen values, not measurements (author's prompts #12 and #16). A pose outside them is rejected, never clamped. headTiltDeg (12 degrees, prompt #16; was 4 on the 1254 px canvas) and headShiftPx must keep every layer on the stage (fitCheck); browsDy keeps the brows inside their frozen region.",
     "headTiltDeg": [
-      -4,
-      4
+      -12,
+      12
     ],
     "headShiftPx": {
       "x": [
@@ -244,8 +253,12 @@
     ]
   },
   "fitCheck": {
-    "rule": "room = distance from each layer's alpha box corner to the canvas edge minus (r * theta + shift); must be >= 0",
-    "thetaRad": 0.06981317007977318,
+    "rule": "room = distance from each layer's alpha box corner, placed on the stage, to the stage edge minus (r * theta + shift); must be >= 0",
+    "stage": [
+      1600,
+      1600
+    ],
+    "thetaRad": 0.20943951023931953,
     "shiftPx": 42.42640687119285,
     "layers": [
       {
@@ -256,7 +269,7 @@
           980,
           971
         ],
-        "smallestRoomPx": 19.26524282106189
+        "smallestRoomPx": 41.6485422055714
       },
       {
         "id": "head",
@@ -266,7 +279,7 @@
           957,
           948
         ],
-        "smallestRoomPx": 31.391227631891283
+        "smallestRoomPx": 56.0264966380596
       },
       {
         "id": "cursor",
@@ -276,7 +289,7 @@
           59,
           103
         ],
-        "smallestRoomPx": 189.38742202463098
+        "smallestRoomPx": 244.01507981627867
       },
       {
         "id": "eyes_open",
@@ -286,7 +299,7 @@
           564,
           172
         ],
-        "smallestRoomPx": 257.29825866706847
+        "smallestRoomPx": 339.7475897435911
       },
       {
         "id": "eyes_closed",
@@ -296,7 +309,7 @@
           547,
           42
         ],
-        "smallestRoomPx": 272.1696861786945
+        "smallestRoomPx": 368.36187227846915
       },
       {
         "id": "brows",
@@ -306,7 +319,7 @@
           544,
           20
         ],
-        "smallestRoomPx": 264.53888509948547
+        "smallestRoomPx": 341.46946904084217
       },
       {
         "id": "mouth_rest",
@@ -316,7 +329,7 @@
           294,
           99
         ],
-        "smallestRoomPx": 306.33310709943186
+        "smallestRoomPx": 442.85213504068133
       },
       {
         "id": "mouth_small",
@@ -326,7 +339,7 @@
           296,
           127
         ],
-        "smallestRoomPx": 280.81479660151007
+        "smallestRoomPx": 420.29720354691585
       },
       {
         "id": "mouth_open",
@@ -336,7 +349,7 @@
           282,
           176
         ],
-        "smallestRoomPx": 261.26157380863145
+        "smallestRoomPx": 403.63753516828007
       },
       {
         "id": "mouth_round",
@@ -346,7 +359,7 @@
           211,
           209
         ],
-        "smallestRoomPx": 246.69367814941063
+        "smallestRoomPx": 393.93384819061754
       },
       {
         "id": "mouth_wide",
@@ -356,7 +369,7 @@
           422,
           103
         ],
-        "smallestRoomPx": 299.6919849680479
+        "smallestRoomPx": 430.9287686465295
       }
     ]
   },
