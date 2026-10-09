@@ -12,6 +12,21 @@ const ready = fs.existsSync(CHROME) && fs.existsSync(path.join(ROOT, "web", "ven
 const skip = ready ? false : "needs Google Chrome and npm run web:vendor";
 const webJs = ["web/main.js", "web/detector-worker.js"].map((f) => [f, fs.readFileSync(path.join(ROOT, f), "utf8")]);
 
+function stubCamera() {
+  // The stub: a moving synthetic picture instead of a camera. captureStream is kept from before privacy.js runs.
+  const realCapture = HTMLCanvasElement.prototype.captureStream;
+  window.__stubCalls = 0;
+  navigator.mediaDevices.getUserMedia = async () => {
+    window.__stubCalls++;
+    const c = document.createElement("canvas");
+    c.width = 640; c.height = 480;
+    const g = c.getContext("2d");
+    let i = 0;
+    setInterval(() => { g.fillStyle = `rgb(${(i += 7) % 255},40,90)`; g.fillRect(0, 0, 640, 480); }, 33);
+    return realCapture.call(c, 30);
+  };
+}
+
 test("static: the page code never draws, stores, records or sends the video", () => {
   for (const [f, src] of webJs) {
     for (const bad of ["drawImage", "texImage", "captureStream", "MediaRecorder", "toDataURL", "toBlob", "localStorage", "sessionStorage", "indexedDB", "sendBeacon", "WebSocket", "XMLHttpRequest", "appendChild(video", "append(video", "Date.now", "performance.now"]) {
@@ -37,20 +52,7 @@ test("headless: no request after ready, the video never drawn or attached, nothi
   const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--no-first-run", "--deny-permission-prompts"] });
   try {
     const page = await browser.newPage();
-    await page.evaluateOnNewDocument(() => {
-      // The stub: a moving synthetic picture instead of a camera. captureStream is kept from before privacy.js runs.
-      const realCapture = HTMLCanvasElement.prototype.captureStream;
-      window.__stubCalls = 0;
-      navigator.mediaDevices.getUserMedia = async () => {
-        window.__stubCalls++;
-        const c = document.createElement("canvas");
-        c.width = 640; c.height = 480;
-        const g = c.getContext("2d");
-        let i = 0;
-        setInterval(() => { g.fillStyle = `rgb(${(i += 7) % 255},40,90)`; g.fillRect(0, 0, 640, 480); }, 33);
-        return realCapture.call(c, 30);
-      };
-    });
+    await page.evaluateOnNewDocument(stubCamera);
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(`http://127.0.0.1:${port}/web/index.html`);
@@ -88,18 +90,48 @@ test("headless: no request after ready, the video never drawn or attached, nothi
     assert.equal(w.refused, 5);
     assert.deepEqual(log.slice(atWorker), [], "nothing from the worker reached the server");
     r.worker = w;
-    r.ticks = await page.evaluate(() => ({ ticks: window.__pingTicks, busySkips: window.__pingBusySkips, handoffs: window.__pingPrivacy.videoHandoffs, frames: window.__pingFrames }));
+    r.ticks = await page.evaluate(() => ({ timestamps: window.__pingTimestamps, timing: document.getElementById("timing").textContent, ticks: window.__pingTicks, busySkips: window.__pingBusySkips, repeatSkips: window.__pingRepeatSkips, handoffs: window.__pingPrivacy.videoHandoffs, frames: window.__pingFrames }));
+    // Chrome has requestVideoFrameCallback: the detector gets the video's own frame times, and the page says so.
+    assert.equal(r.ticks.timestamps, "video");
+    assert.match(r.ticks.timing, /requestVideoFrameCallback/);
     const after = log.slice(atReady);
     assert.deepEqual(errors, []);
     assert.deepEqual(after, [], `requests after ready: ${after.join(", ")}`);
     assert.ok(log.includes("/web/detector-worker.js") && log.includes("/web/models/face_landmarker.task"), "the detector worker and the model came from this server");
     assert.equal(r.stub, 1);
     assert.equal(r.videos, 0, "no video element in the page");
-    assert.ok(r.handoffs >= 16 && r.handoffs <= r.frames + 1, `handoffs ${r.handoffs}, frames ${r.frames}`);
+    // The first drawn frame comes before any hand-off; every later one is a detector result for one hand-off.
+    assert.ok(r.handoffs >= r.frames - 1 && r.handoffs <= r.frames + 1, `handoffs ${r.handoffs}, frames ${r.frames}`);
     assert.deepEqual([r.local, r.session, r.dbs], [0, 0, 0], "nothing stored");
     assert.deepEqual(r.tries, { drawImage: "refused", createImageBitmap: "refused", append: "refused", fetch: "refused", recorder: "refused", capture: "refused" });
     fs.mkdirSync(path.join(ROOT, "out"), { recursive: true });
     fs.writeFileSync(path.join(ROOT, "out", "web-headless.json"), JSON.stringify({ requestsBeforeReady: log.slice(0, atReady), requestsAfterReady: after, ...r }, null, 2) + "\n");
+  } finally {
+    await browser.close();
+    server.close();
+  }
+});
+
+test("headless fallback: without requestVideoFrameCallback the page uses frame count / 30 and says so", { skip, timeout: 180000 }, async () => {
+  const { default: puppeteer } = await import("puppeteer-core");
+  const { server, log, port } = await startServer(0);
+  const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--no-first-run", "--deny-permission-prompts"] });
+  try {
+    const page = await browser.newPage();
+    await page.evaluateOnNewDocument(stubCamera);
+    await page.evaluateOnNewDocument(() => { delete HTMLVideoElement.prototype.requestVideoFrameCallback; });
+    const errors = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto(`http://127.0.0.1:${port}/web/index.html`);
+    await page.waitForFunction(() => window.__pingReady === true, { timeout: 120000 });
+    const atReady = log.length;
+    await page.evaluate(() => window.__pingStart());
+    await page.waitForFunction(() => window.__pingFrames >= 8, { timeout: 120000 });
+    const r = await page.evaluate(() => ({ timestamps: window.__pingTimestamps, timing: document.getElementById("timing").textContent }));
+    assert.deepEqual(errors, []);
+    assert.equal(r.timestamps, "count");
+    assert.match(r.timing, /frame count \/ 30/);
+    assert.deepEqual(log.slice(atReady), []);
   } finally {
     await browser.close();
     server.close();

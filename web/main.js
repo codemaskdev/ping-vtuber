@@ -26,12 +26,21 @@ pingCanvas.width = rig.stage.width;
 pingCanvas.height = rig.stage.height;
 const pingCtx = pingCanvas.getContext("2d");
 const pointsCanvas = document.getElementById("points"), pointsCtx = pointsCanvas.getContext("2d");
-let state = null, frame = 0, busy = false, video = null;
+let state = null, frame = 0, busy = false, video = null, lastSentMs = -1;
 window.__pingFrames = 0;
-// Counted for the report on skipped frames (author's prompt #16): animation ticks with a playable video, and those
-// ticks that handed nothing over because the detector was still busy.
+// Detector timestamps (author's prompt #17): the video's own frame times through requestVideoFrameCallback
+// (mediaTime), so a frame skipped while the detector is busy does not slow the detector's clock and no frame is sent
+// twice. Fallback for browsers without it: one per animation tick, frame count / 30 (the page says which is in use).
+const useVideoTimes = typeof HTMLVideoElement.prototype.requestVideoFrameCallback === "function";
+window.__pingTimestamps = useVideoTimes ? "video" : "count";
+// Counters for the real-camera check: frames (or ticks) with a playable video, those skipped because the detector
+// was busy, and (video times only) those skipped because their time was not later than the last one sent.
 window.__pingTicks = 0;
 window.__pingBusySkips = 0;
+window.__pingRepeatSkips = 0;
+document.getElementById("timing").textContent = useVideoTimes
+  ? "Detector timestamps: the video's own frame times (requestVideoFrameCallback)."
+  : "Detector timestamps: frame count / 30 (this browser has no requestVideoFrameCallback).";
 
 function show(face, points) {
   const r = faceToPose(rig, faceConfig, face, state);
@@ -51,15 +60,29 @@ worker.onmessage = (e) => {
   show(e.data.face, e.data.points);
 };
 
-async function tick() {
+async function send(timestampMs) {
+  busy = true;
+  lastSentMs = timestampMs;
+  const bitmap = await P.handOff(video);
+  worker.postMessage({ type: "frame", bitmap, timestampMs }, [bitmap]);
+}
+
+function onVideoFrame(now, meta) {
+  window.__pingTicks++;
+  const ms = meta.mediaTime * 1000;
+  if (busy) window.__pingBusySkips++;
+  else if (!(ms > lastSentMs)) window.__pingRepeatSkips++;
+  else send(ms);
+  video.requestVideoFrameCallback(onVideoFrame);
+}
+
+function tick() {
   if (!video) return;
-  if (video.readyState >= 2) window.__pingTicks++;
-  if (busy && video.readyState >= 2) window.__pingBusySkips++;
-  if (!busy && video.readyState >= 2) {
-    busy = true;
-    const bitmap = await P.handOff(video);
+  if (video.readyState >= 2) {
+    window.__pingTicks++;
+    if (busy) window.__pingBusySkips++;
     // Timestamps from the frame count, not a clock: monotonic, and the same run gives the same numbers.
-    worker.postMessage({ type: "frame", bitmap, timestampMs: (frame++ * 1000) / 30 }, [bitmap]);
+    else send((frame++ * 1000) / 30);
   }
   requestAnimationFrame(tick);
 }
@@ -72,7 +95,8 @@ window.__pingStart = async function () {
   video.playsInline = true;
   video.srcObject = stream;
   await video.play();
-  tick();
+  if (useVideoTimes) video.requestVideoFrameCallback(onVideoFrame);
+  else tick();
 };
 document.getElementById("start").addEventListener("click", () => window.__pingStart());
 P.ready = true;

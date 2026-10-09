@@ -27,8 +27,10 @@ seen.
 8. [ ] Mouth: open jaw → open; "oo" → round; a closed smile → wide; talking → small/open; relaxed → rest.
 9. [ ] Brows: raising them shows Ping's brows high; frowning shows them low; relaxing hides them.
 10. [ ] The landmark points on the second canvas sit on your face's shape (mirrored or not: note which).
-11. [ ] Frames per second (`window.__pingFrames` over ten seconds), how many ticks were skipped because the detector
-        was busy (`window.__pingBusySkips` against `window.__pingTicks`), and the CPU load.
+11. [ ] Frames per second (`window.__pingFrames` over ten seconds), how many video frames were skipped because the
+        detector was busy (`window.__pingBusySkips` against `window.__pingTicks`) or had no later time
+        (`window.__pingRepeatSkips`), which timestamps the page says it uses (`window.__pingTimestamps`, the line under
+        the status), and the CPU load.
 12. [ ] What happens when your face leaves the frame and comes back.
 
 Every number in `rig/face.json` is a first guess to be tuned from this.

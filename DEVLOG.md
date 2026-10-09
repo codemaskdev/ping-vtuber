@@ -758,3 +758,17 @@ What broke
 - Freeze: `rig/frozen.json` (`scripts/freeze.mjs`) holds the sha256 of the v1 thresholds and code, the v2 rules and
   code, the voice settings (chosen, modelId, settings, outputFormat, seed) and the processing (chain, gainRule,
   peakCeiling, encode); `test/freeze.test.mjs` fails if any of them changes.
+
+### Answer 2: detector timestamps from the video
+- `web/main.js`: with requestVideoFrameCallback (Chrome has it) each presented video frame calls back with its
+  mediaTime; the frame is handed to the detector with timestampMs = mediaTime × 1000 unless the detector is busy
+  (skipped, counted in `__pingBusySkips`) or the time is not later than the last one sent (skipped, counted in
+  `__pingRepeatSkips`), so a skipped frame keeps real time and no frame goes twice. Without it the page falls back to
+  one hand-off per animation tick with frame count / 30. The line under the status says which is in use;
+  `window.__pingTimestamps` is "video" or "count".
+- Headless (stubbed camera, Chrome): "video"; 18 video frames, 2 skipped busy, 0 skipped as repeats, 16 hand-offs,
+  17 drawn frames; 25 requests before ready, 0 after. A second headless test removes requestVideoFrameCallback and
+  sees "count" and the fallback line.
+- What broke: the headless test expected at least 16 hand-offs once 16 frames were drawn; the first drawn frame comes
+  before any hand-off, and the old loop happened to be one hand-off ahead. The check is now hand-offs within one of
+  the drawn frames.

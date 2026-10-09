@@ -191,7 +191,9 @@ npm run face:stream -- --seed 1     a synthetic face stream through lib/face-to-
   OffscreenCanvas convertToBlob). `test/web.test.mjs` checks this in headless Chrome, from the page and from inside the
   worker, and that the server sees no request after ready.
 - MediaPipe Face Landmarker runs in a module worker (`web/detector-worker.js`, CPU delegate); the main thread gets
-  numbers only. `lib/face-to-pose.mjs` turns them into a pose with the chosen values in `rig/face.json`.
+  numbers only. Its timestamps are the video's own frame times (requestVideoFrameCallback, mediaTime): a frame that
+  arrives while the detector is busy is skipped and the clock keeps real time; no frame is sent twice. Browsers
+  without it fall back to frame count / 30; the page says which is in use. `lib/face-to-pose.mjs` turns them into a pose with the chosen values in `rig/face.json`.
 - Model: `face_landmarker.task` from
   https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task,
   sha256 and licence in `web/VENDOR.json`.
