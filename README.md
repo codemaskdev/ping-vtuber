@@ -197,6 +197,19 @@ npm run preview:build -- emotions --seed 1    the 10 s walk-through (rig/emotion
 npm run preview:build -- emotions-sheet       then render and node scripts/emotions-sheet.mjs
 ```
 
+## A spoken line: liveness, emotion and lip sync together
+
+`lib/line.mjs` (author's prompt #22) combines, in this order, liveness, the emotion from the line's tag and lip sync
+v3 (`rig/lines.json`):
+
+- **mouth**: lip sync on every frame from the first to the last letter, whatever the emotion's mouth; outside that,
+  the emotion's mouth (or rest). Liveness never sets it.
+- **eyes**: closed wins: shut if the emotion shuts them (sleepy) or liveness is blinking.
+- **brows**: the emotion's only; hidden for neutral and sleepy.
+- **head**: the sum of liveness (breathing, drift) and the emotion's tilt and shift; outside the rig limits a pose is
+  rejected, never clamped.
+- **cursor**: liveness. **glow**: 1.
+
 ## Step 7: the webcam page — checked by eye by the author on 2026-10-09, no measurements
 
 Built and tested overnight with the camera request stubbed out (a synthetic canvas stream) and a face stream made by

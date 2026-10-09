@@ -1062,6 +1062,86 @@ work. Do not make any of it yet.
 Report in this order: hashes, facts, questions, lines, materials.
 ```
 
+## Prompt #22
+
+```text
+Next task: the project's footage for the episode. The script is final and
+checked: CodeMask repo, episodes/03-ping-vtuber/script.en.md, 21021
+bytes, sha256 starts 8aca74c7e89668ef. Check the hash first; if it
+differs, stop. Everything frozen stays frozen. Nothing is published.
+
+Cards, tables, code boxes, the host's voice and the edit are made later
+in the CodeMask repo. Here you make only what shows Ping or this
+project's own data.
+
+## Format
+One folder per shot: out/footage/<id>/ with the mp4 and a shot.json:
+id, the script scene and line it serves, frames, fps, size, seconds,
+what it was made from (files, commit, seed, version), and checks with
+actual and expected values. Ping shots: the 1600 x 1600 stage, 30 fps,
+black background. Keep only mp4 files; delete intermediate frames after
+encoding and report the total size of out/footage/. Disk space is short.
+
+## A. Shots that exist: wrap them, do not re-render
+v1 on P2; v1 | v2 on P2; v2 on H2; v3 on H7; the emotions walk-through;
+the two 300-frame liveness renders.
+
+## B. Shots to render from what is frozen
+1. v3 on H2, and v2 | v3 on H2.
+2. Liveness as mp4, and a split: still Ping | alive Ping, silent, 10 s.
+3. One frame of a finished clip with the measured mouth region outlined.
+4. Word strips: for one word, a row of the real mouth layers, one per
+   frame, with the letters and their times under it. Make: "moves" (P2)
+   before and after the majority rule; "My" and "loud" before and after
+   the prompt #16 rules; "Bob brought a big" (H2) in v2 and in v3, with
+   the missed closures marked. Old rules come from git, as in
+   lipsync:compare.
+5. The old emotions sheet with "focused", restored from git history into
+   out/footage/ only. Do not touch rig/emotions.json.
+6. A row of the five mouths on the neutral face.
+
+## C. New work
+1. Ping's six lines. Synthesise each once with the frozen voice and
+   chain: one call per line, six calls in all, no second takes unless a
+   call fails. Text exactly as in the script:
+   - hook: Not long ago, I was just a picture.
+   - alive: [happy] I just blinked. Did you see it?
+   - fix: [happy] Sixteen out of sixteen. Write that down.
+   - emotions: [surprised] You removed it?
+   - webcam: [happy] Now I am him. Almost.
+   - outro: [sleepy] And I am going to sleep.
+   Mouth by v3, emotion from the tag, liveness on top. Before rendering,
+   write down and commit how the three combine (which one owns the
+   mouth, the eyes, the brows and the head, and what happens when they
+   disagree), with tests. In the outro the eyes stay shut after the line
+   and the cursor keeps blinking for 3 s. Metadata rule as before.
+2. Blink comparison, 20 s, silent: left, a blink exactly every 4 s;
+   right, the real rule with seed 1; a time ruler with a mark at each
+   blink under both.
+3. The debug skeleton over Ping while the head sways: pivots and lines
+   to parents, 6 s.
+4. Layers flying apart and back, 6 s: the real layers, only moved, each
+   on a checkerboard while apart.
+5. Webcam page, a recording mode (?record=1): face points on the left,
+   Ping on the right, black background, no other text, sized for a
+   1920 x 1080 screen recording. It draws a thinned-out set of the 478
+   points and a caption saying how many of 478 are shown; choose the
+   set and say why. No change to the privacy guards; run the privacy
+   tests again. I will record the screen myself.
+6. out/footage/numbers.json: every number the script's stage notes put
+   on screen (counters, tables, bars), each with its FACTS.md line.
+   Add to FACTS.md the two numbers computed during the script check:
+   mouth changes per second averaged over H5 to H8 for v1 and v3, and
+   the phrase-start onsets of v2 and v3 listed one by one.
+
+## STOP here
+Commit, then report: the list of shots (id, seconds, size, sha256
+start), the combine rule, the six lines with their durations, the page
+change, total size, test counts, what broke, questions. Also write
+out/footage/contact-sheet.png: the first, middle and last frame of
+every shot, labelled, so that I can review them by eye.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

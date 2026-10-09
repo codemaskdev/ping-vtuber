@@ -1068,3 +1068,14 @@ total closure: v2 16 of 20, v3 20 of 20
   |difference| 0.0029135154292259414, character alignments identical. Command (lib/audio.mjs decode, then compare
   sample by sample):
   `node --input-type=module -e 'import { decode } from "./lib/audio.mjs"; const a = decode("out/voice-candidates/2-river.mp3").samples, b = decode("out/voice-final-check.raw.mp3").samples; let n = 0, m = 0, s = 0; for (let i = 0; i < a.length; i++) { const d = Math.abs(a[i] - b[i]); if (d) n++; if (d > m) m = d; s += d; } console.log(a.length, b.length, n, m, s / a.length)'`
+
+## 2026-10-09 · Prompt #22: footage for the episode
+
+- Script checked first: script.en.md 21021 bytes, sha256 8aca74c7e89668ef97afb053903045f194a949d4802421b58de1336a43449fe4
+  (matches the prompt).
+- Before any line was rendered, the combine rule was written down and tested (`lib/line.mjs`, README "A spoken line",
+  `test/line.test.mjs`): partials in the order liveness, emotion, speech through the unchanged combine(). Mouth: speech
+  from the first to the last letter, the emotion's mouth (or rest) outside; eyes: closed wins (sleepy or a blink);
+  brows: the emotion only; head: liveness plus the emotion, rejected outside the limits; cursor: liveness. Decided by
+  Claude (labelled in `rig/lines.json`): liveness seed 1 for every line; 15 rest frames after each line, 3 s for the
+  outro (the author's); the tag's emotion starts at the first letter's start frame and eases in over 8 frames.
