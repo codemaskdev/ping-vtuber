@@ -1045,3 +1045,26 @@ total closure: v2 16 of 20, v3 20 of 20
   now given), "12 attempts" cited to a command that prints file names (now also the outputSize line), and "all code
   written by Claude" (no file says it; now the Co-Authored-By line every commit carries, 27 of 27 at f4a3f98).
 - `npm test`: tests 164, pass 164, fail 0, skipped 0, duration_ms 71398.836334.
+
+## 2026-10-09 · Prompt #21: the script checked against the repository (read-only)
+
+- The scripts were read in the CodeMask repository, not changed: script.en.md 20085 bytes, sha256
+  865e221d43d6f469d632d7fbc6fc89ab77f1e8a9e41cf53d5c99b811b3df2192; script.ru.md 30515 bytes, sha256
+  9c23f7c9b934e6ef821ec6bee00f4f9bd358f36fe39874628197423e5d86082a. Both match the prompt.
+- Face points: `npm run face:points` (new, read-only) reads MediaPipe's own connection lists in
+  web/vendor/tasks-vision (1.1.0): landmark indices 0..477, so 478 points per face; 476 of them appear in a
+  connection, 468 and 473 in none. The worker sends every landmark of the first face and the page draws each as a
+  dot. From the code only: no run has had a real face in front of it (the headless test's picture has no face).
+- One eye shut: `lib/face-to-pose.mjs` line 49 averages eyeBlinkLeft and eyeBlinkRight; line 50 closes Ping's eyes
+  when that mean goes above 0.55 and opens them when it falls below 0.35 (`rig/face.json` lines 13-16); line 70 has
+  only "open" or "closed" for both eyes (`lib/rig.mjs` has no single-eye layer). So a wink moves the mean to about
+  half of one eye's score: Ping has no wink; if the mean stays between 0.35 and 0.55 his eyes keep the state they had,
+  above 0.55 both close. What a real wink scores was never measured.
+- The repeat test in the script ("the same phrase twice, the same settings, two different sounds") was made in step 4
+  with Miffy Mouse, the provisional voice (P1 twice). Measured now for River, read-only, on two files already in
+  out/: the candidate line "Hello. I am Ping. I live in a terminal." from round 1 (out/voice-candidates/2-river.mp3)
+  and from the prompt #16 final check (out/voice-final-check.raw.mp3), the same voice, model, settings and seed 1:
+  both 36824 bytes and 98304 samples, 87875 samples differ, largest |difference| 0.06001995503902435, mean
+  |difference| 0.0029135154292259414, character alignments identical. Command (lib/audio.mjs decode, then compare
+  sample by sample):
+  `node --input-type=module -e 'import { decode } from "./lib/audio.mjs"; const a = decode("out/voice-candidates/2-river.mp3").samples, b = decode("out/voice-final-check.raw.mp3").samples; let n = 0, m = 0, s = 0; for (let i = 0; i < a.length; i++) { const d = Math.abs(a[i] - b[i]); if (d) n++; if (d > m) m = d; s += d; } console.log(a.length, b.length, n, m, s / a.length)'`

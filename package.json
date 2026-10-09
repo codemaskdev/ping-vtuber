@@ -40,6 +40,7 @@
     "web:vendor": "node scripts/web-vendor.mjs",
     "web:serve": "node scripts/serve-web.mjs",
     "face:stream": "node scripts/face-stream.mjs",
+    "face:points": "node scripts/face-points.mjs",
     "liveness:strip": "node scripts/liveness-strip.mjs",
     "review": "node scripts/master-review.mjs",
     "process": "node scripts/process.mjs",

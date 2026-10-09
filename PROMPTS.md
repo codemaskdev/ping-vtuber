@@ -1014,6 +1014,54 @@ publish anything.
 Commit, then report in a few lines.
 ```
 
+## Prompt #21
+
+```text
+Script check before voicing. Read-only: do not change the script, the
+rules, or anything frozen.
+
+The scripts are in the CodeMask repo, episodes/03-ping-vtuber/:
+- script.en.md  20085 bytes, sha256 starts 865e221d43d6f469
+- script.ru.md  30515 bytes, sha256 starts 9c23f7c9b934e6ef
+Check both hashes first. If one differs, stop and say so.
+
+## 1. Facts
+Go through script.en.md line by line. For every number and every claim
+about what was built, measured or decided, find its source in the
+ping-vtuber repository (FACTS.md first, then the file it cites). Report:
+- wrong: the script says X, the source says Y;
+- stronger than the data: the wording claims more than the source shows;
+- no source: nothing in the repository backs it;
+- stage notes that name a file, a line, a commit message or a clip that
+  does not exist or says something else.
+Check the stage notes too, not only the spoken lines. List what is fine
+only as a count.
+
+## 2. Three questions
+1. How many face points does the detector return? Print it from the
+   code or a run, and add it to FACTS.md.
+2. What does Ping do when one eye is shut and the other is open? Answer
+   from the code in web/ and rig/face.json, and say which lines decide
+   it. The challenge in the script hints at winking, so I need the true
+   behaviour.
+3. The line "I asked for the same phrase twice, with the same settings,
+   and got two different sounds": which voice was that test made with?
+   Is the wording still true as written?
+
+## 3. Lines that will sound bad
+The narration is read by a text-to-speech voice. List lines that may be
+misread: homophones, a word with two pronunciations, a letter that may
+be read as a word, a sentence that starts without a verb, a negation at
+the very end. Suggest a replacement for each, but change nothing.
+
+## 4. What the video needs that does not exist yet
+List every clip, still and Ping line the stage notes ask for, and mark
+each: exists (path), can be rendered from what is frozen, or needs new
+work. Do not make any of it yet.
+
+Report in this order: hashes, facts, questions, lines, materials.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.
