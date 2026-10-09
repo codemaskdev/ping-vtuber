@@ -51,7 +51,15 @@
     "audio/raw/H3.mp3",
     "audio/dev/H3.mp3",
     "audio/raw/H4.mp3",
-    "audio/dev/H4.mp3"
+    "audio/dev/H4.mp3",
+    "audio/raw/H5.mp3",
+    "audio/dev/H5.mp3",
+    "audio/raw/H6.mp3",
+    "audio/dev/H6.mp3",
+    "audio/raw/H7.mp3",
+    "audio/dev/H7.mp3",
+    "audio/raw/H8.mp3",
+    "audio/dev/H8.mp3"
   ],
   "metadataApprovedBy": "the author's rule in prompt #16 (approved if the dump shows the encoder tag only), applied with npm run audio:metadata: each file's <name>.metadata.txt says \"encoder tag only: yes\"",
   "metadataApprovedBefore": {
@@ -83,9 +91,13 @@
     "H1": "Okay, okay. Are you ready? Open the window.",
     "H2": "Bob brought a big map, a pump, and a lamp.",
     "H3": "Why is the sky so loud now? I have no idea.",
-    "H4": "Evolution is slow, but it never gets bored."
+    "H4": "Evolution is slow, but it never gets bored.",
+    "H5": "Alright. Let's try again. One more go.",
+    "H6": "Is this thing on? Testing. One, two, three.",
+    "H7": "I like big maps. Nobody reads those. I do.",
+    "H8": "Keep it simple. Open the box. A robot pops up, happy."
   },
-  "heldOutNote": "The author's held-out phrases (prompt #17), synthesised once each only after the measurement method was committed (5332a8c). Nothing is tuned on them.",
+  "heldOutNote": "The author's held-out phrases, synthesised once each: H1-H4 (prompt #17) after the measurement method was committed (5332a8c); H5-H8 (prompt #18) after v3 was frozen (40ae504). Nothing is tuned on them.",
   "round2": {
     "$comment": "Round 2 (author's prompt #15). Chosen by Claude without asking; the author chooses by ear.",
     "library": [
@@ -125,5 +137,5 @@
     ]
   },
   "frozen": "Since the author's prompt #17 the voice settings (chosen, modelId, settings, outputFormat, seed) and processing (chain, gainRule, peakCeiling, encode) do not change: rig/frozen.json, test/freeze.test.mjs.",
-  "metadataApprovedHeldOut": "H1-H4: approved by Claude applying the author's prompt #16 rule (encoder tag only) to the held-out files of prompt #17, which did not restate it; each <name>.metadata.txt says \"encoder tag only: yes\". The author may take them out."
+  "metadataApprovedHeldOut": "H1-H4: approved by Claude applying the author's prompt #16 rule (encoder tag only) to the held-out files of prompt #17, which did not restate it; each <name>.metadata.txt says \"encoder tag only: yes\". The author may take them out. The author accepted that in prompt #18; H5-H8 approved by the same rule."
 }

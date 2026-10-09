@@ -3,7 +3,8 @@
 //   npm run voice -- candidates          the candidate line with every candidate → out/voice-candidates/ (not committed)
 //   npm run voice -- phrases             P1-P3, one take each, with the chosen voice → audio/raw/ (exactly what ElevenLabs
 //                                        returned); writes audio/SOURCES.json. npm run audio:process makes audio/dev/.
-//   npm run voice -- held-out            H1-H4, once each (refuses if a file exists) → audio/raw/; adds to SOURCES.json
+//   npm run voice -- held-out H5 H6      the named held-out phrases, once each (refuses if a file exists) → audio/raw/;
+//                                        adds them to SOURCES.json
 //   npm run voice -- final-check         the candidate line once with the chosen voice → out/voice-final-check.raw.mp3,
 //                                        then through the same processing → out/voice-final-check.mp3 (not committed)
 // Every file gets its alignment (character timestamps) next to it as <name>.align.json. The alignment belongs to the
@@ -72,8 +73,10 @@ if (mode === "candidates") {
   const voice = V.candidates.find((c) => c.id === V.chosen);
   const sourcesFile = path.join(ROOT, "audio", "SOURCES.json");
   const sources = JSON.parse(fs.readFileSync(sourcesFile, "utf8"));
-  sources.heldOutFiles = [];
-  for (const [p, text] of Object.entries(V.heldOut)) {
+  sources.heldOutFiles ||= [];
+  const asked = process.argv.slice(3).filter((a) => /^H\d+$/.test(a));
+  if (!asked.length) throw new Error("name the held-out phrases to synthesise, e.g. H5 H6");
+  for (const [p, text] of Object.entries(V.heldOut).filter(([h]) => asked.includes(h))) {
     if (fs.existsSync(path.join(ROOT, "audio", "raw", `${p}.mp3`))) throw new Error(`audio/raw/${p}.mp3 exists: held-out phrases are synthesised once`);
     sources.heldOutFiles.push(await synth(voice, text, path.join(ROOT, "audio", "raw", p)));
     console.log(`${sources.heldOutFiles.at(-1).file}  ${sources.heldOutFiles.at(-1).durationS} s  sha256 ${sources.heldOutFiles.at(-1).sha256}`);

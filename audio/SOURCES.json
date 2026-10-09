@@ -186,6 +186,62 @@
       "rmsResult": 0.06580898027121534,
       "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/H4.mp3",
       "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/H5.mp3",
+      "sha256": "15bff06b062635cfca398fcfd81024caa14fc3e52c7c39b5db68971d58d3086a",
+      "from": "audio/raw/H5.mp3",
+      "fromSha256": "313f7854907f944365e80722a46fc5d7ddb97ce9a1627b947215718a9cd049c6",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.1418688869335027,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.07170018808271295,
+      "rmsResult": 0.0680986885773395,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/H5.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/H6.mp3",
+      "sha256": "b3cadf0cfc10fa908e80f36f4d125a9aed73bf87b0894bb878672889ee82daa0",
+      "from": "audio/raw/H6.mp3",
+      "fromSha256": "2655e1cfbb3834e0817fbd84d4556ff380f924f59d4e6c9d1ddfa7d4dfacd093",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.6952848862658447,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.07119811156602733,
+      "rmsResult": 0.06765986560507749,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/H6.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/H7.mp3",
+      "sha256": "822fbac40d1de07f2128fd0efd534329170b61e422ec160c5175a5d3f4b50993",
+      "from": "audio/raw/H7.mp3",
+      "fromSha256": "38251cd49de8614216d9108356f4e5d51eef6cf2ae67f8a16d511dcf5718b20f",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.1362921302068183,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.05892329693830097,
+      "rmsResult": 0.056009096762476146,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/H7.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/H8.mp3",
+      "sha256": "03e9886e005bfb115ba54d09cbd795ecc7c533d5e1ac31ee37ba856ef52f8731",
+      "from": "audio/raw/H8.mp3",
+      "fromSha256": "e3e3c526a2e911ffbfa174e782c34507b5f4d87e44bd01e64b3a5c1e6526282a",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.575748362126393,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.07563637491219606,
+      "rmsResult": 0.07185546241334075,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/H8.mp3",
+      "log": "audio/process-log.json"
     }
   ],
   "repeatabilityEarlier": {
@@ -310,6 +366,118 @@
       "sha256": "1bdf84ab6313b98579a38b24c863713bb11bd7506f2b765cd35d7c4a7abc5447",
       "bytes": 39750,
       "durationS": 2.414875,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "file": "audio/raw/H5.mp3",
+      "alignment": "audio/raw/H5.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 09:17:56 GMT",
+      "text": "Alright. Let's try again. One more go.",
+      "creditsReported": {
+        "character-cost": "38"
+      },
+      "sha256": "313f7854907f944365e80722a46fc5d7ddb97ce9a1627b947215718a9cd049c6",
+      "bytes": 33898,
+      "durationS": 2.043356,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "file": "audio/raw/H6.mp3",
+      "alignment": "audio/raw/H6.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 09:17:57 GMT",
+      "text": "Is this thing on? Testing. One, two, three.",
+      "creditsReported": {
+        "character-cost": "43"
+      },
+      "sha256": "2655e1cfbb3834e0817fbd84d4556ff380f924f59d4e6c9d1ddfa7d4dfacd093",
+      "bytes": 39750,
+      "durationS": 2.414875,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "file": "audio/raw/H7.mp3",
+      "alignment": "audio/raw/H7.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 09:17:58 GMT",
+      "text": "I like big maps. Nobody reads those. I do.",
+      "creditsReported": {
+        "character-cost": "42"
+      },
+      "sha256": "38251cd49de8614216d9108356f4e5d51eef6cf2ae67f8a16d511dcf5718b20f",
+      "bytes": 38078,
+      "durationS": 2.321995,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "file": "audio/raw/H8.mp3",
+      "alignment": "audio/raw/H8.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 09:17:59 GMT",
+      "text": "Keep it simple. Open the box. A robot pops up, happy.",
+      "creditsReported": {
+        "character-cost": "53"
+      },
+      "sha256": "e3e3c526a2e911ffbfa174e782c34507b5f4d87e44bd01e64b3a5c1e6526282a",
+      "bytes": 51035,
+      "durationS": 3.111474,
       "sampleRate": 44100,
       "channels": 1,
       "codec": "mp3",

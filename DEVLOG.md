@@ -943,3 +943,59 @@ H4: "Evolution is slow, but it never gets bored.", 73 frames
 total closure: v2 16 of 20, v3 20 of 20
 ```
 - `npm test` at the v3 freeze: tests 160, pass 160, fail 0, skipped 0, duration_ms 68669.113167.
+
+### Part B: the second exam, H5-H8 (after the v3 freeze 40ae504)
+- `npm run voice -- held-out H5 H6 H7 H8` (the mode now takes the phrase names and adds to SOURCES.json instead of
+  starting it again; it would have dropped H1-H4's entries): once each; character-cost 38, 43, 42, 53; server dates
+  Fri, 09 Oct 2026 09:17:56 to 09:17:59 GMT; durations 2.043356, 2.414875, 2.321995, 3.111474 s.
+- `npm run audio:process`: every earlier file came out byte for byte the same; H5-H8 gains 3.1418688869335027,
+  3.6952848862658447, 3.1362921302068183, 3.575748362126393; RMS raw → result 0.07170018808271295 →
+  0.0680986885773395, 0.07119811156602733 → 0.06765986560507749, 0.05892329693830097 → 0.056009096762476146,
+  0.07563637491219606 → 0.07185546241334075. Metadata: encoder tag only on all eight files (prompt #16's rule, which
+  the author confirmed for H1-H4 in prompt #18).
+- Clips v1, v2, v3 (renders 5.2 to 6.0 s each), side-by-side clips v1 | v3 and v2 | v3
+  (`npm run side-by-side`, out/lipsync-v3/<phrase>-v1-v3.mp4 and -v2-v3.mp4). Measured with
+  `npm run measure:exam -- H5 H6 H7 H8 --out H5-H8`: it calls the frozen `scripts/measure.mjs` measureClip and
+  reportLines unchanged and adds v3's summary with the same `summary()`. Pixels against the draw list: 0
+  disagreements on all 12 clips (1077 frames), 0 unread, largest template distance 5.
+- Every value (ms, positive = late; f0 = mouth not rest at frame 0, flagged; ends on m, b, p: footnote above):
+
+| phrase | word | kind | v1 | v2 | v3 |
+|---|---|---|---|---|---|
+| H5 | Alright | onset | −12.15386167800453 | −78.82086167800453 f0 | −78.82086167800453 f0 |
+| H5 | Let | onset | 1.3148594104308575 | 134.64885941043087 | 1.3148594104308575 |
+| H5 | One | onset | −5.441843537415059 | −38.775843537415035 | −38.775843537415035 |
+| H5 | Alright | end | 8.072229024943312 | 41.40622902494334 | 41.40622902494334 |
+| H5 | again | end | −22.26790702947845 | −22.26790702947845 | −22.26790702947845 |
+| H5 | go | end | −14.104308390022746 | 19.22869160997731 | 19.22869160997731 |
+| H6 | Is | onset | 8.798519274376423 | −57.868480725623584 f0 | −57.868480725623584 f0 |
+| H6 | Testing | onset | 9.02494331065762 | −57.64205668934241 | −57.64205668934241 |
+| H6 | One | onset | −0.40849659863950727 | −0.40849659863950727 | −0.40849659863950727 |
+| H6 | on | end | −16.3718820861678 | −16.3718820861678 | −16.3718820861678 |
+| H6 | Testing | end | 2.5400158730157774 | 2.5400158730157774 | 2.5400158730157774 |
+| H6 | three | end | −26.348873015872964 | 40.31712698412715 | 40.31712698412715 |
+| H7 | I | onset | −7.1651995464852565 | −73.83219954648526 f0 | −73.83219954648526 f0 |
+| H7 | I (2nd) | onset | −18.68514058956916 | −18.68514058956916 | −18.68514058956916 |
+| H7 | those | end | −5.351473922902361 | 27.981526077097474 | 27.981526077097474 |
+| H7 | do | end | −3.03888208616776 | −3.03888208616776 | −3.03888208616776 |
+| H8 | Keep | onset | 16.1904761904762 | −83.80952380952381 f0 | −83.80952380952381 f0 |
+| H8 | A | onset | −11.337868480725488 | −44.670868480725545 | −44.670868480725545 |
+| H8 | box | end | −37.32459637188201 | −70.65759637188206 | −70.65759637188206 |
+| H8 | happy | end | 9.932306122448775 | 9.932306122448775 | 9.932306122448775 |
+
+| version | kind | count | median | largest abs | within one frame | within 45 late / 125 early | not measured |
+|---|---|---|---|---|---|---|---|
+| v1 | onsets | 10 | −2.925170068027283 | 18.68514058956916 | 10 | 10 | 0 |
+| v1 | ends | 10 | −9.727891156462555 | 37.32459637188201 | 9 | 10 | 0 |
+| v2 | onsets | 10 | −51.15646258503398 | 134.64885941043087 | 2 | 9 | 0 |
+| v2 | ends | 10 | 6.236160997732276 | 70.65759637188206 | 7 | 10 | 0 |
+| v3 | onsets | 10 | −51.15646258503398 | 83.80952380952381 | 3 | 10 | 0 |
+| v3 | ends | 10 | 6.236160997732276 | 70.65759637188206 | 7 | 10 | 0 |
+
+- Closure: v1 9 of 16 (H5 0/1, H6 0/0, H7 2/4, H8 7/11), v2 12 of 16 (0/1, 0/0, 2/4, 10/11), v3 16 of 16.
+- One-frame runs (pixel mouths): v1 4, 7, 8, 16; v2 0, 0, 0, 0; v3 0, 0, 0, 0. Changes per second: v1
+  8.709677419354838, 11.506849315068495, 8.873239436619718, 12.631578947368421; v2 5.806451612903225,
+  7.397260273972603, 8.873239436619718, 7.578947368421053; v3 8.709677419354838, 9.45205479452055,
+  10.140845070422536, 9.789473684210527.
+- Nothing was changed after seeing the numbers. No measuring-code bug found.
+- Lags of the chain for H5-H8: 0, 1, 0, 0 samples. `npm test`: tests 160, pass 160, fail 0, skipped 0, duration_ms 68167.920792.
