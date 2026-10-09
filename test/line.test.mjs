@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
-import { linePose } from "../lib/line.mjs";
+import { lineMarks, linePose } from "../lib/line.mjs";
 import { livenessAt } from "../lib/liveness.mjs";
 import { ROOT } from "../lib/spec.mjs";
 
@@ -50,6 +50,8 @@ test("rig/lines.json: the six lines, text as in the script, one tag at most, v3"
   assert.deepEqual(Object.keys(L.lines), ["hook", "alive", "fix", "emotions", "webcam", "outro"]);
   assert.equal(L.lipSync, "v3");
   assert.equal(L.lines.outro.tailSeconds, 3);
+  assert.deepEqual([L.leadSeconds, L.tailSeconds], [0.5, 0.5]);
+  assert.ok(L.leadTailRule.changedAfterSeeing);
   for (const l of Object.values(L.lines)) assert.ok((l.text.match(/\[/g) || []).length <= 1);
 });
 
@@ -60,4 +62,17 @@ test("the six lines were synthesised once each from the script text without the 
     assert.equal(f.text, L.lines[f.id].text.replace(/^\[[a-z]+\] /, ""), f.id);
     assert.equal(f.voiceId, read("audio/voice.json").chosen);
   }
+});
+
+test("lead (changed after seeing the contact sheet): the emotion is complete on the first letter; lead and tail show the emotion's mouth", () => {
+  const lead = 15, marks = lineMarks([{ frame: 0, state: "surprised" }], lead, EC.transitionFrames);
+  assert.deepEqual(marks, [{ frame: lead - EC.transitionFrames, state: "surprised" }]);
+  const line = { seed: 1, lead, marks, mouths: new Array(20).fill("small"), span: { first: 0, last: 19 } };
+  const first = linePose(rig, LC, EC, line, lead, 30), l = livenessAt(LC, 1, lead, 30);
+  assert.equal(first.head.y, (l.head?.y || 0) + EC.states.surprised.partial.head.y, "fully surprised on the first letter");
+  assert.equal(first.mouth, "small", "speech on the first letter");
+  assert.equal(linePose(rig, LC, EC, line, 3, 30).mouth, "rest", "before the emotion arrives: rest");
+  assert.equal(linePose(rig, LC, EC, line, lead - 1, 30).mouth, "round", "late in the lead: the emotion's mouth");
+  assert.equal(linePose(rig, LC, EC, line, lead + 25, 30).mouth, "round", "in the tail: the emotion's mouth");
+  assert.equal(linePose(rig, LC, EC, line, lead + 19, 30).mouth, "small", "the last audio frame of the span: speech");
 });

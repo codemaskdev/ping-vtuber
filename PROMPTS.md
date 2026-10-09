@@ -1142,6 +1142,45 @@ out/footage/contact-sheet.png: the first, middle and last frame of
 every shot, labelled, so that I can review them by eye.
 ```
 
+## Prompt #23
+
+```text
+The footage is accepted with the changes below. I looked at the whole
+contact sheet. No new ElevenLabs calls: the audio of the six lines stays.
+
+## Answers
+1. Yes. Every line clip gets 0.5 s before the sound and 0.5 s after it
+   (the outro keeps its 3 s). The emotion of the line eases in during
+   the lead so that it is fully there on the first letter. During the
+   lead and the tail the mouth is the emotion's mouth and liveness runs.
+   This changes the combine rule: label it "changed after seeing the
+   contact sheet", update the tests, and put the audio offset inside
+   each clip into shot.json.
+2. Yes, delete the old frames under out/render/. Keep the hash lists.
+3. Leave the filter chain's shift as it is.
+
+## Changes to shots
+- strip-*, mouths-row, emotions-sheet-focused: the content fills the
+  1920 x 1080 frame with a small margin, and every label is at least
+  28 px tall at that size.
+- blink-compare: the time ruler and its blink marks at least three times
+  larger.
+- No clip may end on a blink: v3-H7 ends with the eyes shut. Lengthen
+  the tail of a wrapped clip until the eyes are open, or say in
+  shot.json which frame is the last safe one to hold.
+- Every shot.json gets "holdFrame": a frame that is safe to freeze.
+
+## Recording mode
+Drop the face oval: the outline of a face is the most recognisable part
+of the mesh. Keep lips, eyes and brows, and update the caption with the
+new count. Run the privacy tests again.
+
+## STOP here
+Commit, write the contact sheet again, and report in a few lines: what
+changed, the new clip lengths, the point count, total size, test
+counts.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

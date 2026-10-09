@@ -209,6 +209,10 @@ v3 (`rig/lines.json`):
 - **head**: the sum of liveness (breathing, drift) and the emotion's tilt and shift; outside the rig limits a pose is
   rejected, never clamped.
 - **cursor**: liveness. **glow**: 1.
+- **lead and tail** (changed after seeing the contact sheet, prompt #23): each clip starts 0.5 s before the sound
+  and ends 0.5 s after it (the outro 3 s); the emotion eases in during the lead and is complete on the first
+  letter; before and after the speech the mouth is the emotion's and liveness runs. A tail that would end in a blink
+  grows until the eyes are open.
 
 ## Step 7: the webcam page — checked by eye by the author on 2026-10-09, no measurements
 

@@ -1,18 +1,49 @@
 {
   "$comment": "Ping's spoken lines for the episode (author's prompt #22), text exactly as in the script (CodeMask repo, episodes/03-ping-vtuber/script.en.md, sha256 8aca74c7e89668ef...). The tag is not sent to ElevenLabs: lib/script-tags.mjs parseTags removes it and turns it into an emotion mark. Rendering settings below are chosen values, labelled so.",
-  "script": { "file": "episodes/03-ping-vtuber/script.en.md (CodeMask repository)", "bytes": 21021, "sha256": "8aca74c7e89668ef97afb053903045f194a949d4802421b58de1336a43449fe4" },
+  "script": {
+    "file": "episodes/03-ping-vtuber/script.en.md (CodeMask repository)",
+    "bytes": 21021,
+    "sha256": "8aca74c7e89668ef97afb053903045f194a949d4802421b58de1336a43449fe4"
+  },
   "lines": {
-    "hook": { "text": "Not long ago, I was just a picture.", "scriptLine": 12 },
-    "alive": { "text": "[happy] I just blinked. Did you see it?", "scriptLine": 88 },
-    "fix": { "text": "[happy] Sixteen out of sixteen. Write that down.", "scriptLine": 191 },
-    "emotions": { "text": "[surprised] You removed it?", "scriptLine": 206 },
-    "webcam": { "text": "[happy] Now I am him. Almost.", "scriptLine": 233 },
-    "outro": { "text": "[sleepy] And I am going to sleep.", "scriptLine": 264, "tailSeconds": 3, "tailWhy": "the author's prompt #22: in the outro the eyes stay shut after the line and the cursor keeps blinking for 3 s" }
+    "hook": {
+      "text": "Not long ago, I was just a picture.",
+      "scriptLine": 12
+    },
+    "alive": {
+      "text": "[happy] I just blinked. Did you see it?",
+      "scriptLine": 88
+    },
+    "fix": {
+      "text": "[happy] Sixteen out of sixteen. Write that down.",
+      "scriptLine": 191
+    },
+    "emotions": {
+      "text": "[surprised] You removed it?",
+      "scriptLine": 206
+    },
+    "webcam": {
+      "text": "[happy] Now I am him. Almost.",
+      "scriptLine": 233
+    },
+    "outro": {
+      "text": "[sleepy] And I am going to sleep.",
+      "scriptLine": 264,
+      "tailSeconds": 3,
+      "tailWhy": "the author's prompt #22: in the outro the eyes stay shut after the line and the cursor keeps blinking for 3 s"
+    }
   },
   "lipSync": "v3",
   "livenessSeed": 1,
   "livenessSeedWhy": "Chosen: the same seed as every other clip of this project, so liveness is the one already shown and measured.",
-  "tailFrames": 15,
-  "tailWhy": "Chosen: the same 15 rest frames after the audio as every lip sync clip, unless the line sets tailSeconds.",
-  "emotionMark": "a tag before the line starts its emotion at the first letter's start frame (lib/script-tags.mjs marksFromAlignment), easing in over rig/emotions.json transitionFrames"
+  "emotionMark": "a tag before the line puts its mark transitionFrames before the first letter's frame in the clip (lib/line.mjs lineMarks), so the emotion is complete on that letter",
+  "leadSeconds": 0.5,
+  "tailSeconds": 0.5,
+  "leadTailRule": {
+    "rule": "every line clip starts 0.5 s before the sound and ends 0.5 s after it (the outro keeps its 3 s); the line's emotion eases in during the lead so that it is fully there on the first letter; during the lead and the tail the mouth is the emotion's mouth and liveness runs",
+    "by": "the author, prompt #23",
+    "changedAfterSeeing": "the contact sheet of prompt #22's footage (each line started neutral and reached its emotion only during the first words)",
+    "before": "no lead; 15 rest frames after the audio; the tag's emotion started at the first letter and eased in over 8 frames"
+  },
+  "noBlinkAtTheEnd": "Decided by Claude for prompt #23 (no clip may end on a blink): if the last tail frame falls in a liveness blink, the tail grows frame by frame until the eyes are open again; the outro is exempt (sleepy shuts the eyes on purpose)."
 }

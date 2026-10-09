@@ -13,7 +13,7 @@ import { decode } from "../lib/audio.mjs";
 import { speechSpan } from "../lib/emotions.mjs";
 import { drawText, textWidth } from "../lib/font.mjs";
 import { alphaBBox, create, fillRect, over, resample } from "../lib/image.mjs";
-import { linePose } from "../lib/line.mjs";
+import { lineMarks, linePose } from "../lib/line.mjs";
 import { lipsyncText } from "../lib/lipsync-text.mjs";
 import { lipsyncV3 } from "../lib/lipsync-v3.mjs";
 import { frameCount, lipsyncVolume } from "../lib/lipsync-volume.mjs";
@@ -55,10 +55,38 @@ function finish(id, info) {
     ...(info.expectFrames !== undefined ? [check("frames", p.frames, info.expectFrames)] : []),
     ...(info.checks || []),
   ];
-  const shot = { id, scene: info.scene, scriptLines: info.line, frames: p.frames, fps: p.fps, size: [p.width, p.height], seconds: p.seconds, audio: p.audio, file: rel(mp4), bytes: fs.statSync(mp4).size, sha256: shaFile(mp4), madeFrom: { commit: HEAD, worktreeClean: CLEAN, ...info.made }, checks, allChecksOk: checks.every((c) => c.ok) };
+  const hold = holdOf(mp4, p, info.hold || { mode: "pixels" });
+  checks.push(...hold.checks);
+  const shot = { id, scene: info.scene, scriptLines: info.line, frames: p.frames, fps: p.fps, size: [p.width, p.height], seconds: p.seconds, audio: p.audio, ...(info.audioOffsetSeconds !== undefined ? { audioOffsetSeconds: info.audioOffsetSeconds } : {}), holdFrame: hold.holdFrame, holdWhy: hold.why, ...(hold.lastSafeFrame !== undefined ? { lastSafeFrame: hold.lastSafeFrame } : {}), file: rel(mp4), bytes: fs.statSync(mp4).size, sha256: shaFile(mp4), madeFrom: { commit: HEAD, worktreeClean: CLEAN, ...info.made }, checks, allChecksOk: checks.every((c) => c.ok) };
   fs.writeFileSync(path.join(OUT, id, "shot.json"), JSON.stringify(shot, null, 2) + "\n");
   console.log(`${id}: ${p.seconds} s, ${p.width}x${p.height}, ${shot.bytes} bytes, sha256 ${shot.sha256.slice(0, 16)}, checks ${checks.filter((c) => c.ok).length}/${checks.length}${shot.allChecksOk ? "" : " FAILED: " + checks.filter((c) => !c.ok).map((c) => c.name).join(", ")}`);
   return shot;
+}
+// A frame safe to freeze (author's prompt #23). "still": every frame is the same, frame 0. "frame": the given frame and
+// reason. "pixels": eyes read from every Ping on the stage (one, or two side by side); the hold frame is the last frame
+// whose eyes are open there and two frames either side; a clip that ends with the eyes shut gets lastSafeFrame too.
+function holdOf(mp4, p, h) {
+  if (h.mode === "still") return { holdFrame: 0, why: "a still: every frame is the same", checks: [] };
+  if (h.mode === "frame") return { holdFrame: h.frame, why: h.why, checks: h.checks || [] };
+  const halves = p.width === 2 * SW ? [[0, 0], [SW, 0]] : [[0, 0]];
+  const eyes = halves.map((o) => readEyesCursor(mp4, o));
+  const open = (f) => eyes.every((e) => e[f] && e[f].eyes === "open");
+  const safe = (f) => [-2, -1, 0, 1, 2].every((d) => f + d < 0 || f + d >= p.frames || open(f + d));
+  let f = p.frames - 1;
+  while (f > 0 && !safe(f)) f--;
+  const endsOnBlink = !open(p.frames - 1);
+  return { holdFrame: f, why: "the last frame with the eyes open on it and on two frames either side (read from the pixels)", ...(endsOnBlink ? { lastSafeFrame: f } : {}),
+    checks: [check("ends with the eyes open", !endsOnBlink, h.mayEndOnBlink ? !endsOnBlink : true)] };
+}
+// Adds the hold frame to a shot made earlier whose sources are gone (its mp4 and other fields are not touched).
+function annotate(id, h) {
+  const f = path.join(OUT, id, "shot.json"), shot = JSON.parse(fs.readFileSync(f, "utf8")), mp4 = path.join(ROOT, shot.file);
+  const hold = holdOf(mp4, { width: shot.size[0], height: shot.size[1], frames: shot.frames }, h);
+  const checks = [...shot.checks.filter((c) => c.name !== "ends with the eyes open"), ...hold.checks];
+  const out = { ...shot, holdFrame: hold.holdFrame, holdWhy: hold.why, ...(hold.lastSafeFrame !== undefined ? { lastSafeFrame: hold.lastSafeFrame } : {}), holdAddedAt: HEAD, checks, allChecksOk: checks.every((c) => c.ok) };
+  fs.writeFileSync(f, JSON.stringify(out, null, 2) + "\n");
+  console.log(`${id}: kept (${out.sha256.slice(0, 16)}), hold frame ${out.holdFrame}${out.lastSafeFrame !== undefined ? `, last safe frame ${out.lastSafeFrame}` : ""}, checks ${checks.filter((c) => c.ok).length}/${checks.length}`);
+  return out;
 }
 const dirOf = (id) => { const d = path.join(OUT, id); fs.rmSync(d, { recursive: true, force: true }); fs.mkdirSync(d, { recursive: true }); return d; };
 const tmpDir = (id) => { const d = path.join(ROOT, "out", "footage-tmp", id); fs.rmSync(d, { recursive: true, force: true }); fs.mkdirSync(d, { recursive: true }); return d; };
@@ -153,7 +181,7 @@ function wrap(id) {
   const w = WRAPS[id], src = path.join(ROOT, w.src), d = dirOf(id), dst = path.join(d, `${id}.mp4`);
   fs.copyFileSync(src, dst);
   const mouths = w.mouths ? w.mouths() : null;
-  return finish(id, { scene: w.scene, line: w.line, size: w.size || [SW, SH], expectFrames: mouths ? mouths.length : w.frames, made: { files: [w.src], copiedUnchanged: true, ...w.made },
+  return finish(id, { scene: w.scene, line: w.line, size: w.size || [SW, SH], expectFrames: mouths ? mouths.length : w.frames, hold: { mode: "pixels", mayEndOnBlink: true }, made: { files: [w.src], copiedUnchanged: true, ...w.made },
     checks: [check("sha256 equals the source", shaFile(dst), shaFile(src)), ...(mouths ? pixelMouthCheck(dst, mouths) : [])] });
 }
 
@@ -161,7 +189,9 @@ function wrap(id) {
 // the still neutral pose. Their frames are deleted afterwards (the per-frame sha256 lists stay).
 function livenessShots() {
   const r1 = "out/render/liveness-seed-1-run-1", r2 = "out/render/liveness-seed-1-run-2";
-  if (!fs.existsSync(path.join(ROOT, r1, "frame_000001.png"))) throw new Error(`${r1} has no frames`);
+  // The frames were deleted after encoding (author's prompt #23): the shots stay as they are and only get their hold
+  // frame from the mp4.
+  if (!fs.existsSync(path.join(ROOT, r1, "frame_000001.png"))) return ["liveness-two-renders", "liveness", "still-alive-split"].map((id) => annotate(id, { mode: "pixels", mayEndOnBlink: true }));
   const shaList = (dir) => fs.readdirSync(path.join(ROOT, dir)).filter((f) => f.endsWith(".png")).sort().map((f) => shaFile(path.join(ROOT, dir, f)));
   const s1 = shaList(r1), s2 = shaList(r2), same = s1.filter((h, i) => h === s2[i]).length;
   const made = { files: [r1, r2], seed: 1, version: "rig/liveness.json, rendered at e2a7f56 (prompt #16 stage renders)" };
@@ -212,7 +242,7 @@ function mouthRegion() {
   const d = dirOf("mouth-region");
   hold(png, path.join(d, "mouth-region.mp4"), 5);
   dropTmp("mouth-region");
-  return finish("mouth-region", { scene: "exam, retro", line: [151, 152, 245], size: [SW, SH], expectFrames: 150, made: { files: ["out/lipsync-v2/H2.mp4"], frame: k, frameRule: "the first frame of v2-H2 whose mouth reads as round", outline: `the measuring window (MEASUREMENT.md 2, scripts/measure.mjs WINDOW) x ${WINDOW.x}, y ${WINDOW.y}, ${WINDOW.w} x ${WINDOW.h}, drawn 6 px wide in yellow`, holdSeconds: 5 },
+  return finish("mouth-region", { scene: "exam, retro", line: [151, 152, 245], size: [SW, SH], expectFrames: 150, hold: { mode: "still" }, made: { files: ["out/lipsync-v2/H2.mp4"], frame: k, frameRule: "the first frame of v2-H2 whose mouth reads as round", outline: `the measuring window (MEASUREMENT.md 2, scripts/measure.mjs WINDOW) x ${WINDOW.x}, y ${WINDOW.y}, ${WINDOW.w} x ${WINDOW.h}, drawn 6 px wide in yellow`, holdSeconds: 5 },
     checks: [check("mouth read at that frame", frames[k].mouth, "round"), check("draw list's mouth at that frame", built("H2", "v2")[k], "round"), check("window", [WINDOW.x, WINDOW.y, WINDOW.w, WINDOW.h], [550, 892, 500, 294])] });
 }
 
@@ -229,40 +259,57 @@ function mouthCrop(mouth) {
   return (mouthLayerCache[mouth] = crop);
 }
 // One strip: rows = [{ label, mouths }] for frames f0..f1 of the phrase, letters from the alignment under each row.
+// Layout (author's prompt #23): the strip fills 1920 x 1080 with a 24 px margin; every label is 28 px tall (font scale
+// 4); the cells are as wide as the frame allows; letter labels go to the first of up to five lanes where they do not
+// overlap the one before; the rows are spread evenly over the height.
+const LABEL = 4, LH = 7 * LABEL;
 function strip(id, phrase, word0, word1, rows, info) {
   const al = read(`audio/raw/${phrase}.align.json`).alignment, words = wordsOf(al);
   const a = words.findIndex((w) => w.word === word0), b = words.findIndex((w, i) => i >= a && w.word === word1);
   const t0 = words[a].start, t1 = words[b].end, f0 = Math.floor(t0 * FPS), f1 = Math.ceil(t1 * FPS) - 1, n = f1 - f0 + 1;
-  const W = 1920, H = 1080, L = 40, cell = Math.min(220, Math.floor((W - 2 * L) / n)), ch = Math.round((cell * 294) / 500);
+  const W = 1920, H = 1080, MG = 24, cell = Math.floor((W - 2 * MG) / n), ch = Math.round((cell * 294) / 500);
   const img = create(W, H, [0, 0, 0, 255]), INK = [230, 230, 236, 255], DIM = [140, 140, 150, 255], RED = [255, 60, 80, 255];
-  drawText(img, `${info.title} - ${phrase}, FRAMES ${f0} TO ${f1} AT 30 FPS`, L, 30, 3, INK);
-  const rowH = Math.floor((H - 90) / rows.length), checks = [];
+  drawText(img, `${info.title} - ${phrase}, FRAMES ${f0} TO ${f1} AT 30 FPS`, MG, MG, LABEL, INK);
+  const xOf = (t) => MG + Math.round((t * FPS - f0) * cell);
+  // Letters of the stretch with their lanes.
+  const letters = [], laneEnd = [];
+  al.characters.forEach((c, k) => {
+    const st = al.character_start_times_seconds[k], e = al.character_end_times_seconds[k];
+    if (st < t0 - 1e-9 || e > t1 + 1e-9 || c === " ") return;
+    const text = `${c} ${st.toFixed(3)}`, xa = xOf(st), w = textWidth(text, LABEL);
+    let lane = laneEnd.findIndex((x) => x + 12 <= xa);
+    if (lane < 0) { lane = laneEnd.length; laneEnd.push(0); }
+    laneEnd[lane] = xa + w;
+    letters.push({ c, st, e, text, xa, xb: xOf(e), lane });
+  });
+  if (laneEnd.length > 5) throw new Error(`${id}: the letter labels need ${laneEnd.length} lanes`);
+  const lanesH = laneEnd.length * (LH + 16), missedH = rows.some((r) => r.markMissed) ? LH + 16 : 0;
+  const blockH = LH + 10 + ch + 10 + LH + 16 + lanesH + missedH, top = MG + LH + 24;
+  const gapY = Math.floor((H - MG - top - rows.length * blockH) / rows.length);
+  if (gapY < 0) throw new Error(`${id}: the rows do not fit`);
+  const checks = [check("label height (px)", LH, 28)];
   rows.forEach((r, ri) => {
-    const y = 90 + ri * rowH;
-    drawText(img, r.label, L, y, 2, INK);
+    const y = top + Math.floor(gapY / 2) + ri * (blockH + gapY), cy = y + LH + 10;
+    drawText(img, r.label, MG, y, LABEL, INK);
     for (let f = f0; f <= f1; f++) {
-      const x = L + (f - f0) * cell;
-      over(img, resample(mouthCrop(r.mouths[f]), cell - 4, ch - 2), x + 2, y + 24);
-      drawText(img, String(f), x + 2, y + 28 + ch, cell >= 60 ? 2 : 1, DIM);
+      const x = MG + (f - f0) * cell;
+      over(img, resample(mouthCrop(r.mouths[f]), cell - 4, ch - 2), x + 2, cy);
+      drawText(img, String(f), x + 2, cy + ch + 10, LABEL, DIM);
     }
-    // Letters under the row, each as a bar over its aligned span, staggered in three lines.
-    const ly = y + 52 + ch;
-    al.characters.forEach((c, k) => {
-      const s = al.character_start_times_seconds[k], e = al.character_end_times_seconds[k];
-      if (s < t0 - 1e-9 || e > t1 + 1e-9 || c === " ") return;
-      const xa = L + Math.round((s * FPS - f0) * cell), xb = L + Math.round((e * FPS - f0) * cell), lane = k % 3;
-      fillRect(img, xa, ly + lane * 34, Math.max(2, xb - xa - 2), 3, INK);
-      drawText(img, `${c} ${s.toFixed(3)}`, xa, ly + 6 + lane * 34, cell >= 60 ? 2 : 1, INK);
-    });
+    const ly = cy + ch + 10 + LH + 16;
+    for (const l of letters) {
+      fillRect(img, l.xa, ly + l.lane * (LH + 16), Math.max(3, l.xb - l.xa - 2), 4, INK);
+      drawText(img, l.text, l.xa, ly + l.lane * (LH + 16) + 8, LABEL, INK);
+    }
     if (r.markMissed) {
       const missed = closureScore(al, r.mouths.map((mouth, f) => ({ t: f / FPS, mouth })), FPS).letters.filter((x) => !x.hit && x.start >= t0 - 1e-9 && x.end <= t1 + 1e-9);
       for (const m of missed) {
         const fa = Math.floor(m.start * FPS), fb = Math.ceil(m.end * FPS) - 1;
         for (let f = Math.max(f0, fa); f <= Math.min(f1, fb); f++) {
-          const x = L + (f - f0) * cell;
-          for (const [rx, ry, rw, rh] of [[x, y + 20, cell, 4], [x, y + 24 + ch, cell, 4], [x, y + 20, 4, ch + 8], [x + cell - 4, y + 20, 4, ch + 8]]) fillRect(img, rx, ry, rw, rh, RED);
+          const x = MG + (f - f0) * cell;
+          for (const [rx, ry, rw, rh] of [[x, cy - 6, cell, 6], [x, cy + ch, cell, 6], [x, cy - 6, 6, ch + 12], [x + cell - 6, cy - 6, 6, ch + 12]]) fillRect(img, rx, ry, rw, rh, RED);
         }
-        drawText(img, `MISSED ${m.letter.toUpperCase()}`, L + (Math.floor(m.start * FPS) - f0) * cell, y + ch + 152, 2, RED);
+        drawText(img, `MISSED ${m.letter.toUpperCase()}`, MG + (fa - f0) * cell, ly + lanesH + 4, LABEL, RED);
       }
       checks.push(check(`missed closures marked in "${r.label}"`, missed.length, r.expectMissed));
     }
@@ -272,7 +319,7 @@ function strip(id, phrase, word0, word1, rows, info) {
   const d = dirOf(id);
   hold(png, path.join(d, `${id}.mp4`), 6);
   dropTmp(id);
-  return finish(id, { scene: info.scene, line: info.line, size: [W, H], expectFrames: 180, checks, made: { phrase, audio: `audio/dev/${phrase}.mp3`, alignment: `audio/raw/${phrase}.align.json`, words: `${word0} .. ${word1}`, frames: [f0, f1], rows: rows.map((r) => ({ label: r.label, rules: r.rules, mouths: r.mouths.slice(f0, f1 + 1).join(" ") })), layers: "head with each mouth layer at its anchorDy, the mouth region cut out and scaled to the cell (art pixels, no redrawing)", holdSeconds: 6, note: "on the River audio the video uses; the author first saw these words in prompts #16-#17" } });
+  return finish(id, { scene: info.scene, line: info.line, size: [W, H], expectFrames: 180, checks, hold: { mode: "still" }, made: { phrase, audio: `audio/dev/${phrase}.mp3`, alignment: `audio/raw/${phrase}.align.json`, words: `${word0} .. ${word1}`, frames: [f0, f1], cellPx: [cell, ch], letterLanes: laneEnd.length, rows: rows.map((r) => ({ label: r.label, rules: r.rules, mouths: r.mouths.slice(f0, f1 + 1).join(" ") })), layers: "head with each mouth layer at its anchorDy, the mouth region cut out and scaled to the cell (art pixels, no redrawing)", holdSeconds: 6, note: "on the River audio the video uses; the author first saw these words in prompts #16-#17" } });
 }
 function strips() {
   const P2 = read("audio/raw/P2.align.json").alignment, H2 = read("audio/raw/H2.align.json").alignment;
@@ -306,19 +353,28 @@ function renderPoses(id, poses) {
   render(path.join(tmp, "frames"), "png");
   return poses.map((_, i) => readPng(path.join(tmp, "frames", `frame_${String(i + 1).padStart(6, "0")}.png`)).img);
 }
+// Sheets (author's prompt #23): each render cut to the head (stage 200..1200 on both axes, room for a 6 degree tilt
+// and the glow), the cells as wide as the frame allows with a 24 px margin, labels 28 px tall, centred.
+const HEAD_CROP = [200, 200, 1000, 1000];
+function cropImg(im, [x, y, w, h]) {
+  const out = create(w, h, [0, 0, 0, 255]);
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) for (let c = 0; c < 4; c++) out.data[(j * w + i) * 4 + c] = im.data[((y + j) * im.width + x + i) * 4 + c];
+  return out;
+}
 function sheet(id, imgs, labels, info) {
-  const W = 1920, H = 1080, GAP = 16, cell = Math.floor((W - GAP * (imgs.length + 1)) / imgs.length), img = create(W, H, [0, 0, 0, 255]);
-  const y = Math.floor((H - cell - (labels ? 40 : 0)) / 2);
+  const W = 1920, H = 1080, MG = 24, GAP = 16, k = imgs.length, cell = Math.floor((W - 2 * MG - (k - 1) * GAP) / k), img = create(W, H, [0, 0, 0, 255]);
+  const left = Math.floor((W - k * cell - (k - 1) * GAP) / 2), y = Math.floor((H - cell - (labels ? LH + 16 : 0)) / 2);
   imgs.forEach((im, i) => {
-    over(img, resample(im, cell, cell), GAP + i * (cell + GAP), y);
-    if (labels) drawText(img, labels[i], GAP + i * (cell + GAP) + Math.floor((cell - textWidth(labels[i], 3)) / 2), y + cell + 12, 3, [230, 230, 236, 255]);
+    const x = left + i * (cell + GAP);
+    over(img, resample(cropImg(im, HEAD_CROP), cell, cell), x, y);
+    if (labels) drawText(img, labels[i], x + Math.floor((cell - textWidth(labels[i], LABEL)) / 2), y + cell + 16, LABEL, [230, 230, 236, 255]);
   });
   const png = path.join(ROOT, "out", "footage-tmp", id, "sheet.png");
   writePng(png, img);
   const d = dirOf(id);
   hold(png, path.join(d, `${id}.mp4`), 5);
   dropTmp(id);
-  return finish(id, { ...info, size: [W, H], expectFrames: 150 });
+  return finish(id, { ...info, size: [W, H], expectFrames: 150, hold: { mode: "still" }, checks: [...(info.checks || []), ...(labels ? [check("label height (px)", LH, 28)] : [])], made: { ...info.made, crop: `stage ${HEAD_CROP.join(", ")} (x, y, w, h)`, cellPx: cell } });
 }
 function oldEmotionsSheet() {
   const old = gitJson("9f9b04d", "rig/emotions.json"), names = ["neutral", ...Object.keys(old.states)];
@@ -335,30 +391,45 @@ function mouthsRow() {
 // ---------------------------------------------------------------- C1: Ping's six lines
 function lines() {
   const L = read("rig/lines.json"), S = read("audio/SOURCES.json"), out = [];
+  const lead = Math.round(L.leadSeconds * FPS);
   for (const [id, line] of Object.entries(L.lines)) {
     const src = S.lineFiles.find((f) => f.id === id), al = read(`audio/raw/line-${id}.align.json`).alignment;
     const d0 = decode(path.join(ROOT, "audio", "dev", `line-${id}.mp3`)), n = frameCount(d0.samples.length, d0.sampleRate, FPS);
-    const mouths = lipsyncV3(al, FPS, V3, n).mouths, span = speechSpan(al, FPS), marks = marksFromAlignment(src.tags, al, FPS);
-    const tail = line.tailSeconds ? line.tailSeconds * FPS : L.tailFrames, frames = n + tail, spec = { seed: L.livenessSeed, marks, mouths, span };
+    const mouths = lipsyncV3(al, FPS, V3, n).mouths, span = speechSpan(al, FPS);
+    const tagMarks = marksFromAlignment(src.tags, al, FPS), marks = lineMarks(tagMarks, lead, EC.transitionFrames);
+    const spec = { seed: L.livenessSeed, lead, marks, mouths, span };
+    // 0.5 s after the end of the audio (3 s for the outro); a tail that ends in a blink grows until the eyes are open.
+    const tail0 = Math.round((line.tailSeconds ?? L.tailSeconds) * FPS);
+    let frames = lead + n + tail0;
+    if (id !== "outro") while (linePose(rig, LC, EC, spec, frames - 1, FPS).eyes === "closed") frames++;
+    const tail = frames - lead - n;
     const sid = `line-${id}`, d = dirOf(sid), video = path.join(ROOT, "out", "footage-tmp", sid, "video.mp4");
     tmpDir(sid);
     buildPreview("line", undefined, lineSequence(id, spec, frames));
     const took = render(video, "mp4");
-    const mp4 = path.join(d, `${sid}.mp4`);
-    ffmpeg(["-i", rel(video), "-i", `audio/dev/line-${id}.mp3`, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "copy", rel(mp4)]);
+    const mp4 = path.join(d, `${sid}.mp4`), offset = lead / FPS;
+    ffmpeg(["-i", rel(video), "-itsoffset", String(offset), "-i", `audio/dev/line-${id}.mp3`, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "copy", rel(mp4)]);
     dropTmp(sid);
+    const audioStart = Number(execFileSync("ffprobe", ["-v", "error", "-select_streams", "a:0", "-show_entries", "stream=start_time", "-of", "csv=p=0", mp4]).toString().trim());
     const poses = Array.from({ length: frames }, (_, f) => linePose(rig, LC, EC, spec, f, FPS));
     const ec = readEyesCursor(mp4);
     const seen = readMouthsAtPoses(mp4, poses), dis = seen.map((r, f) => (r.mouth !== poses[f].mouth ? f : null)).filter((f) => f !== null);
-    const checks = [check("pixel mouths (turned back by the pose) that disagree with the pose", dis.length, 0), check("largest distance to the chosen template (px)", Math.max(...seen.map((r) => r.distance)) <= M.mouthPixels.maxDistance, true), check("eyes from pixels that disagree with the pose", ec.filter((e, f) => e.eyes !== poses[f].eyes).length, 0), check("cursor from pixels that disagrees with the pose", ec.filter((e, f) => e.cursor !== poses[f].cursor).length, 0)];
-    const c = closureScore(al, seen.map((r, f) => ({ t: f / FPS, mouth: r.mouth })), FPS);
+    const first = span ? lead + span.first : null;
+    const checks = [check("audio starts at (s)", audioStart, offset), check("pixel mouths (turned back by the pose) that disagree with the pose", dis.length, 0), check("largest distance to the chosen template (px)", Math.max(...seen.map((r) => r.distance)) <= M.mouthPixels.maxDistance, true), check("eyes from pixels that disagree with the pose", ec.filter((e, f) => e.eyes !== poses[f].eyes).length, 0), check("cursor from pixels that disagrees with the pose", ec.filter((e, f) => e.cursor !== poses[f].cursor).length, 0),
+      check("the emotion is complete on the first letter", marks.every((m) => m.frame + EC.transitionFrames <= first), true),
+      check("lead and tail show the emotion's mouth (or rest)", poses.every((p, f) => (f >= first && f <= lead + span.last) || p.mouth === linePose(rig, LC, EC, { ...spec, span: null }, f, FPS).mouth), true)];
+    const c = closureScore(al, seen.map((r, f) => ({ t: (f - lead) / FPS, mouth: r.mouth })), FPS);
     if (c.of) checks.push(check("closures from the pixels", `${c.hits} of ${c.of}`, `${c.of} of ${c.of}`));
+    let hold = { mode: "pixels" };
     if (id === "outro") {
-      const tailF = ec.slice(n);
+      const tailF = ec.slice(lead + n);
       checks.push(check("outro tail: frames with the eyes shut (pixels)", tailF.filter((e) => e.eyes === "closed").length, tail), check("outro tail: the cursor both on and off (pixels)", [tailF.some((e) => e.cursor), tailF.some((e) => !e.cursor)], [true, true]));
+      let hf = frames - 1;
+      while (hf > 0 && !ec[hf].cursor) hf--;
+      hold = { mode: "frame", frame: hf, why: "sleepy shuts the eyes on purpose: the last frame with the cursor on" };
     }
-    out.push(finish(sid, { scene: { hook: "hook", alive: "alive", fix: "fix", emotions: "emotions", webcam: "webcam", outro: "outro" }[id], line: [line.scriptLine], size: [SW, SH], expectFrames: frames, checks,
-      made: { text: line.text, sent: src.text, audio: `audio/dev/line-${id}.mp3`, raw: src.file, alignment: `audio/raw/line-${id}.align.json`, voice: `${src.voiceName} (${src.voiceId})`, lipSync: "v3 (frozen 40ae504)", combine: "lib/line.mjs (committed 198255c before rendering)", emotion: marks, seed: L.livenessSeed, audioFrames: n, tailFrames: tail, render: took } }));
+    out.push(finish(sid, { scene: { hook: "hook", alive: "alive", fix: "fix", emotions: "emotions", webcam: "webcam", outro: "outro" }[id], line: [line.scriptLine], size: [SW, SH], expectFrames: frames, checks, hold, audioOffsetSeconds: offset,
+      made: { text: line.text, sent: src.text, audio: `audio/dev/line-${id}.mp3`, raw: src.file, alignment: `audio/raw/line-${id}.align.json`, voice: `${src.voiceName} (${src.voiceId})`, lipSync: "v3 (frozen 40ae504)", combine: "lib/line.mjs (lead and tail changed after seeing the contact sheet, prompt #23)", emotion: marks, seed: L.livenessSeed, leadFrames: lead, audioFrames: n, tailFrames: tail, tailGrewForABlink: tail - tail0, mux: `ffmpeg -itsoffset ${offset} on the audio, both streams copied`, render: took } }));
   }
   return out;
 }
@@ -376,24 +447,26 @@ function blinkCompare() {
     return v;
   });
   // The ruler: 0 to 20 s under each Ping, a tick every second, a red mark at each blink start; a white playhead moves.
-  const ruler = create(2 * SW, SH, [0, 0, 0, 0]), RX = 100, RW = 1400, RY = 1440, INK = [200, 200, 210, 255], RED = [255, 60, 80, 255];
+  // Three times the first version's size (author's prompt #23): line 9 px, ticks 24 and 48 px, labels 63 px tall,
+  // blink marks 18 x 108 px, playhead 12 px wide.
+  const ruler = create(2 * SW, SH, [0, 0, 0, 0]), RX = 100, RW = 1400, RY = 1430, INK = [200, 200, 210, 255], RED = [255, 60, 80, 255];
   for (const [side, eyes] of [[0, steady], [1, real]]) {
     const ox = side * SW;
-    fillRect(ruler, ox + RX, RY, RW, 3, INK);
-    for (let s = 0; s <= 20; s++) { const x = ox + RX + Math.round((s / 20) * RW); fillRect(ruler, x, RY - (s % 5 ? 8 : 16), 2, s % 5 ? 8 : 16, INK); if (s % 5 === 0) drawText(ruler, `${s}S`, x - 8, RY + 14, 3, INK); }
-    for (const f of starts(eyes)) fillRect(ruler, ox + RX + Math.round((f / N) * RW) - 3, RY - 40, 6, 36, RED);
+    fillRect(ruler, ox + RX, RY, RW, 9, INK);
+    for (let s = 0; s <= 20; s++) { const x = ox + RX + Math.round((s / 20) * RW); fillRect(ruler, x - 3, RY - (s % 5 ? 24 : 48), 6, s % 5 ? 24 : 48, INK); if (s % 5 === 0) drawText(ruler, `${s}S`, x - Math.floor(textWidth(`${s}S`, 9) / 2), RY + 30, 9, INK); }
+    for (const f of starts(eyes)) fillRect(ruler, ox + RX + Math.round((f / N) * RW) - 9, RY - 120, 18, 108, RED);
   }
   writePng(path.join(tmp, "ruler.png"), ruler);
-  writePng(path.join(tmp, "playhead.png"), create(4, 70, [255, 255, 255, 255]));
-  const d = dirOf("blink-compare"), mp4 = path.join(d, "blink-compare.mp4"), px = (ox) => `${ox + RX}+t/20*${RW}-2`;
+  writePng(path.join(tmp, "playhead.png"), create(12, 160, [255, 255, 255, 255]));
+  const d = dirOf("blink-compare"), mp4 = path.join(d, "blink-compare.mp4"), px = (ox) => `${ox + RX}+t/20*${RW}-6`;
   ffmpeg(["-i", rel(vids[0]), "-i", rel(vids[1]), "-i", rel(path.join(tmp, "ruler.png")), "-loop", "1", "-i", rel(path.join(tmp, "playhead.png")),
-    "-filter_complex", `[0:v][1:v]hstack=inputs=2[s];[s][2:v]overlay=0:0[r];[r][3:v]overlay=x='${px(0)}':y=${RY - 50}:shortest=1[p];[p][3:v]overlay=x='${px(SW)}':y=${RY - 50}:shortest=1[v]`,
+    "-filter_complex", `[0:v][1:v]hstack=inputs=2[s];[s][2:v]overlay=0:0[r];[r][3:v]overlay=x='${px(0)}':y=${RY - 140}:shortest=1[p];[p][3:v]overlay=x='${px(SW)}':y=${RY - 140}:shortest=1[v]`,
     "-map", "[v]", "-frames:v", String(N), ...X264, rel(mp4)]);
   dropTmp("blink-compare");
   const eL = readEyesCursor(mp4), eR = readEyesCursor(mp4, [SW, 0]);
   return finish("blink-compare", { scene: "alive", line: [82, 83], size: [2 * SW, SH], expectFrames: N,
     checks: [check("left blinks (starts)", starts(steady), [60, 180, 300, 420, 540]), check("left eyes from pixels that disagree", eL.filter((e, f) => e.eyes !== steady[f]).length, 0), check("right eyes from pixels that disagree with seed 1", eR.filter((e, f) => e.eyes !== real[f]).length, 0)],
-    made: { left: "a blink every 4 s: eyes shut for 4 frames (0.133 s, inside the rule's 0.10-0.15 s) from frame 60, every 120 frames (chosen)", right: "rig/liveness.json blinks for seed 1, eyes only (no breathing, drift or cursor blink on either side, so the two differ only in blink timing; chosen)", rightBlinkStarts: starts(real), ruler: "drawn by code: 0-20 s, a tick each second, a red mark at each blink start, a moving white playhead", seed: 1 } });
+    made: { left: "a blink every 4 s: eyes shut for 4 frames (0.133 s, inside the rule's 0.10-0.15 s) from frame 60, every 120 frames (chosen)", right: "rig/liveness.json blinks for seed 1, eyes only (no breathing, drift or cursor blink on either side, so the two differ only in blink timing; chosen)", rightBlinkStarts: starts(real), ruler: "drawn by code: 0-20 s, a tick each second, a red mark at each blink start, a moving white playhead; three times the first version's size (prompt #23)", seed: 1 } });
 }
 
 // ---------------------------------------------------------------- C3: the skeleton while the head sways
@@ -405,7 +478,7 @@ function skeletonSway() {
   const d = dirOf("skeleton-sway");
   buildPreview("poses", undefined, posesSequence(poses, "skeleton-sway", FPS, { skeleton: true }));
   render(path.join(d, "skeleton-sway.mp4"), "mp4");
-  return finish("skeleton-sway", { scene: "layers-and-rig, hook", line: [15, 68, 74], size: [SW, SH], expectFrames: N, checks: [check("largest |tilt| (degrees) inside the 12 degree limit", Math.max(...poses.map((p) => Math.abs(p.head.tilt))), 8)],
+  return finish("skeleton-sway", { scene: "layers-and-rig, hook", line: [15, 68, 74], size: [SW, SH], expectFrames: N, hold: { mode: "frame", frame: 45, why: "no blink in this shot (neutral poses without liveness); frame 45 is the tilt of 8 degrees" }, checks: [check("largest |tilt| (degrees) inside the 12 degree limit", Math.max(...poses.map((p) => Math.abs(p.head.tilt))), 8)],
     made: { poses: "neutral; head tilt 0 → 8 → −8 → 0 degrees over 6 s, smootherstep between keys at frames 0, 45, 135, 179 (chosen)", skeleton: "rig/adapter.js drawSkeleton: region boxes, pivots, lines to parents, the smile line" } });
 }
 
@@ -435,7 +508,7 @@ function layersApart() {
   buildPreview("cutout", undefined, cutoutSequence("layers-apart", plan, FPS));
   render(path.join(d, "layers-apart.mp4"), "mp4");
   const ec = readEyesCursor(path.join(d, "layers-apart.mp4"));
-  return finish("layers-apart", { scene: "layers-and-rig, retro", line: [50, 55, 241], size: [SW, SH], expectFrames: N,
+  return finish("layers-apart", { scene: "layers-and-rig, retro", line: [50, 55, 241], size: [SW, SH], expectFrames: N, hold: { mode: "frame", frame: 90, why: "the middle of the 2 s the layers are held apart; no blinks in this shot" },
     checks: [check("checkerboards inside the stage when apart", inStage, true), check("checkerboards that overlap when apart", pairs, []), check("every move is whole pixels", plan.every((fr) => fr.every((it) => Number.isInteger(it.x) && Number.isInteger(it.y))), true), check("first and last frame: the neutral face (eyes open from pixels)", [ec[0].eyes, ec[N - 1].eyes], ["open", "open"])],
     made: { layers: "art/layers/*.png, drawn unscaled at whole-pixel positions; only moved", timeline: "together 0.5 s, apart 1.5 s (smootherstep), held 2 s, back 1.5 s, together 0.5 s; the layers not in the neutral face fade in and out over 9 frames while moving (chosen)", targets: target, checkerboard: `behind every layer but the glow while apart, ${PAD} px around its alpha box, 16 px cells, opacity following the move`, headAndGlow: "stay in place" } });
 }
