@@ -440,6 +440,47 @@ function layersApart() {
     made: { layers: "art/layers/*.png, drawn unscaled at whole-pixel positions; only moved", timeline: "together 0.5 s, apart 1.5 s (smootherstep), held 2 s, back 1.5 s, together 0.5 s; the layers not in the neutral face fade in and out over 9 frames while moving (chosen)", targets: target, checkerboard: `behind every layer but the glow while apart, ${PAD} px around its alpha box, 16 px cells, opacity following the move`, headAndGlow: "stay in place" } });
 }
 
+// ---------------------------------------------------------------- numbers.json
+// Every number the script's stage notes put on screen, with the FACTS.md line(s) it comes from (found by a quote).
+const NUMBERS = [
+  { line: 55, onScreen: "8 images → 11 layers", facts: ["cut by scripts from 8 generated images"] },
+  { line: 60, onScreen: "12 attempts · 8 used · 4 not used", facts: ["12 generator attempts"] },
+  { line: 84, onScreen: "\"intervalS\": [2.0, 6.0]", facts: ["Blinks every 2 to 6 s"] },
+  { line: 85, onScreen: "300 / 300 identical", facts: ["The 10 s liveness clip rendered twice: 300 of 300 frames identical"] },
+  { line: 110, onScreen: "2 / 6", facts: ["v1 closes the lips on 2 of the 6"] },
+  { line: 116, onScreen: "M and y with their times (0 to 0.128 s, 0.128 to 0.174 s)", facts: ["In P2 ElevenLabs puts the M of"] },
+  { line: 122, onScreen: "\"minFrames\": 2", facts: ["A mouth shape is held for at least two frames"] },
+  { line: 126, onScreen: "closures 6 / 6 · one-frame flickers 0", facts: ["First version (provisional voice): closures 6 of 6"] },
+  { line: 136, onScreen: "6 / 6", facts: ["After that change, P1-P3 still scored 6 of 6"] },
+  { line: 153, onScreen: "v1 8 / 14 · v2 10 / 14", facts: ["H1-H4 closures: v1 8 of 14, v2 10 of 14"] },
+  { line: 155, onScreen: "6 / 6 on the three old phrases", facts: ["After that change, P1-P3 still scored 6 of 6"] },
+  { line: 161, onScreen: "v1 4 of 4 within one frame · v2 1 of 4", facts: ["H1-H4 onsets: v1 median"] },
+  { line: 161, onScreen: "v2 phrase starts −57, −76, −83 ms (at least); inside a phrase −4 ms", facts: ["v2's phrase starts in H1-H4"], rounded: "−56.87074829931973 → −57, −75.82766439909297 → −76, −82.81179138321995 → −83, −3.855208616780015 → −4" },
+  { line: 163, onScreen: "4 measurements", facts: ["H1-H4 onsets: v1 median"] },
+  { line: 182, onScreen: "v1 9 / 16 · v2 12 / 16 · v3 16 / 16", facts: ["Closures: v1 9 of 16, v2 12 of 16, v3 16 of 16"] },
+  { line: 186, onScreen: "v3 phrase starts −58, −74, −79, −84 ms (at least); about two and a half frames", facts: ["Phrase starts in H5-H8, the same in v2 and v3"], rounded: "−57.868480725623584 → −58, −73.83219954648526 → −74, −78.82086167800453 → −79, −83.80952380952381 → −84; in frames −1.7360544217687075 to −2.5142857142857142" },
+  { line: 188, onScreen: "v1 10.43 · v3 9.52; v3 one-frame runs 0", facts: ["Mouth changes per second averaged over H5-H8", "One-frame flickers: v1 4, 7, 8 and 16 per phrase"], rounded: "10.43033627960287 → 10.43, 9.523012742127113 → 9.52" },
+  { line: 210, onScreen: "128 of 478 points shown (the page's caption)", facts: ["The recording mode of the page shows 128 of the 478 points"] },
+  { line: 214, onScreen: "3 758 596 bytes", facts: ["model 3758596 bytes"] },
+  { line: 216, onScreen: "\"tiltGain\": 0.6", facts: ["Head tilt follows at 0.6 times"] },
+  { line: 218, onScreen: "\"closeAbove\": 0.55", facts: ["Ping's eyes shut when the mean blink score goes above 0.55"] },
+  { line: 220, onScreen: "thresholds 0.55 and 0.35", facts: ["Ping's eyes shut when the mean blink score goes above 0.55"] },
+  { line: 226, onScreen: "25 before ready, 0 after", facts: ["Headless test: 25 requests before the page is ready, 0 after"] },
+  { line: 237, onScreen: "11 layers · lip sync v3 16/16 · 3 emotions", facts: ["The character is 11 layers", "Closures: v1 9 of 16, v2 12 of 16, v3 16 of 16", "Three emotions besides neutral"] },
+  { line: 238, onScreen: "4 of 12 images not used · v1: 2 of 6 closures · my rule: 10 of 14", facts: ["12 generator attempts", "v1 closes the lips on 2 of the 6", "H1-H4 closures: v1 8 of 14, v2 10 of 14"] },
+  { line: 243, onScreen: "6 / 6 and 10 / 14", facts: ["After that change, P1-P3 still scored 6 of 6", "H1-H4 closures: v1 8 of 14, v2 10 of 14"] },
+];
+function writeNumbers() {
+  const facts = fs.readFileSync(path.join(ROOT, "FACTS.md"), "utf8").split("\n");
+  const out = NUMBERS.map((n) => ({ scriptLine: n.line, onScreen: n.onScreen, ...(n.rounded ? { rounded: n.rounded } : {}), facts: n.facts.map((q) => {
+    const i = facts.findIndex((l) => l.startsWith("- ") && l.includes(q));
+    if (i < 0) throw new Error(`no FACTS.md line says: ${q}`);
+    return { line: `FACTS.md:${i + 1}`, text: facts[i].replace(/ \[.*$/, "") };
+  }) }));
+  fs.writeFileSync(path.join(OUT, "numbers.json"), JSON.stringify({ $comment: "Written by scripts/footage.mjs (npm run footage -- numbers). Every number the stage notes of script.en.md (sha256 8aca74c7e89668ef) put on screen, with the FACTS.md line it comes from.", factsCommit: HEAD, worktreeClean: CLEAN, numbers: out }, null, 2) + "\n");
+  console.log(`out/footage/numbers.json: ${out.length} entries`);
+}
+
 // ---------------------------------------------------------------- the contact sheet
 function contactSheet() {
   const ids = fs.readdirSync(OUT).filter((d) => fs.existsSync(path.join(OUT, d, "shot.json"))).sort();
@@ -483,6 +524,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (on("blink-compare")) blinkCompare();
   if (on("skeleton-sway")) skeletonSway();
   if (on("layers-apart")) layersApart();
+  if (on("numbers")) writeNumbers();
   if (on("sheet") || all) contactSheet();
   fs.rmSync(path.join(ROOT, "out", "footage-tmp"), { recursive: true, force: true });
 }

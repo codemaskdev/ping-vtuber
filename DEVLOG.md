@@ -1079,3 +1079,62 @@ total closure: v2 16 of 20, v3 20 of 20
   brows: the emotion only; head: liveness plus the emotion, rejected outside the limits; cursor: liveness. Decided by
   Claude (labelled in `rig/lines.json`): liveness seed 1 for every line; 15 rest frames after each line, 3 s for the
   outro (the author's); the tag's emotion starts at the first letter's start frame and eases in over 8 frames.
+- Ping's six lines (prompt #22), `npm run voice -- lines`: 6 ElevenLabs calls, one per line, River, frozen settings,
+  the script text without its tag; durations (ffprobe) hook 1.857596 s, alive 1.625397 s, fix 2.182676 s, emotions
+  1.021678 s, webcam 1.393197 s, outro 1.393197 s. Processed with `npm run audio:process` (earlier files unchanged);
+  chain lag alive -16 samples and emotions 72 samples (the others 0 or 1); not corrected, as before. Metadata: encoder
+  tag only on all 12 files.
+- Numbers computed for the script's stage notes (from the H5-H8 and H1-H4 tables above, ms, f0 = mouth already open
+  at frame 0, so the true value is that or earlier):
+  - mouth changes per second averaged over H5-H8: v1 10.43033627960287 (8.709677419354838, 11.506849315068495,
+    8.873239436619718, 12.631578947368421), v3 9.523012742127113 (8.709677419354838, 9.45205479452055,
+    10.140845070422536, 9.789473684210527);
+  - v2 phrase starts in H1-H4: Okay −82.81179138321995 f0, Why −75.82766439909297 f0, Evolution
+    −56.87074829931973 f0; the one onset inside a phrase: Open −3.855208616780015;
+  - v2 and v3 phrase starts in H5-H8 (the same in both): Alright −78.82086167800453 f0, Is −57.868480725623584 f0,
+    I −73.83219954648526 f0, Keep −83.80952380952381 f0; in frames (÷ 33.333333333333336): −2.364625850340136,
+    −1.7360544217687075, −2.2149659863945574, −2.5142857142857142.
+  Command: `node -e 'const m=a=>a.reduce((x,y)=>x+y)/a.length;console.log(m([8.709677419354838,11.506849315068495,8.873239436619718,12.631578947368421]),m([8.709677419354838,9.45205479452055,10.140845070422536,9.789473684210527]))'`
+- Footage (`npm run footage`, code at 0111563, clean tree; out/footage/, not committed; 3:08.18 for everything):
+  26 shots, each `<id>/<id>.mp4` and `shot.json` with its checks, all checks passing; the full run gave the same
+  bytes as the trial runs for every shot except emotions-sheet-focused, whose labels I centred between the two. Total 29992 kB (`du -sk out/footage`) with the
+  contact sheet; only mp4, json and the contact sheet png are kept.
+  - Wrapped, copied unchanged: v1-P2, v1-v2-P2, v2-H2, v3-H7, emotions-walkthrough. From the two liveness renders
+    (frames encoded, then the frame folders deleted; their per-frame sha256 lists stay): liveness-two-renders (300 of
+    300 frames identical by sha256), liveness, still-alive-split (the neutral still of the reconstruction render next
+    to run 1).
+  - From frozen code: v3-H2 (11 of 11 closures read from the pixels, 0 frames where the pixel mouth disagrees with
+    the draw list) and v2-v3-H2; mouth-region (frame 4 of v2-H2, the first that reads round, with the measuring window
+    550, 892, 500 x 294 outlined); strip-moves, strip-My, strip-loud, strip-bob (the real mouth layers per frame,
+    letters and times under them, missed closures in red: 3 in v2, 0 in v3; old rules from git e2a7f56 and 0b9efef);
+    emotions-sheet-focused (rig/emotions.json from 9f9b04d, into out/footage only); mouths-row.
+  - New: line-hook, line-alive, line-fix, line-emotions, line-webcam, line-outro (mouth, eyes and cursor read from the
+    pixels agree with lib/line.mjs on every frame; the outro's 90 tail frames all eyes shut, the cursor both on and
+    off); blink-compare (left a blink every 4 s from frame 60, right seed 1's blinks only; eyes from pixels agree on
+    every frame of both); skeleton-sway (tilt 0, 8, −8, 0 degrees); layers-apart (whole-pixel moves only, no tile
+    overlaps, all inside the stage).
+  - Decided without asking: stills (strips, sheets, mouths row, mouth region) are held as 5 or 6 s mp4s; strips and
+    sheets are 1920 x 1080, side-by-side shots 3200 x 1600; the blink comparison shows blinks only on both sides;
+    the layers that are not in the neutral face fade in and out while they move; the head and the glow stay in
+    place; the old emotions sheet has labels and the mouths row has none (the edit adds them); liveness seed 1 for
+    the lines.
+- What broke:
+  - The frozen measuring code reads the mouth from an upright head; at happy's 6 degree tilt the rotated smile reads
+    as small or unread (59 of 64 frames of line-alive wrong). The method stays frozen; the footage checks for the
+    lines turn each bright pixel back by the frame's pose before measuring the box. It needs sine and cosine, which
+    the determinism test bans in scripts; they are Taylor polynomials (largest error 9.177769655366319e-11 over
+    ±12 degrees).
+  - My crops for the eyes and cursor checks had odd sizes; ffmpeg rounds odd crops of yuv420p video, so the raw
+    frames no longer divided evenly and every later frame was shifted (3 false cursor disagreements in the outro).
+    Crops are now even.
+  - A local variable named `read` shadowed the JSON reader (a ReferenceError), and the eyes were first classified by
+    the box height, which a 6.7 degree tilt pushes past the threshold for shut eyes; they are now classified by the
+    count of bright pixels, which turning does not change.
+  - The recording-mode test counted the hidden start button as visible (display is not inherited); visibility is
+    now read from the layout.
+- Webcam page, recording mode (`?record=1`): 1920 x 1080, black; on the left the 128 points of
+  FACE_LANDMARKS_CONTOURS (lips 40, eyes 16 + 16, eyebrows 10 + 10, face oval 36; web/record-points.json from
+  `npm run face:points`), mirrored like Ping, 6 px dots; on the right Ping; one caption "128 of 478 points shown";
+  the camera starts by itself once ready. Privacy guards unchanged; the four headless tests pass (requests after
+  ready 0 in the recording mode too).
+- `npm test`: tests 171, pass 171, fail 0, skipped 0, duration_ms 68868.638958.
