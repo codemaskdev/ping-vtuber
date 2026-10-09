@@ -967,6 +967,12 @@ table for v1, v2 and v3, closure scores, one-frame runs, what broke,
 questions. Change nothing after seeing the numbers.
 ```
 
+## Prompt #19
+
+```text
+The H5 to H8 exam is accepted. 1. No time shift: v3 is the last version, the early mouth stays an observation. 2. Do not wire anything yet: I will choose between frozen v2 and frozen v3 after watching the v2 | v3 clips, and tell you. Nothing else to do now.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

@@ -999,3 +999,8 @@ total closure: v2 16 of 20, v3 20 of 20
   10.140845070422536, 9.789473684210527.
 - Nothing was changed after seeing the numbers. No measuring-code bug found.
 - Lags of the chain for H5-H8: 0, 1, 0, 0 samples. `npm test`: tests 160, pass 160, fail 0, skipped 0, duration_ms 68167.920792.
+
+## 2026-10-09 · Prompt #19
+- The H5-H8 exam is accepted. No time shift: v3 is the last version and the early mouth at phrase starts stays an
+  observation. Nothing is wired into the episode or the web page until the author chooses between frozen v2 and
+  frozen v3 after watching the v2 | v3 clips (out/lipsync-v3/H5-v2-v3.mp4 to H8-v2-v3.mp4).
