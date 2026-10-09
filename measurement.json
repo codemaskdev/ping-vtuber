@@ -1,0 +1,18 @@
+{
+  "$comment": "Parameters of the measurement (MEASUREMENT.md, author's prompt #17). Chosen on P1-P3 only, before any held-out phrase existed; frozen with the method (rig/frozen.json).",
+  "fps": 30,
+  "reference": {
+    "windowS": 0.01,
+    "hopS": 0.001,
+    "threshold": 0.0031622776601683794,
+    "minPauseS": 0.08,
+    "why": "The idea of the CodeMask episodes' tools/onsets.mjs (ffmpeg silencedetect at -50 dB, quiet of at least 80 ms is a pause), written here on the mp4's own decoded audio so that window and hop are explicit: loudness = RMS over a 10 ms window centred on the time, every 1 ms; sound at or above -50 dBFS (0.0031622776601683794 linear, the same level as onsets.mjs); quiet shorter than 80 ms (onsets.mjs's minimum) is a stop consonant inside the sound, longer is a pause. Checked on P1-P3: see MEASUREMENT.md."
+  },
+  "mouthPixels": {
+    "window": "the rig's mouth region (rig.json layers mouth_*.region, art pixels) moved onto the stage by stage.artOffset",
+    "greenAtLeast": 128,
+    "maxDistance": 14,
+    "why": "Chosen: the mouths are the screen's cyan (green 230) on a dark screen; a pixel with green at or above 128 is mouth. Each frame's bright bounding box (w, h) is compared with the same box measured on the art (head with that mouth layer, moved by its anchorDy); the two closest templates (rest and small) are 29 px apart, so a frame more than 14 px from every template is reported as unread rather than guessed."
+  },
+  "yardsticksMs": { "oneFrame": 33.333333333333336, "late": 45, "early": 125 }
+}

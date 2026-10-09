@@ -7,6 +7,10 @@
     "rig/lipsync-text.json (v2 rules)": "73b3a4210726b6867a6be01eaf2e22ab1c3472f5a885af784349aecc46dcc4d2",
     "lib/lipsync-text.mjs (v2)": "7dfe97d6c82a33248d1e7c7aa85d7e1e192769637b55b5f19e251e098813b1ff",
     "audio/voice.json chosen, modelId, settings, outputFormat, seed (voice settings)": "eab3ba16281b545f4c386e7f474fe7490bbd68ea006c60a2e1f4daf65844a41a",
-    "audio/voice.json processing chain, gainRule, peakCeiling, encode (filter chain)": "dfa93d51b6d32a8b7f546c08f705819a43424c814e0f136c125b91692abe870d"
+    "audio/voice.json processing chain, gainRule, peakCeiling, encode (filter chain)": "dfa93d51b6d32a8b7f546c08f705819a43424c814e0f136c125b91692abe870d",
+    "MEASUREMENT.md (method)": "050ccb6f08a8457335f9e69dddc69691c9287b6323d555908a83527f752ea59f",
+    "measurement.json (method parameters)": "0ea97579461330367c3bcc1845ef7bcde70814dabd2436b1834e0a4af9fee1f6",
+    "lib/measure.mjs (method)": "291e541d0845093d2691ba4bdd06687227d123779d2728d3e2f0f44b7c2d8d24",
+    "scripts/measure.mjs (method)": "b0b88434736f80a404745cfe21190159f6d7e619c160ee23ad4d2fd426925a1d"
   }
 }

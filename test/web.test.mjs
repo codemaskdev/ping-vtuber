@@ -61,7 +61,9 @@ test("headless: no request after ready, the video never drawn or attached, nothi
     await page.evaluate(() => window.__pingStart());
     await page.waitForFunction(() => window.__pingFrames >= 16, { timeout: 120000 });
     const r = await page.evaluate(async () => {
-      const P = window.__pingPrivacy, out = { handoffs: P.videoHandoffs, refused: [...P.refused], videos: document.querySelectorAll("video").length, stub: window.__stubCalls, local: localStorage.length, session: sessionStorage.length, dbs: (await indexedDB.databases()).length, frames: window.__pingFrames };
+      // Both counters are read together, before anything awaits, so a result arriving meanwhile cannot split them.
+      const P = window.__pingPrivacy, out = { handoffs: P.videoHandoffs, frames: window.__pingFrames, refused: [...P.refused], videos: document.querySelectorAll("video").length, stub: window.__stubCalls, local: localStorage.length, session: sessionStorage.length };
+      out.dbs = (await indexedDB.databases()).length;
       const v = document.createElement("video"), c = document.createElement("canvas").getContext("2d");
       const tries = {};
       for (const [name, fn] of Object.entries({

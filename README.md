@@ -160,6 +160,17 @@ npm run lipsync:clips -- --seed 1 --method v2       out/lipsync-v2/P<n>.mp4
 npm run lipsync:compare                             closure score, run table, words.txt, P2 chart, side-by-side clips
 ```
 
+## Measuring lip sync
+
+`MEASUREMENT.md` says how (on the finished mp4: mouth from the pixels, onsets and ends of sound from its own audio,
+offsets in ms, closure score, yardsticks) and what is not independent. Written and frozen before the held-out
+phrases existed.
+
+```
+npm run measure -- P1 P2 P3 --check-drawlist     also compares every frame's pixel mouth with the draw list
+npm run measure -- H1 H2 H3 H4 --out H           out/measure/H.txt and one JSON per clip
+```
+
 ## Step 6: emotions
 
 `rig/emotions.json` holds four states besides neutral (happy, surprised, focused, sleepy), each a partial pose made

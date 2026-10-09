@@ -772,3 +772,37 @@ What broke
 - What broke: the headless test expected at least 16 hand-offs once 16 frames were drawn; the first drawn frame comes
   before any hand-off, and the old loop happened to be one hand-off ahead. The check is now hand-offs within one of
   the drawn frames.
+
+### Part B: the measurement method (committed before any held-out audio)
+- `MEASUREMENT.md`, `measurement.json`, `lib/measure.mjs`, `scripts/measure.mjs` (`npm run measure`), tests in
+  `test/measure.test.mjs`. Added to `rig/frozen.json` in this commit.
+- onsets.mjs (CodeMask episodes, `episodes/tools/onsets.mjs`): ffmpeg silencedetect at −50 dB with silences of at
+  least 80 ms, used to move ElevenLabs' word edges to where the sound starts and stops. The same idea is written here
+  on the mp4's own audio without the alignment: RMS over a 10 ms window every 1 ms, sound at or above
+  0.0031622776601683794 (−50 dBFS), pauses of at least 80 ms. Chosen on P1–P3 after looking at −60/−50/−40 dBFS and
+  50/80/120 ms (table in MEASUREMENT.md).
+- Found while writing it (prompt #16 question 4): the mp4's edit list skips the mp3 encoder's 1105 samples and
+  ffmpeg applies it, so the mp4's audio equals the mp3's sample for sample on P1–P3 (lag 0); the extra length is
+  padding at the end, at most 0.0000012379792906358489.
+- Pixels against the draw list on P1–P3 (v1 and v2, 392 frames): 0 disagreements, 0 unread, largest template
+  distance 4 px.
+- What changed while testing on P1–P3, before the commit: the first onset rule needed the mouth to be at rest after
+  the pause began, so a mouth open from frame 0 (v2 "Hello", "Oh") was not measured; the first end rule needed the
+  mouth at rest at the last frame of the pause, so a mouth opening early for the next word (v1 and v2 "wow" → "We")
+  was not measured. Both now use the mouth's rest run in the pause (MEASUREMENT.md 4 and 5), and frame 0 is flagged.
+  Two of my own tests had wrong expectations (a template boundary); fixed the tests.
+- P1–P3 with the frozen method (out/measure/P-check.txt), ms, positive = late:
+
+| clip | onsets | ends | closure |
+|---|---|---|---|
+| P1 v1 | Hello 6.21315192743764 | Ping −11.110777777777692 | 1 of 2 |
+| P1 v2 | Hello −93.78684807256236 (frame 0, flagged) | Ping 22.222222222222253 | 2 of 2 |
+| P2 v1 | My not measured (m) | loud −35.41983446712016 | 1 of 3 |
+| P2 v2 | My not measured (m) | loud −2.0858344671201845 | 3 of 3 |
+| P3 v1 | Oh −4.172002267573694; We −9.02460997732424 | wow 1.7236893424036337; see −26.213151927437785 | 0 of 1 |
+| P3 v2 | Oh −70.8390022675737 (frame 0, flagged); We −42.35860997732432 | wow 1.7236893424036337; see 7.119848072562274 | 1 of 1 |
+- What broke: the headless web test failed once in the full run (hand-offs 15, frames 17). The test read the hand-off
+  count, then awaited `indexedDB.databases()`, then read the frame count, so results arriving during the await split
+  them (a test bug since prompt #15, made visible by the tighter check of prompt #17's answer 2). Both counters are now
+  read before anything awaits; 5 runs in a row passed.
+- `npm test` before the method commit: tests 152, pass 152, fail 0, skipped 0, duration_ms 68562.950083.
