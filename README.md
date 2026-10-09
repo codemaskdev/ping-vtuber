@@ -158,7 +158,8 @@ before and after the change on the same audio.
 Lip sync v3 (`rig/lipsync-v3.json`, `lib/lipsync-v3.mjs`, author's prompt #18): v2's letters and majority rule,
 then every m, b, p, f, v left without a frame takes the frame it overlaps most, and a run shorter than the minimum
 grows from a neighbour before it is removed (closure runs are never removed). v1, v2 and v3 are frozen
-(`rig/frozen.json`); v3 is the last version for this episode.
+(`rig/frozen.json`); v3 is the last version for this episode and the one it uses (`rig/lipsync-main.json`, author's
+prompt #20); v1 and v2 stay for the comparison clips.
 
 ```
 npm run lipsync:clips -- --seed 1 --method v2       out/lipsync-v2/P<n>.mp4 (v3: --method v3)
@@ -179,7 +180,7 @@ npm run measure -- H1 H2 H3 H4 --out H           out/measure/H.txt and one JSON 
 
 ## Step 6: emotions
 
-`rig/emotions.json` holds four states besides neutral (happy, surprised, focused, sleepy), each a partial pose made
+`rig/emotions.json` holds three states besides neutral (happy, surprised, sleepy; focused was removed by eye in prompt #20), each a partial pose made
 of what the face has. `lib/emotions.mjs` eases between marks (smootherstep over `transitionFrames`); it goes into
 `combine()` after liveness, and lip sync after it, so while Ping speaks the speech mouth wins and outside speech the
 emotion's mouth shows. Marks come from tags in the script text: `lib/script-tags.mjs` turns
@@ -190,10 +191,11 @@ npm run preview:build -- emotions --seed 1    the 10 s walk-through (rig/emotion
 npm run preview:build -- emotions-sheet       then render and node scripts/emotions-sheet.mjs
 ```
 
-## Step 7: the webcam page — NOT VERIFIED WITH A REAL CAMERA
+## Step 7: the webcam page — checked by eye by the author on 2026-10-09, no measurements
 
-Nothing here has ever seen a real camera or a real face. It was built and tested overnight with the camera request
-stubbed out (a synthetic canvas stream) and a face stream made by code.
+Built and tested overnight with the camera request stubbed out (a synthetic canvas stream) and a face stream made by
+code. On 2026-10-09 the author tested it with a real camera: the page opens, no camera picture is shown, Ping follows
+the head, eyes, mouth and brows. Checked by eye, with no numbers; `rig/face.json` is unchanged.
 
 ```
 npm run web:vendor      copy the pinned @mediapipe/tasks-vision 1.1.0 files and fetch the model (sha256 checked)

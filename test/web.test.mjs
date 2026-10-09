@@ -1,5 +1,5 @@
 // The webcam page in headless Chrome with the camera request stubbed out (a synthetic canvas stream; the real camera is
-// never opened and no permission prompt appears). NOT VERIFIED WITH A REAL CAMERA.
+// never opened and no permission prompt appears). Checked by eye by the author on 2026-10-09, no measurements.
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";

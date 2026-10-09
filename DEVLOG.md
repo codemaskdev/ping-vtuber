@@ -1004,3 +1004,32 @@ total closure: v2 16 of 20, v3 20 of 20
 - The H5-H8 exam is accepted. No time shift: v3 is the last version and the early mouth at phrase starts stays an
   observation. Nothing is wired into the episode or the web page until the author chooses between frozen v2 and
   frozen v3 after watching the v2 | v3 clips (out/lipsync-v3/H5-v2-v3.mp4 to H8-v2-v3.mp4).
+
+## 2026-10-09 · Prompt #20: decisions, FACTS.md, the model licence
+
+### Decisions (the author's)
+- Lip sync: v3 is the main lip sync for the episode (`rig/lipsync-main.json`); v1 and v2 stay for the comparison
+  clips. No time shift: the early mouth stays an observation.
+- Voice: confirmed by ear by the author (`audio/voice.json` confirmedByEar).
+- Emotions, chosen by eye by the author after looking at the sheet: happy and focused read as the same face. focused
+  is removed (kept in `rig/emotions.json` removedByEye for the record) and happy tilts 6 degrees instead of 2.
+  Decided by Claude: focused's demo mark is simply dropped, so surprised holds from frame 90 to 210. The emotions
+  tests now expect three states. `npm run stage:renders -- emotions` (the script now takes the parts to render):
+  sheet 4 frames rendered in 4.9s (`time` 6.580 s), out/emotions-sheet.png 1316x416 sha256
+  f70fe90272b914924bcde0fe07554fa8f96aa4c92e06298950be4eb9e605a71e; walk-through seed 1 twice, 1m 3.4s (1m4.916s)
+  and 1m 4.4s (1m6.066s), 300 of 300 frames identical; out/emotions-seed-1.mp4 from run 1.
+- Camera page: the author tested it with a real camera on 2026-10-09. The page opens, no camera picture is shown,
+  Ping follows the author's head, eyes, mouth and brows. This was checked by eye, with no numbers. "NOT VERIFIED WITH
+  A REAL CAMERA" is replaced by "checked by eye by the author on 2026-10-09, no measurements" in README, the web code,
+  the tests' comments, `lib/face-to-pose.mjs`, `scripts/serve-web.mjs` and PUBLISH-CHECKLIST.md; earlier DEVLOG and
+  PROMPTS entries keep their words (history), and `rig/face.json` is unchanged as the author asked, so its $comment
+  still says NOT VERIFIED WITH A REAL CAMERA. The checklist items that need DevTools, the console or numbers stay
+  open.
+
+### The model licence (checked by Claude, nothing published)
+- The Face Landmarker documentation page (https://developers.google.com/edge/mediapipe/solutions/vision/face_landmarker,
+  Models section) links three model cards for the bundle: BlazeFace short range (model date June 9, 2021), Face
+  Mesh V2 (September 15, 2022), Blendshape V2 (November 11, 2022). Each card's first page says "LICENSED UNDER Apache
+  License, Version 2.0" (PDFs read with pdftotext; their sha256 in `web/VENDOR.json`). Not checked: the cards do not
+  name `face_landmarker.task` (float16/1). Recorded in PUBLISH-CHECKLIST.md (ticked) and `web/VENDOR.json`.
+- `npm test`: tests 160, pass 160, fail 0, skipped 0, duration_ms 70754.36875.

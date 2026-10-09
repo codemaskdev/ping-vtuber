@@ -1,4 +1,4 @@
-// lib/face-to-pose.mjs on numbers made by code (no camera, no face). NOT VERIFIED WITH A REAL CAMERA.
+// lib/face-to-pose.mjs on numbers made by code (no camera, no face). Checked by eye by the author on 2026-10-09, no measurements.
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";

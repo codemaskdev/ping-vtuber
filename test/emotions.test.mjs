@@ -15,8 +15,11 @@ const E = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "emotions.json"), "u
 const L = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "liveness.json"), "utf8"));
 const states = Object.keys(E.states);
 
-test("four states besides neutral, each a partial pose with a reason, each valid on its own and with liveness", () => {
-  assert.equal(states.length, 4);
+test("three states besides neutral (focused removed by eye, prompt #20), each a partial pose with a reason, each valid on its own and with liveness", () => {
+  assert.deepEqual([...states].sort(), ["happy", "sleepy", "surprised"]);
+  assert.ok(!E.demoMarks.some((m) => m.state === "focused"));
+  assert.equal(E.states.happy.partial.head.tilt, 6);
+  assert.ok(E.states.happy.chosenByEye && E.removedByEye.focused);
   for (const s of states) {
     assert.ok(E.states[s].why, s);
     assert.doesNotThrow(() => combine(rig, neutralPose(rig), E.states[s].partial), s);

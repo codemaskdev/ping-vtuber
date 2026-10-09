@@ -1,4 +1,4 @@
-// Privacy guards, loaded before any other script of the page (author's prompt #15). NOT VERIFIED WITH A REAL CAMERA.
+// Privacy guards, loaded before any other script of the page (author's prompt #15). Checked by eye by the author on 2026-10-09, no measurements.
 // - The video never reaches drawImage, texImage2D/texSubImage2D or createImageBitmap, except through handOff(), the
 //   one call that turns a frame into an ImageBitmap for the detector worker.
 // - The video element can never be attached to the page.

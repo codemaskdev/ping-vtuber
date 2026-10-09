@@ -137,5 +137,6 @@
     ]
   },
   "frozen": "Since the author's prompt #17 the voice settings (chosen, modelId, settings, outputFormat, seed) and processing (chain, gainRule, peakCeiling, encode) do not change: rig/frozen.json, test/freeze.test.mjs.",
-  "metadataApprovedHeldOut": "H1-H4: approved by Claude applying the author's prompt #16 rule (encoder tag only) to the held-out files of prompt #17, which did not restate it; each <name>.metadata.txt says \"encoder tag only: yes\". The author may take them out. The author accepted that in prompt #18; H5-H8 approved by the same rule."
+  "metadataApprovedHeldOut": "H1-H4: approved by Claude applying the author's prompt #16 rule (encoder tag only) to the held-out files of prompt #17, which did not restate it; each <name>.metadata.txt says \"encoder tag only: yes\". The author may take them out. The author accepted that in prompt #18; H5-H8 approved by the same rule.",
+  "confirmedByEar": "the author, prompt #20: the voice (River with the stronger chain) is confirmed by ear"
 }

@@ -25,5 +25,5 @@ export function startServer(port = 0) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const { port } = await startServer(8317);
-  console.log(`http://127.0.0.1:${port}/web/index.html (NOT VERIFIED WITH A REAL CAMERA)`);
+  console.log(`http://127.0.0.1:${port}/web/index.html (checked by eye by the author on 2026-10-09, no measurements)`);
 }

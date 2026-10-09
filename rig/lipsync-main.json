@@ -1,0 +1,9 @@
+{
+  "$comment": "Which lip sync the episode uses (author's prompt #20). v1 and v2 stay only for the comparison clips. No time shift: the early mouth at phrase starts stays an observation.",
+  "main": "v3",
+  "rules": "rig/lipsync-v3.json",
+  "code": "lib/lipsync-v3.mjs",
+  "comparisonOnly": ["v1", "v2"],
+  "timeShift": null,
+  "decidedBy": "the author, prompt #20, after watching the v2 | v3 clips"
+}

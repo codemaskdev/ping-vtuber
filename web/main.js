@@ -1,6 +1,6 @@
 // The webcam page: Ping drawn from the face, and the landmark points on a second canvas. The video element is created
 // but never attached and never drawn; frames reach the detector only through privacy.js handOff().
-// NOT VERIFIED WITH A REAL CAMERA.
+// checked by eye by the author on 2026-10-09, no measurements.
 import { drawList } from "/lib/rig.mjs";
 import { faceToPose } from "/lib/face-to-pose.mjs";
 

@@ -3,7 +3,8 @@
 // clip twice (frame hashes, blink strip), the emotions sheet, the emotions walk-through twice (frame hashes, an mp4
 // for viewing) and the synthetic face stream clip. The lip sync clips are made by lipsync:clips and lipsync:compare.
 //
-//   npm run stage:renders
+//   npm run stage:renders                      everything
+//   npm run stage:renders -- emotions          only the named parts: pose-sheet clip reconstruction liveness emotions face
 import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -11,6 +12,7 @@ import { ROOT, rel } from "../lib/spec.mjs";
 import { PREVIEW, buildPreview, posesSequence, rig } from "./build-preview.mjs";
 import { playStream, syntheticStream } from "./face-stream.mjs";
 
+const only = process.argv.slice(2), want = (k) => !only.length || only.includes(k);
 const log = [];
 const say = (s) => { log.push(s); console.log(s); };
 const node = (script, ...args) => execFileSync(process.execPath, [path.join(ROOT, "scripts", script), ...args], { cwd: ROOT, encoding: "utf8" }).trimEnd();
@@ -34,25 +36,34 @@ const R = (name) => path.join(ROOT, "out", "render", name);
 
 say(`stage ${rig.stage.width}x${rig.stage.height}, art at ${rig.stage.artOffset.join(",")}, tilt limit ${rig.limits.headTiltDeg.join("..")} deg; hyperframes@0.8.134; ${ffmpegVersion}`);
 
+if (want("pose-sheet")) {
 say("pose sheet");
 buildPreview("pose-sheet");
 render(R("pose-sheet"));
 say(`  ${node("pose-sheet.mjs")}`);
+}
 
+if (want("clip")) {
 say("step 2 test clip, twice");
 for (const run of [1, 2]) { buildPreview("clip"); render(R(`clip-${run}`)); }
 say(`  ${node("frame-hashes.mjs", "out/render/clip-1", "out/render/clip-2").split("\n")[0]}`);
+}
 
+if (want("reconstruction")) {
 say("reconstruction");
 buildPreview("reconstruction");
 render(R("reconstruction"));
 for (const l of node("reconstruction.mjs").split("\n")) say(`  ${l}`);
+}
 
+if (want("liveness")) {
 say("liveness, seed 1, twice");
 for (const run of [1, 2]) { buildPreview("liveness", 1); render(R(`liveness-seed-1-run-${run}`)); }
 say(`  ${node("frame-hashes.mjs", "out/render/liveness-seed-1-run-1", "out/render/liveness-seed-1-run-2").split("\n")[0]}`);
 say(`  ${node("liveness-strip.mjs", "--seed", "1", "--render", "out/render/liveness-seed-1-run-1")}`);
+}
 
+if (want("emotions")) {
 say("emotions sheet");
 buildPreview("emotions-sheet");
 render(R("emotions-sheet"));
@@ -62,13 +73,17 @@ say("emotions walk-through, seed 1, twice");
 for (const run of [1, 2]) { buildPreview("emotions", 1); render(R(`emotions-seed-1-run-${run}`)); }
 say(`  ${node("frame-hashes.mjs", "out/render/emotions-seed-1-run-1", "out/render/emotions-seed-1-run-2").split("\n")[0]}`);
 mp4(R("emotions-seed-1-run-1"), path.join(ROOT, "out", "emotions-seed-1.mp4"));
+}
 
+if (want("face")) {
 say("synthetic face stream, seed 1 (SYNTHETIC, not a real face)");
 const faceCfg = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "face.json"), "utf8"));
 const { poses, saturated } = playStream(rig, faceCfg, syntheticStream(1));
 say(`  ${poses.length} poses, largest |tilt| ${Math.max(...poses.map((p) => Math.abs(p.head.tilt)))}, tilt saturated in ${saturated.filter((s) => s.includes("tilt")).length} frames (tiltGain ${faceCfg.head.tiltGain})`);
 buildPreview("poses", undefined, posesSequence(poses, "face-synthetic-seed-1"));
 render(path.join(ROOT, "out", "face-synthetic-seed-1.mp4"), "mp4");
+}
 
-fs.writeFileSync(path.join(ROOT, "out", "stage-renders.txt"), log.join("\n") + "\n");
-console.log("out/stage-renders.txt");
+const logName = only.length ? `stage-renders-${only.join("-")}.txt` : "stage-renders.txt";
+fs.writeFileSync(path.join(ROOT, "out", logName), log.join("\n") + "\n");
+console.log(`out/${logName}`);

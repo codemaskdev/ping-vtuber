@@ -42,6 +42,33 @@
     "url": "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
     "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff",
     "bytes": 3758596,
-    "license": "Apache-2.0 as stated by the MediaPipe solutions documentation for the Face Landmarker model; not checked against the model card in this run"
+    "license": "Apache-2.0: each of the three model cards linked from the Face Landmarker documentation says \"LICENSED UNDER Apache License, Version 2.0\" (read by Claude on 2026-10-09, prompt #20; see modelCards and PUBLISH-CHECKLIST.md)",
+    "modelCards": {
+      "page": "https://developers.google.com/edge/mediapipe/solutions/vision/face_landmarker (Models section; ai.google.dev redirects there)",
+      "cards": [
+        {
+          "model": "face detector (BlazeFace short range)",
+          "url": "https://storage.googleapis.com/mediapipe-assets/MediaPipe%20BlazeFace%20Model%20Card%20(Short%20Range).pdf",
+          "sha256": "cd335c06fc0de7807cd815a0777a697932598bcdb28fa98adaaabf847485f758",
+          "date": "June 9, 2021",
+          "licence": "LICENSED UNDER Apache License, Version 2.0"
+        },
+        {
+          "model": "face mesh (Face Mesh V2)",
+          "url": "https://storage.googleapis.com/mediapipe-assets/Model%20Card%20MediaPipe%20Face%20Mesh%20V2.pdf",
+          "sha256": "c6add060f4ebfb37b2690136b6c711c7e5fcb7038baa2649ae3338b83979565a",
+          "date": "September 15, 2022",
+          "licence": "LICENSED UNDER Apache License, Version 2.0"
+        },
+        {
+          "model": "blendshapes (Blendshape V2)",
+          "url": "https://storage.googleapis.com/mediapipe-assets/Model%20Card%20Blendshape%20V2.pdf",
+          "sha256": "c8e9cf60a39998f4b341740623917590e050d1c97004e2de4568d84e026445ae",
+          "date": "November 11, 2022",
+          "licence": "LICENSED UNDER Apache License, Version 2.0"
+        }
+      ],
+      "notChecked": "The cards do not name the file face_landmarker.task (float16/1); that these three cards cover it rests on the documentation page listing them as the bundle's models."
+    }
   }
 }

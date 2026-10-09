@@ -973,6 +973,47 @@ questions. Change nothing after seeing the numbers.
 The H5 to H8 exam is accepted. 1. No time shift: v3 is the last version, the early mouth stays an observation. 2. Do not wire anything yet: I will choose between frozen v2 and frozen v3 after watching the v2 | v3 clips, and tell you. Nothing else to do now.
 ```
 
+## Prompt #20
+
+```text
+Decisions and next task.
+
+## Decisions
+1. v3 is the main lip sync for the episode. v1 and v2 stay for the
+   comparison clips. No time shift: the early mouth stays an observation.
+2. The voice is confirmed by ear.
+3. Emotions, after looking at the sheet: happy and focused read as the
+   same face. Remove focused. Happy: tilt 6 degrees instead of 2.
+   Regenerate the sheet and the walk-through clip, update the tests.
+   Label this "chosen by eye".
+4. Camera page: I tested it with a real camera. The page opens, no
+   camera picture is shown, Ping follows my head, eyes, mouth and brows.
+   This was checked by eye, with no numbers. Record exactly that in
+   DEVLOG, and replace "NOT VERIFIED WITH A REAL CAMERA" with "checked by
+   eye by the author on 2026-10-09, no measurements". Change nothing in
+   rig/face.json.
+
+## Task: FACTS.md for the script
+Write FACTS.md: every number and claim the video could use, one per
+line, each with its source (file and line, or the command that prints
+it, and the commit). Group by chapter: layers and rig, liveness, lip
+sync v1, lip sync v2, the first exam (H1 to H4), the fix (v3), the
+second exam (H5 to H8), emotions, webcam, how it was built (tools,
+models, versions, number of generator attempts and which were rejected
+and why, number of prompts). For each fact say whether it was decided
+before or after seeing data. Mark anything that is not independent or
+was checked only by eye. Add nothing you cannot point to; if a number is
+missing, list it under "not measured".
+Add a test that every file and commit FACTS.md cites exists.
+
+## Also
+Check the MediaPipe face model's licence against its model card and
+write what you found, with the link, in PUBLISH-CHECKLIST.md. Do not
+publish anything.
+
+Commit, then report in a few lines.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.
