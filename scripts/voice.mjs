@@ -3,6 +3,7 @@
 //   npm run voice -- candidates          the candidate line with every candidate → out/voice-candidates/ (not committed)
 //   npm run voice -- phrases             P1-P3, one take each, with the chosen voice → audio/raw/ (exactly what ElevenLabs
 //                                        returned); writes audio/SOURCES.json. npm run audio:process makes audio/dev/.
+//   npm run voice -- held-out            H1-H4, once each (refuses if a file exists) → audio/raw/; adds to SOURCES.json
 //   npm run voice -- final-check         the candidate line once with the chosen voice → out/voice-final-check.raw.mp3,
 //                                        then through the same processing → out/voice-final-check.mp3 (not committed)
 // Every file gets its alignment (character timestamps) next to it as <name>.align.json. The alignment belongs to the
@@ -65,6 +66,20 @@ if (mode === "candidates") {
     repeatabilityEarlier: before.repeatability ? { ...before.repeatability, note: "measured in step 4 (prompt #14) with the provisional voice, P1 twice; not measured again: prompt #16 asks for one take per phrase" } : before.repeatabilityEarlier,
   }, null, 2) + "\n");
   console.log("audio/SOURCES.json");
+} else if (mode === "held-out") {
+  // The held-out phrases (author's prompt #17), once each, after the measurement method was committed.
+  if (!V.chosen) throw new Error("no voice chosen in audio/voice.json");
+  const voice = V.candidates.find((c) => c.id === V.chosen);
+  const sourcesFile = path.join(ROOT, "audio", "SOURCES.json");
+  const sources = JSON.parse(fs.readFileSync(sourcesFile, "utf8"));
+  sources.heldOutFiles = [];
+  for (const [p, text] of Object.entries(V.heldOut)) {
+    if (fs.existsSync(path.join(ROOT, "audio", "raw", `${p}.mp3`))) throw new Error(`audio/raw/${p}.mp3 exists: held-out phrases are synthesised once`);
+    sources.heldOutFiles.push(await synth(voice, text, path.join(ROOT, "audio", "raw", p)));
+    console.log(`${sources.heldOutFiles.at(-1).file}  ${sources.heldOutFiles.at(-1).durationS} s  sha256 ${sources.heldOutFiles.at(-1).sha256}`);
+  }
+  fs.writeFileSync(sourcesFile, JSON.stringify(sources, null, 2) + "\n");
+  console.log("audio/SOURCES.json");
 } else if (mode === "final-check") {
   if (!V.chosen) throw new Error("no voice chosen in audio/voice.json");
   const voice = V.candidates.find((c) => c.id === V.chosen);
@@ -73,6 +88,6 @@ if (mode === "candidates") {
   fs.writeFileSync(path.join(ROOT, "out", "voice-final-check.txt"), JSON.stringify({ raw: r, processing: e }, null, 2) + "\n");
   console.log(`${r.file} ${r.durationS} s → ${e.output}; RMS raw ${e.rms.raw}, result ${e.rms.result}; gain ${e.gain}; out/voice-final-check.txt`);
 } else {
-  console.error("usage: npm run voice -- candidates | phrases | final-check");
+  console.error("usage: npm run voice -- candidates | phrases | held-out | final-check");
   process.exit(1);
 }

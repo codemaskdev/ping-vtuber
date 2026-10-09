@@ -806,3 +806,48 @@ What broke
   them (a test bug since prompt #15, made visible by the tighter check of prompt #17's answer 2). Both counters are now
   read before anything awaits; 5 runs in a row passed.
 - `npm test` before the method commit: tests 152, pass 152, fail 0, skipped 0, duration_ms 68562.950083.
+
+### Part C: the held-out phrases (after the method commit 5332a8c)
+- `npm run voice -- held-out`: H1-H4 synthesised once each (the mode refuses if a file exists), River, frozen
+  settings; character-cost 43, 42, 43, 43; server dates Fri, 09 Oct 2026 08:59:34 to 08:59:37 GMT; durations
+  2.136236, 2.182676, 2.368435, 2.414875 s.
+- `npm run audio:process`: P1-P3 came out byte for byte as before; H1-H4 gains 3.1947955934755536,
+  3.1798540727644165, 3.3021407279052615, 3.6687298804341224; RMS raw → result 0.07035685180980257 →
+  0.06683287012492387, 0.07153989929303718 → 0.06794946305431043, 0.0702747331509732 → 0.06678668897846181,
+  0.06928115770307362 → 0.06580898027121534; lag 1, 0, -3, -3 samples (out/audio log in audio/process-log.json).
+- Metadata: all eight files show the encoder tag only. Decided without asking: prompt #17 did not restate prompt
+  #16's rule, so I applied it to H1-H4 and committed them (`audio/voice.json` metadataApprovedHeldOut says so).
+- Clips: v1 and v2 for H1-H4 (renders 7.6/5.3/5.4/5.4 s for v1, 5.4/5.3/5.3/5.4 s for v2), side-by-side clips,
+  out/lipsync-v2/compare-held-out.txt and words-held-out.txt. Measured with `npm run measure -- H1 H2 H3 H4 --out H`
+  (out/measure/H.txt); a second run with `--check-drawlist` gave the same file plus: pixels and draw list agree on
+  all 672 frames, 0 unread, largest template distance 4.
+- Every value (ms, positive = the mouth is late; "f0" = mouth not rest at frame 0, flagged):
+
+| clip | onsets | ends |
+|---|---|---|
+| H1 v1 | Okay −16.144791383219946; Open −3.855208616780015 | ready −2.902160997732439; window 3.083900226757308 |
+| H1 v2 | Okay −82.81179138321995 (f0); Open −3.855208616780015 | ready −2.902160997732439; window 36.41690022675736 |
+| H2 v1 | Bob not measured (b) | lamp −65.35180725623579 |
+| H2 v2 | Bob not measured (b) | lamp −132.0178072562359 |
+| H3 v1 | Why −9.160664399092965 | idea −18.36701360544213 |
+| H3 v2 | Why −75.82766439909297 (f0) | idea −18.36701360544213 |
+| H4 v1 | Evolution −23.537748299319727; but not measured (b) | slow −12.698412698412653; bored −52.51667346938804 |
+| H4 v2 | Evolution −56.87074829931973 (f0); but not measured (b) | slow −46.0314126984126; bored 14.149326530612072 |
+
+| version | kind | count | median | largest abs | within one frame | within 45 late / 125 early | not measured |
+|---|---|---|---|---|---|---|---|
+| v1 | onsets | 4 | −12.652727891156456 | 23.537748299319727 | 4 | 4 | 2 |
+| v1 | ends | 6 | −15.53271315192739 | 65.35180725623579 | 4 | 6 | 0 |
+| v2 | onsets | 4 | −66.34920634920636 | 82.81179138321995 | 1 | 4 | 2 |
+| v2 | ends | 6 | −10.634587301587285 | 132.0178072562359 | 3 | 5 | 0 |
+
+- Closure score: v1 8 of 14, v2 10 of 14 (H1 0 of 1, H2 8 of 11, H3 0 of 0, H4 2 of 2). With the rules before prompt
+  #17's change (e2a7f56, from lipsync:compare on the draw list) v2 would have had 14 of 14: the majority rule drops
+  the b of "Bob brought", "brought" and "big" and the p of "Open", short letters that never cover most of a frame.
+- Changes per second (pixel mouths, frames before the end of the audio): v1 12.727272727272727, 10.909090909090908,
+  9.166666666666668, 12.73972602739726 with 14, 10, 6, 14 one-frame runs; v2 6.363636363636363, 5.909090909090908,
+  5.833333333333334, 6.575342465753425 with 0 one-frame runs.
+- Seen in the numbers, nothing changed: three of v2's four measured onsets are flagged f0 (the alignment starts the
+  first letter at 0 s, before the sound); H2's "lamp" ends with m and p, so its rest from the m on counts as an
+  early end (−132.0178072562359 ms) though rest is the right mouth for m and p. No measuring-code bug found.
+- `npm test`: tests 152, pass 152, fail 0, skipped 0, duration_ms 68392.216125.

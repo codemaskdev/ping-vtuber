@@ -15,7 +15,7 @@ import { buildPreview, lipsyncSequence } from "./build-preview.mjs";
 
 const args = process.argv.slice(2);
 const i = args.indexOf("--seed"), seed = i >= 0 ? Number(args[i + 1]) : 1;
-const phrases = args.filter((a) => /^P\d+$/.test(a));
+const phrases = args.filter((a) => /^[PH]\d+$/.test(a));
 const mi = args.indexOf("--method"), method = mi >= 0 ? args[mi + 1] : "v1";
 if (!["v1", "v2"].includes(method)) throw new Error("--method v1 or v2");
 const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "lipsync-volume.json"), "utf8"));

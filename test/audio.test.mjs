@@ -36,17 +36,17 @@ test("cross-correlation finds a known delay, in both directions", () => {
 });
 
 test("audio/raw/ is exactly what ElevenLabs returned; the alignment lives with it", () => {
-  for (const f of S.files) {
+  for (const f of [...S.files, ...S.heldOutFiles]) {
     assert.equal(sha256(fs.readFileSync(path.join(ROOT, f.file))), f.sha256, f.file);
-    assert.match(f.alignment, /^audio\/raw\/P\d\.align\.json$/);
+    assert.match(f.alignment, /^audio\/raw\/[PH]\d\.align\.json$/);
   }
   assert.ok(!fs.readdirSync(path.join(ROOT, "audio", "dev")).some((f) => f.endsWith(".align.json")), "no alignment in audio/dev/");
 });
 
 test("every audio/dev/ file is disclosed: made from its raw file by the logged chain and gain", () => {
-  assert.deepEqual(S.processed.map((p) => p.file), Object.keys(V.phrases).map((p) => `audio/dev/${p}.mp3`));
+  assert.deepEqual(S.processed.map((p) => p.file), [...Object.keys(V.phrases), ...Object.keys(V.heldOut)].map((p) => `audio/dev/${p}.mp3`));
   for (const p of S.processed) {
-    const raw = S.files.find((f) => f.file === p.from);
+    const raw = [...S.files, ...S.heldOutFiles].find((f) => f.file === p.from);
     assert.equal(p.fromSha256, raw.sha256, p.file);
     assert.equal(sha256(fs.readFileSync(path.join(ROOT, p.file))), p.sha256, p.file);
     assert.equal(p.chain, V.processing.chain);

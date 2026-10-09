@@ -130,6 +130,62 @@
       "rmsResult": 0.06694050880586776,
       "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/P3.mp3",
       "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/H1.mp3",
+      "sha256": "2ca655abfdfead75a7a9384b9b74984d65395870415aba7f170642d0112adab3",
+      "from": "audio/raw/H1.mp3",
+      "fromSha256": "ece40e8a84f92495280452e9ddf302eb182de649ab14bc984cd9ca482c2f6968",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.1947955934755536,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.07035685180980257,
+      "rmsResult": 0.06683287012492387,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/H1.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/H2.mp3",
+      "sha256": "31fd0e4e89774a9c6108249de7f09c1b693611a4c04fe5ce9308111ca4afd280",
+      "from": "audio/raw/H2.mp3",
+      "fromSha256": "c83d34a907ce9b3acbc61be9badbfbfa666e1729a7bc908cb76b16b1b5996de7",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.1798540727644165,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.07153989929303718,
+      "rmsResult": 0.06794946305431043,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/H2.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/H3.mp3",
+      "sha256": "1b64f0d232c69617434f1781776a18554f33a1926c7192a80d9db7cc430cf033",
+      "from": "audio/raw/H3.mp3",
+      "fromSha256": "66d2a980701445bd7c5a278ee47857cfec345494fdb4661765453f9179311714",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.3021407279052615,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.0702747331509732,
+      "rmsResult": 0.06678668897846181,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/H3.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/H4.mp3",
+      "sha256": "ec95601c6af1d8fd100c0c7ed6601a632c05be103792ecabac08be7276b8902c",
+      "from": "audio/raw/H4.mp3",
+      "fromSha256": "1bdf84ab6313b98579a38b24c863713bb11bd7506f2b765cd35d7c4a7abc5447",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.6687298804341224,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.06928115770307362,
+      "rmsResult": 0.06580898027121534,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/H4.mp3",
+      "log": "audio/process-log.json"
     }
   ],
   "repeatabilityEarlier": {
@@ -145,5 +201,119 @@
     },
     "identical": false,
     "note": "measured in step 4 (prompt #14) with the provisional voice, P1 twice; not measured again: prompt #16 asks for one take per phrase"
-  }
+  },
+  "heldOutFiles": [
+    {
+      "file": "audio/raw/H1.mp3",
+      "alignment": "audio/raw/H1.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 08:59:34 GMT",
+      "text": "Okay, okay. Are you ready? Open the window.",
+      "creditsReported": {
+        "character-cost": "43"
+      },
+      "sha256": "ece40e8a84f92495280452e9ddf302eb182de649ab14bc984cd9ca482c2f6968",
+      "bytes": 35152,
+      "durationS": 2.136236,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "file": "audio/raw/H2.mp3",
+      "alignment": "audio/raw/H2.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 08:59:35 GMT",
+      "text": "Bob brought a big map, a pump, and a lamp.",
+      "creditsReported": {
+        "character-cost": "42"
+      },
+      "sha256": "c83d34a907ce9b3acbc61be9badbfbfa666e1729a7bc908cb76b16b1b5996de7",
+      "bytes": 35988,
+      "durationS": 2.182676,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "file": "audio/raw/H3.mp3",
+      "alignment": "audio/raw/H3.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 08:59:36 GMT",
+      "text": "Why is the sky so loud now? I have no idea.",
+      "creditsReported": {
+        "character-cost": "43"
+      },
+      "sha256": "66d2a980701445bd7c5a278ee47857cfec345494fdb4661765453f9179311714",
+      "bytes": 38914,
+      "durationS": 2.368435,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "file": "audio/raw/H4.mp3",
+      "alignment": "audio/raw/H4.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 08:59:37 GMT",
+      "text": "Evolution is slow, but it never gets bored.",
+      "creditsReported": {
+        "character-cost": "43"
+      },
+      "sha256": "1bdf84ab6313b98579a38b24c863713bb11bd7506f2b765cd35d7c4a7abc5447",
+      "bytes": 39750,
+      "durationS": 2.414875,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    }
+  ]
 }

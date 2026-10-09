@@ -85,7 +85,7 @@ export function livenessSequence(seed, seconds = 10, fps = 30) {
 // A lip sync clip: one mouth per frame from lib/lipsync-volume.mjs on the phrase's decoded audio, then 15 frames at
 // rest, with liveness for the seed on top. The audio itself is muxed in afterwards (scripts/lipsync-clips.mjs).
 export function lipsyncSequence(phrase, seed, mouths, fps = 30) {
-  if (!/^P\d+$/.test(phrase)) throw new Error("phrase must look like P1");
+  if (!/^[PH]\d+$/.test(phrase)) throw new Error("phrase must look like P1");
   return { kind: "lipsync", phrase, seed, fps, frames: mouths.length + 15, mouths, final: true, entries: [] };
 }
 

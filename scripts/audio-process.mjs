@@ -6,7 +6,7 @@
 // sample counts, sha256 of input and output, and how far the chain shifts the sound in time (cross-correlation of the
 // raw samples with the filtered floats, and with the decoded result; reported, not corrected).
 //
-//   npm run audio:process                           audio/raw/P*.mp3 → audio/dev/P*.mp3, log audio/process-log.json
+//   npm run audio:process                           audio/raw/P*.mp3 and H*.mp3 → audio/dev/, log audio/process-log.json
 //   npm run audio:process -- <in.mp3> <out.mp3>     one file; the log goes next to the output as <out>.process.json
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -66,7 +66,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     fs.writeFileSync(path.resolve(args[1]).replace(/\.mp3$/, ".process.json"), JSON.stringify(e, null, 2) + "\n");
   } else if (args.length === 0) {
     const files = [];
-    for (const p of Object.keys(V.phrases)) {
+    for (const p of [...Object.keys(V.phrases), ...Object.keys(V.heldOut || {}).filter((h) => fs.existsSync(path.join(ROOT, "audio", "raw", `${h}.mp3`)))]) {
       const e = processFile(path.join(ROOT, "audio", "raw", `${p}.mp3`), path.join(ROOT, "audio", "dev", `${p}.mp3`));
       say(e);
       files.push(e);

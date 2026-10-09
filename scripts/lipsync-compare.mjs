@@ -5,6 +5,8 @@
 // its closure score, its table, words-before.txt and a row on the timeline.
 //
 //   npm run lipsync:compare        (after npm run lipsync:clips for v1 and for --method v2)
+//   npm run lipsync:compare -- H1 H2 H3 H4 --name held-out     other phrases: compare-held-out.txt, words-held-out.txt,
+//                                                              words-before-held-out.txt; no timeline without P2
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -24,6 +26,8 @@ const BEFORE_COMMIT = rules.rulesBefore.match(/commit ([0-9a-f]{7,40})/)[1];
 const rulesBefore = JSON.parse(execFileSync("git", ["show", `${BEFORE_COMMIT}:rig/lipsync-text.json`], { cwd: ROOT, encoding: "utf8" }));
 const OUT = path.join(ROOT, "out", "lipsync-v2");
 fs.mkdirSync(OUT, { recursive: true });
+const ARGS = process.argv.slice(2), PHRASES = ARGS.filter((a) => /^[PH]\d+$/.test(a)).length ? ARGS.filter((a) => /^[PH]\d+$/.test(a)) : ["P1", "P2", "P3"];
+const NI = ARGS.indexOf("--name"), SUFFIX = NI >= 0 ? `-${ARGS[NI + 1]}` : "";
 const report = [];
 const say = (s) => { report.push(s); console.log(s); };
 
@@ -52,7 +56,7 @@ function closures(align, m) {
 }
 
 const all = {};
-for (const p of ["P1", "P2", "P3"]) {
+for (const p of PHRASES) {
   const d = decode(path.join(ROOT, "audio", "dev", `${p}.mp3`));
   const align = JSON.parse(fs.readFileSync(path.join(ROOT, "audio", "raw", `${p}.align.json`), "utf8")).alignment;
   const n = frameCount(d.samples.length, d.sampleRate, FPS);
@@ -92,11 +96,11 @@ function wordsFile(file, key, rs) {
   fs.writeFileSync(path.join(OUT, file), words.join("\n") + "\n");
   say(`out/lipsync-v2/${file}`);
 }
-wordsFile("words.txt", "v2r", rules);
-wordsFile("words-before.txt", "v2br", rulesBefore);
+wordsFile(`words${SUFFIX}.txt`, "v2r", rules);
+wordsFile(`words-before${SUFFIX}.txt`, "v2br", rulesBefore);
 
 // P2 timeline with the mouth rows: v1, v2 with the rules before the change, v2.
-{
+if (all.P2) {
   const { rms, v1, v2, v2b, align } = all.P2, n = v1.length, PX = 18, L = 150, Wd = L + n * PX + 30;
   const ROWS = [["V1", v1], ["V2 OLD", v2b], ["V2", v2]];
   const TOP = 70, CH = 300, MH = 50, Hd = TOP + CH + 30 + ROWS.length * (MH + 40) + 120;
@@ -127,7 +131,7 @@ wordsFile("words-before.txt", "v2br", rulesBefore);
 
 // Side-by-side clips: v1 left, v2 right, a label strip drawn by code on top, the phrase's audio (stream copy).
 const ffmpeg = execFileSync("ffmpeg", ["-version"]).toString().split("\n")[0];
-for (const p of ["P1", "P2", "P3"]) {
+for (const p of PHRASES) {
   const label = create(2 * STAGE_W, 90, [0, 0, 0, 0]);
   drawText(label, `V1 LOUDNESS - ${p}`, 30, 25, 6, [255, 255, 255, 255]);
   drawText(label, `V2 CHARACTER TIMINGS - ${p}`, STAGE_W + 30, 25, 6, [255, 255, 255, 255]);
@@ -142,10 +146,10 @@ for (const p of ["P1", "P2", "P3"]) {
 say(`side-by-side tool: ${ffmpeg} (video re-encoded with libx264 crf 18 for the hstack; audio stream copied)`);
 
 // How much longer is the mp3 inside each mp4 than the decoded audio?
-for (const dir of ["lipsync-v1", "lipsync-v2"]) for (const p of ["P1", "P2", "P3"]) {
+for (const dir of ["lipsync-v1", "lipsync-v2"]) for (const p of PHRASES) {
   const f = path.join(ROOT, "out", dir, `${p}.mp4`);
   const inMp4 = Number(execFileSync("ffprobe", ["-v", "error", "-select_streams", "a:0", "-show_entries", "stream=duration", "-of", "csv=p=0", f]).toString().trim());
   const decoded = all[p].d.samples.length / all[p].d.sampleRate;
   say(`${dir}/${p}.mp4: mp3 stream ${inMp4} s, decoded ${decoded} s, longer by ${inMp4 - decoded} s`);
 }
-fs.writeFileSync(path.join(OUT, "compare.txt"), report.join("\n") + "\n");
+fs.writeFileSync(path.join(OUT, `compare${SUFFIX}.txt`), report.join("\n") + "\n");

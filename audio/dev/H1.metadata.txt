@@ -1,0 +1,28 @@
+=== audio/dev/H1.mp3  35570 bytes  sha256 2ca655abfdfead75a7a9384b9b74984d65395870415aba7f170642d0112adab3
+--- exiftool -a -u -G1 -s
+[ExifTool]      ExifToolVersion                 : 13.55
+[System]        FileName                        : H1.mp3
+[System]        Directory                       : audio/dev
+[System]        FileSize                        : 36 kB
+[System]        FileModifyDate                  : 2026:10:09 08:59:42+00:00
+[System]        FileAccessDate                  : 2026:10:09 08:59:42+00:00
+[System]        FileInodeChangeDate             : 2026:10:09 08:59:42+00:00
+[System]        FilePermissions                 : -rw-r--r--
+[File]          FileType                        : MP3
+[File]          FileTypeExtension               : mp3
+[File]          MIMEType                        : audio/mpeg
+[File]          ID3Size                         : 45
+[MPEG]          MPEGAudioVersion                : 1
+[MPEG]          AudioLayer                      : 3
+[MPEG]          AudioBitrate                    : 128 kbps
+[MPEG]          SampleRate                      : 44100
+[MPEG]          ChannelMode                     : Single Channel
+[MPEG]          MSStereo                        : Off
+[MPEG]          IntensityStereo                 : Off
+[MPEG]          CopyrightFlag                   : False
+[MPEG]          OriginalMedia                   : False
+[MPEG]          Emphasis                        : None
+[ID3v2_4]       EncoderSettings                 : Lavf62.12.101
+[Composite]     Duration                        : 2.22 s (approx)
+--- embedded tags: [ID3v2_4] EncoderSettings = Lavf62.12.101
+--- encoder tag only: yes
