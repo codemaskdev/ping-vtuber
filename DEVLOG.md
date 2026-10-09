@@ -1138,3 +1138,4 @@ total closure: v2 16 of 20, v3 20 of 20
   the camera starts by itself once ready. Privacy guards unchanged; the four headless tests pass (requests after
   ready 0 in the recording mode too).
 - `npm test`: tests 171, pass 171, fail 0, skipped 0, duration_ms 68868.638958.
+- FACTS.md: 8 facts added for the stage notes (minFrames, P2's M and y times, v2's and v3's phrase starts one by one, the H5-H8 averages, v3 on H2 11 of 11, the blink thresholds, the 128 of 478 points), so that every number in out/footage/numbers.json (26 entries) has its FACTS.md line.
