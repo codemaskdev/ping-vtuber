@@ -167,6 +167,12 @@ npm run lipsync:v3-compare -- P1 H1 --name x        v2 against v3 from the code
 npm run lipsync:compare                             closure score, run table, words.txt, P2 chart, side-by-side clips
 ```
 
+## Facts for the script
+
+`FACTS.md`: every number and claim the video may use, each with its file and line (or command) and commit,
+whether it was decided before or after seeing data, and what is not independent or checked only by eye or ear.
+`test/facts.test.mjs` checks every citation.
+
 ## Measuring lip sync
 
 `MEASUREMENT.md` says how (on the finished mp4: mouth from the pixels, onsets and ends of sound from its own audio,

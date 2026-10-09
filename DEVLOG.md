@@ -1033,3 +1033,15 @@ total closure: v2 16 of 20, v3 20 of 20
   License, Version 2.0" (PDFs read with pdftotext; their sha256 in `web/VENDOR.json`). Not checked: the cards do not
   name `face_landmarker.task` (float16/1). Recorded in PUBLISH-CHECKLIST.md (ticked) and `web/VENDOR.json`.
 - `npm test`: tests 160, pass 160, fail 0, skipped 0, duration_ms 70754.36875.
+
+### FACTS.md
+- FACTS.md: 101 facts in eleven chapters (the ten asked for plus Voice), each with its source as `[file:line @ commit ⟦quote⟧]` or `[run: command @ commit]`
+  (all at f4a3f98, the decisions commit), whether it was decided before or after seeing data, and marks for NOT
+  INDEPENDENT, BY EYE, BY EAR and SYNTHETIC; 9 items under "Not measured". Line numbers were filled in by a script
+  in the scratch folder from the quotes, then checked by `test/facts.test.mjs`: every cited commit, file, line and
+  quote exists, every cited npm script exists at its commit, every commit named in the text exists, and every fact
+  has a source.
+- Wrong on my first draft and corrected before the commit: "about 5 % quieter" (a rounded number; the three ratios are
+  now given), "12 attempts" cited to a command that prints file names (now also the outputSize line), and "all code
+  written by Claude" (no file says it; now the Co-Authored-By line every commit carries, 27 of 27 at f4a3f98).
+- `npm test`: tests 164, pass 164, fail 0, skipped 0, duration_ms 71398.836334.
