@@ -5,6 +5,10 @@ import { drawList } from "/lib/rig.mjs";
 import { faceToPose } from "/lib/face-to-pose.mjs";
 
 const P = window.__pingPrivacy;
+// Recording mode (?record=1, author's prompt #22): only the points of web/record-points.json, mirrored like Ping,
+// larger dots, one caption; the camera starts by itself once the page is ready. The privacy guards are the same.
+const record = new URLSearchParams(location.search).get("record") === "1";
+const recordPoints = record ? await (await fetch("/web/record-points.json")).json() : null;
 const rig = await (await fetch("/rig/rig.json")).json();
 const faceConfig = await (await fetch("/rig/face.json")).json();
 const images = {};
@@ -26,6 +30,13 @@ pingCanvas.width = rig.stage.width;
 pingCanvas.height = rig.stage.height;
 const pingCtx = pingCanvas.getContext("2d");
 const pointsCanvas = document.getElementById("points"), pointsCtx = pointsCanvas.getContext("2d");
+if (record) {
+  document.body.classList.add("record");
+  pointsCanvas.width = 900;
+  pointsCanvas.height = 675;
+  document.getElementById("caption").textContent = `${recordPoints.shown} of ${recordPoints.of} points shown`;
+}
+const shown = record ? recordPoints.indices : null;
 let state = null, frame = 0, busy = false, video = null, lastSentMs = -1;
 window.__pingFrames = 0;
 // Detector timestamps (author's prompt #17): the video's own frame times through requestVideoFrameCallback
@@ -48,7 +59,9 @@ function show(face, points) {
   window.PingAdapter.draw(pingCtx, images, drawList(rig, r.pose));
   pointsCtx.clearRect(0, 0, pointsCanvas.width, pointsCanvas.height);
   pointsCtx.fillStyle = "#2fe6ff";
-  for (const [x, y] of points) pointsCtx.fillRect(x * pointsCanvas.width - 1, y * pointsCanvas.height - 1, 2, 2);
+  if (record) {
+    for (const i of shown) if (points[i]) pointsCtx.fillRect((1 - points[i][0]) * pointsCanvas.width - 3, points[i][1] * pointsCanvas.height - 3, 6, 6);
+  } else for (const [x, y] of points) pointsCtx.fillRect(x * pointsCanvas.width - 1, y * pointsCanvas.height - 1, 2, 2);
   window.__pingFrames++;
   window.__pingLastPose = r.pose;
 }
@@ -102,3 +115,4 @@ document.getElementById("start").addEventListener("click", () => window.__pingSt
 P.ready = true;
 window.__pingReady = true;
 document.getElementById("status").textContent = "ready: press Start camera";
+if (record) window.__pingStart();

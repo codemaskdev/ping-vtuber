@@ -5,6 +5,7 @@
 //                                        returned); writes audio/SOURCES.json. npm run audio:process makes audio/dev/.
 //   npm run voice -- held-out H5 H6      the named held-out phrases, once each (refuses if a file exists) → audio/raw/;
 //                                        adds them to SOURCES.json
+//   npm run voice -- lines [id ...]      Ping's script lines (rig/lines.json), once each → audio/raw/line-<id>.mp3
 //   npm run voice -- final-check         the candidate line once with the chosen voice → out/voice-final-check.raw.mp3,
 //                                        then through the same processing → out/voice-final-check.mp3 (not committed)
 // Every file gets its alignment (character timestamps) next to it as <name>.align.json. The alignment belongs to the
@@ -14,6 +15,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { ttsWithTimestamps } from "../lib/elevenlabs.mjs";
 import { processFile } from "./audio-process.mjs";
+import { parseTags } from "../lib/script-tags.mjs";
 import { sha256 } from "../lib/png.mjs";
 import { ROOT, rel } from "../lib/spec.mjs";
 
@@ -35,6 +37,14 @@ async function synth(voice, text, base) {
     settings: V.settings, outputFormat: V.outputFormat, seed: V.seed, serverDate: r.serverDate, text,
     creditsReported: Object.keys(r.costHeaders || {}).length ? r.costHeaders : "not reported", sha256: sha256(r.audio), bytes: r.audio.length, ...probe(`${base}.mp3`), probedWith: ffprobeVersion(),
   };
+}
+
+// The text sent for a script line: parseTags, then the leading space a tag at the start leaves, removed (tag indices
+// moved with it).
+export function sentText(text, states) {
+  const { clean, tags } = parseTags(text, states);
+  const lead = clean.length - clean.trimStart().length;
+  return { clean: clean.trim(), tags: tags.map((t) => ({ ...t, index: t.index - lead })) };
 }
 
 const mode = process.argv[2];
@@ -83,6 +93,27 @@ if (mode === "candidates") {
   }
   fs.writeFileSync(sourcesFile, JSON.stringify(sources, null, 2) + "\n");
   console.log("audio/SOURCES.json");
+} else if (mode === "lines") {
+  // Ping's lines for the episode (author's prompt #22, rig/lines.json): one call per line, once. The text sent is the
+  // script line without its tag (lib/script-tags.mjs) and without the space the tag leaves at the start.
+  if (!V.chosen) throw new Error("no voice chosen in audio/voice.json");
+  const voice = V.candidates.find((c) => c.id === V.chosen);
+  const L = JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "lines.json"), "utf8"));
+  const states = Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, "rig", "emotions.json"), "utf8")).states);
+  const asked = process.argv.slice(3);
+  const sourcesFile = path.join(ROOT, "audio", "SOURCES.json");
+  const sources = JSON.parse(fs.readFileSync(sourcesFile, "utf8"));
+  sources.lineFiles ||= [];
+  for (const [id, line] of Object.entries(L.lines).filter(([k]) => !asked.length || asked.includes(k))) {
+    const base = path.join(ROOT, "audio", "raw", `line-${id}`);
+    if (fs.existsSync(`${base}.mp3`)) throw new Error(`audio/raw/line-${id}.mp3 exists: each line is synthesised once`);
+    const { clean, tags } = sentText(line.text, states);
+    const r = await synth(voice, clean, base);
+    sources.lineFiles.push({ id, scriptText: line.text, tags, ...r });
+    console.log(`${r.file}  ${r.durationS} s  "${clean}"  tags ${JSON.stringify(tags)}  sha256 ${r.sha256}`);
+    fs.writeFileSync(sourcesFile, JSON.stringify(sources, null, 2) + "\n");
+  }
+  console.log("audio/SOURCES.json");
 } else if (mode === "final-check") {
   if (!V.chosen) throw new Error("no voice chosen in audio/voice.json");
   const voice = V.candidates.find((c) => c.id === V.chosen);
@@ -91,6 +122,6 @@ if (mode === "candidates") {
   fs.writeFileSync(path.join(ROOT, "out", "voice-final-check.txt"), JSON.stringify({ raw: r, processing: e }, null, 2) + "\n");
   console.log(`${r.file} ${r.durationS} s → ${e.output}; RMS raw ${e.rms.raw}, result ${e.rms.result}; gain ${e.gain}; out/voice-final-check.txt`);
 } else {
-  console.error("usage: npm run voice -- candidates | phrases | held-out | final-check");
+  console.error("usage: npm run voice -- candidates | phrases | held-out | lines | final-check");
   process.exit(1);
 }

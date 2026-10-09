@@ -95,22 +95,37 @@ export function emotionsSequence(seed) {
   return { kind: "emotions", seed, fps: 30, frames: 300, marks: emotionsConfig.demoMarks, final: true, entries: [] };
 }
 
-// A clip of ready-made poses, one per frame (e.g. a face stream played through lib/face-to-pose.mjs).
-export function posesSequence(poses, label, fps = 30) {
-  return { kind: "poses", label, fps, frames: poses.length, poses, final: true, entries: [] };
+// A clip of ready-made poses, one per frame (e.g. a face stream played through lib/face-to-pose.mjs). With
+// skeleton: true the debug skeleton is drawn over every frame (not a final render).
+export function posesSequence(poses, label, fps = 30, { skeleton = false } = {}) {
+  return { kind: "poses", label, fps, frames: poses.length, poses, skeleton, final: !skeleton, entries: [] };
+}
+
+// A spoken line (author's prompt #22): lib/line.mjs per frame from the seed, the emotion marks, the v3 mouths and the
+// speech span; tail frames after the audio keep going with the same rule (the mouth outside the span).
+export function lineSequence(id, line, frames, fps = 30) {
+  if (!/^[a-z]+$/.test(id)) throw new Error("line id must be a word");
+  return { kind: "line", label: id, fps, frames, line, final: true, entries: [] };
+}
+
+// Layers moved as cut-outs (author's prompt #22): per frame, the layers to draw, each moved by whole pixels, with its
+// opacity, and a checkerboard box behind it (or null). Made by scripts/footage.mjs; nothing is redrawn or scaled.
+export function cutoutSequence(label, frames, fps = 30) {
+  return { kind: "cutout", label, fps, frames: frames.length, cutout: frames, final: true, entries: [] };
 }
 
 export function buildPreview(name, seed, extra) {
-  const seq = name === "liveness" ? livenessSequence(seed) : name === "lipsync" || name === "poses" ? extra : name === "emotions" ? emotionsSequence(seed) : rigSequences()[name];
+  const seq = name === "liveness" ? livenessSequence(seed) : ["lipsync", "poses", "line", "cutout"].includes(name) ? extra : name === "emotions" ? emotionsSequence(seed) : rigSequences()[name];
   if (!seq) throw new Error(`unknown sequence ${name}`);
   checkSequence(name, seq);
   if (seq.kind === "poses") for (const p of seq.poses) validatePose(rig, p);
+  if (seq.kind === "poses" && seq.skeleton && seq.final) throw new Error("a final render never carries the debug skeleton");
   const frames = seq.kind ? seq.frames : seq.entries.length * seq.framesPerEntry;
   const duration = frames / seq.fps;
   for (const d of ["layers"]) fs.rmSync(path.join(PREVIEW, d), { recursive: true, force: true });
   fs.mkdirSync(path.join(PREVIEW, "art", "layers"), { recursive: true });
   for (const l of rig.layers) fs.copyFileSync(path.join(ROOT, l.file), path.join(PREVIEW, l.file));
-  for (const f of ["rig.mjs", "rng.mjs", "liveness.mjs", "pose.mjs", "emotions.mjs"]) fs.copyFileSync(path.join(ROOT, "lib", f), path.join(PREVIEW, f));
+  for (const f of ["rig.mjs", "rng.mjs", "liveness.mjs", "pose.mjs", "emotions.mjs", "line.mjs"]) fs.copyFileSync(path.join(ROOT, "lib", f), path.join(PREVIEW, f));
   fs.copyFileSync(path.join(ROOT, "rig", "adapter.js"), path.join(PREVIEW, "adapter.js"));
   fs.writeFileSync(path.join(PREVIEW, "data.js"),
     "// Written by scripts/build-preview.mjs. Do not edit by hand.\nwindow.PING_RIG = " + JSON.stringify(rig) +
@@ -148,6 +163,7 @@ ${imgs}
       import { livenessAt } from "./liveness.mjs";
       import { combine } from "./pose.mjs";
       import { emotionAt } from "./emotions.mjs";
+      import { linePose } from "./line.mjs";
       const R = window.PING_RIG, S = window.PING_SEQUENCE, LC = window.PING_LIVENESS, EC = window.PING_EMOTIONS;
       const images = {};
       for (const img of document.querySelectorAll("#preload img")) images[img.dataset.file] = img;
@@ -162,6 +178,29 @@ ${imgs}
         }
         if (S.kind === "poses") {
           PingAdapter.draw(ctx, images, drawList(R, S.poses[frame]));
+          if (S.skeleton) PingAdapter.drawSkeleton(ctx, skeleton(R, S.poses[frame]));
+          return;
+        }
+        if (S.kind === "line") {
+          PingAdapter.draw(ctx, images, drawList(R, linePose(R, LC, EC, S.line, frame, S.fps)));
+          return;
+        }
+        if (S.kind === "cutout") {
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+          for (const it of S.cutout[frame]) {
+            if (it.checker) {
+              const [x, y, w, h, cell] = it.checker;
+              ctx.globalAlpha = it.checkerAlpha;
+              for (let j = 0; j * cell < h; j++) for (let i = 0; i * cell < w; i++) {
+                ctx.fillStyle = (i + j) % 2 ? "#222228" : "#3a3a42";
+                ctx.fillRect(x + i * cell, y + j * cell, Math.min(cell, w - i * cell), Math.min(cell, h - j * cell));
+              }
+            }
+            ctx.globalAlpha = it.opacity;
+            ctx.drawImage(images[it.file], it.x, it.y);
+          }
+          ctx.globalAlpha = 1;
           return;
         }
         if (S.kind === "emotions") {

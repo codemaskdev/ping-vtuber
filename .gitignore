@@ -20,3 +20,4 @@ audio/**/*.wav
 rig/preview/emotions.mjs
 web/vendor/
 web/models/
+rig/preview/line.mjs

@@ -52,3 +52,12 @@ test("rig/lines.json: the six lines, text as in the script, one tag at most, v3"
   assert.equal(L.lines.outro.tailSeconds, 3);
   for (const l of Object.values(L.lines)) assert.ok((l.text.match(/\[/g) || []).length <= 1);
 });
+
+test("the six lines were synthesised once each from the script text without the tag", () => {
+  const S = read("audio/SOURCES.json"), L = read("rig/lines.json");
+  assert.deepEqual(S.lineFiles.map((f) => f.id), Object.keys(L.lines));
+  for (const f of S.lineFiles) {
+    assert.equal(f.text, L.lines[f.id].text.replace(/^\[[a-z]+\] /, ""), f.id);
+    assert.equal(f.voiceId, read("audio/voice.json").chosen);
+  }
+});

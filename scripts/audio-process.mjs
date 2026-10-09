@@ -66,7 +66,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     fs.writeFileSync(path.resolve(args[1]).replace(/\.mp3$/, ".process.json"), JSON.stringify(e, null, 2) + "\n");
   } else if (args.length === 0) {
     const files = [];
-    for (const p of [...Object.keys(V.phrases), ...Object.keys(V.heldOut || {}).filter((h) => fs.existsSync(path.join(ROOT, "audio", "raw", `${h}.mp3`)))]) {
+    const lines = fs.readdirSync(path.join(ROOT, "audio", "raw")).filter((f) => /^line-[a-z]+\.mp3$/.test(f)).sort().map((f) => f.slice(0, -4));
+    for (const p of [...Object.keys(V.phrases), ...Object.keys(V.heldOut || {}).filter((h) => fs.existsSync(path.join(ROOT, "audio", "raw", `${h}.mp3`))), ...lines]) {
       const e = processFile(path.join(ROOT, "audio", "raw", `${p}.mp3`), path.join(ROOT, "audio", "dev", `${p}.mp3`));
       say(e);
       files.push(e);

@@ -242,6 +242,90 @@
       "rmsResult": 0.07185546241334075,
       "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/H8.mp3",
       "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/line-alive.mp3",
+      "sha256": "ebc35b51fbb814b7b06e0829f21edd46577c729c32bb0cb458cffe95180f20ae",
+      "from": "audio/raw/line-alive.mp3",
+      "fromSha256": "1961a8e25a08ec70d7491b96ac92d274d7efd70ac485b3e2f30c582dc6409a23",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.8790666653760977,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.06178952304537906,
+      "rmsResult": 0.058725367765192285,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/line-alive.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/line-emotions.mp3",
+      "sha256": "afed8abc164fd8087f85616b1ddc751e94a69c6a37db15f97f8a70874dcf03a1",
+      "from": "audio/raw/line-emotions.mp3",
+      "fromSha256": "7c1f3b4ad60d25bcced4e16752bc3ab268fcdcad34b5abd65b991e6bd48ffa26",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 4.581012585070798,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.05708864020745509,
+      "rmsResult": 0.05424600004367015,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/line-emotions.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/line-fix.mp3",
+      "sha256": "eec0c937d35223d8cd228e1003f4af46e33769f6898ffda3bfc337b23473ddca",
+      "from": "audio/raw/line-fix.mp3",
+      "fromSha256": "2f1b017ebf8bea4b2c557bf124450ccec8b5cbf8596d8f934629f56f48b1e063",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.6586572352571687,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.06293867932459711,
+      "rmsResult": 0.059798253698088645,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/line-fix.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/line-hook.mp3",
+      "sha256": "9243796c695043a9a4f0d97853bb6e8c58a6616f2c1f2acadde7fe85852299d6",
+      "from": "audio/raw/line-hook.mp3",
+      "fromSha256": "826bd6bf798b5c49d97863b4bebdc77f2f728ece60cf11638b52a2c7b1001c8b",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.3786122930784157,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.06225523895359643,
+      "rmsResult": 0.05913539763667102,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/line-hook.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/line-outro.mp3",
+      "sha256": "43a8a333f7a74f115f933c5f3d3c929940adb84af94e55ea9d9f61c8fb32c3f0",
+      "from": "audio/raw/line-outro.mp3",
+      "fromSha256": "9d313700e941cf747305fdcfab8193c62b963f5e037052ef3fda3acaf13d0f7c",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.5597747769555466,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.05956794283401373,
+      "rmsResult": 0.05658236374482335,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/line-outro.mp3",
+      "log": "audio/process-log.json"
+    },
+    {
+      "file": "audio/dev/line-webcam.mp3",
+      "sha256": "6f268d053fd9f2445296ee837936d84e1771f3151882fa4afc19e1c9f49f93a8",
+      "from": "audio/raw/line-webcam.mp3",
+      "fromSha256": "64c68163a9c6aa266f164f4c2d7cdba8eb869071184f81e9092adb765f998695",
+      "tool": "ffmpeg version 8.1.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "chain": "highpass=f=280,lowpass=f=5000,acrusher=bits=9:mode=log:aa=1:mix=0.35,flanger=delay=1.5:depth=1.5:speed=0.4,aecho=0.8:0.55:7:0.22",
+      "gain": 3.6910909742824187,
+      "gainRule": "one gain for the whole file that brings the processed RMS back to the raw file's RMS, lowered if any sample would go above peakCeiling",
+      "rmsRaw": 0.055834551542602306,
+      "rmsResult": 0.05305322867602259,
+      "encode": "ffmpeg -v error -y -f f32le -ar 44100 -ac 1 -i pipe:0 -c:a libmp3lame -b:a 128k audio/dev/line-webcam.mp3",
+      "log": "audio/process-log.json"
     }
   ],
   "repeatabilityEarlier": {
@@ -478,6 +562,219 @@
       "sha256": "e3e3c526a2e911ffbfa174e782c34507b5f4d87e44bd01e64b3a5c1e6526282a",
       "bytes": 51035,
       "durationS": 3.111474,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    }
+  ],
+  "lineFiles": [
+    {
+      "id": "hook",
+      "scriptText": "Not long ago, I was just a picture.",
+      "tags": [],
+      "file": "audio/raw/line-hook.mp3",
+      "alignment": "audio/raw/line-hook.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 10:58:28 GMT",
+      "text": "Not long ago, I was just a picture.",
+      "creditsReported": {
+        "character-cost": "35"
+      },
+      "sha256": "826bd6bf798b5c49d97863b4bebdc77f2f728ece60cf11638b52a2c7b1001c8b",
+      "bytes": 30973,
+      "durationS": 1.857596,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "id": "alive",
+      "scriptText": "[happy] I just blinked. Did you see it?",
+      "tags": [
+        {
+          "index": 0,
+          "state": "happy"
+        }
+      ],
+      "file": "audio/raw/line-alive.mp3",
+      "alignment": "audio/raw/line-alive.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 10:58:29 GMT",
+      "text": "I just blinked. Did you see it?",
+      "creditsReported": {
+        "character-cost": "31"
+      },
+      "sha256": "1961a8e25a08ec70d7491b96ac92d274d7efd70ac485b3e2f30c582dc6409a23",
+      "bytes": 27211,
+      "durationS": 1.625397,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "id": "fix",
+      "scriptText": "[happy] Sixteen out of sixteen. Write that down.",
+      "tags": [
+        {
+          "index": 0,
+          "state": "happy"
+        }
+      ],
+      "file": "audio/raw/line-fix.mp3",
+      "alignment": "audio/raw/line-fix.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 10:58:29 GMT",
+      "text": "Sixteen out of sixteen. Write that down.",
+      "creditsReported": {
+        "character-cost": "40"
+      },
+      "sha256": "2f1b017ebf8bea4b2c557bf124450ccec8b5cbf8596d8f934629f56f48b1e063",
+      "bytes": 35988,
+      "durationS": 2.182676,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "id": "emotions",
+      "scriptText": "[surprised] You removed it?",
+      "tags": [
+        {
+          "index": 0,
+          "state": "surprised"
+        }
+      ],
+      "file": "audio/raw/line-emotions.mp3",
+      "alignment": "audio/raw/line-emotions.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 10:58:31 GMT",
+      "text": "You removed it?",
+      "creditsReported": {
+        "character-cost": "15"
+      },
+      "sha256": "7c1f3b4ad60d25bcced4e16752bc3ab268fcdcad34b5abd65b991e6bd48ffa26",
+      "bytes": 17598,
+      "durationS": 1.021678,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "id": "webcam",
+      "scriptText": "[happy] Now I am him. Almost.",
+      "tags": [
+        {
+          "index": 0,
+          "state": "happy"
+        }
+      ],
+      "file": "audio/raw/line-webcam.mp3",
+      "alignment": "audio/raw/line-webcam.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 10:58:32 GMT",
+      "text": "Now I am him. Almost.",
+      "creditsReported": {
+        "character-cost": "21"
+      },
+      "sha256": "64c68163a9c6aa266f164f4c2d7cdba8eb869071184f81e9092adb765f998695",
+      "bytes": 23449,
+      "durationS": 1.393197,
+      "sampleRate": 44100,
+      "channels": 1,
+      "codec": "mp3",
+      "probedWith": "ffprobe version 8.1.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    {
+      "id": "outro",
+      "scriptText": "[sleepy] And I am going to sleep.",
+      "tags": [
+        {
+          "index": 0,
+          "state": "sleepy"
+        }
+      ],
+      "file": "audio/raw/line-outro.mp3",
+      "alignment": "audio/raw/line-outro.align.json",
+      "voiceName": "River - Relaxed, Neutral, Informative",
+      "voiceId": "SAz9YHcvj6GT2YYXdXww",
+      "modelId": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0,
+        "use_speaker_boost": true,
+        "speed": 1
+      },
+      "outputFormat": "mp3_44100_128",
+      "seed": 1,
+      "serverDate": "Fri, 09 Oct 2026 10:58:32 GMT",
+      "text": "And I am going to sleep.",
+      "creditsReported": {
+        "character-cost": "24"
+      },
+      "sha256": "9d313700e941cf747305fdcfab8193c62b963f5e037052ef3fda3acaf13d0f7c",
+      "bytes": 23449,
+      "durationS": 1.393197,
       "sampleRate": 44100,
       "channels": 1,
       "codec": "mp3",

@@ -12,6 +12,15 @@
       main { display: flex; gap: 16px; padding: 16px; align-items: flex-start; }
       #ping { width: 640px; height: 640px; }
       #points { width: 320px; height: 240px; background: #000; }
+      #caption { display: none; }
+      /* Recording mode (?record=1, author's prompt #22): sized for a 1920 x 1080 screen recording, black, the points on
+         the left and Ping on the right, one caption, nothing else. */
+      body.record { background: #000; width: 1920px; height: 1080px; overflow: hidden; }
+      body.record main { display: block; padding: 0; position: relative; width: 1920px; height: 1080px; }
+      body.record main > div > p { display: none; }
+      body.record #points { position: absolute; left: 30px; top: 202px; width: 900px; height: 675px; }
+      body.record #ping { position: absolute; left: 960px; top: 60px; width: 960px; height: 960px; }
+      body.record #caption { display: block; position: absolute; left: 30px; top: 1020px; margin: 0; color: #8a8a96; font: 20px monospace; }
     </style>
   </head>
   <body>
@@ -22,6 +31,7 @@
         <p><button id="start">Start camera</button></p>
         <p id="status">loading…</p>
         <p id="timing"></p>
+        <p id="caption"></p>
         <p>The camera picture is never shown, drawn, stored or sent. Only Ping and the face points are drawn.</p>
       </div>
     </main>

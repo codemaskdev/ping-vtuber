@@ -59,7 +59,19 @@
     "audio/raw/H7.mp3",
     "audio/dev/H7.mp3",
     "audio/raw/H8.mp3",
-    "audio/dev/H8.mp3"
+    "audio/dev/H8.mp3",
+    "audio/dev/line-alive.mp3",
+    "audio/dev/line-emotions.mp3",
+    "audio/dev/line-fix.mp3",
+    "audio/dev/line-hook.mp3",
+    "audio/dev/line-outro.mp3",
+    "audio/dev/line-webcam.mp3",
+    "audio/raw/line-alive.mp3",
+    "audio/raw/line-emotions.mp3",
+    "audio/raw/line-fix.mp3",
+    "audio/raw/line-hook.mp3",
+    "audio/raw/line-outro.mp3",
+    "audio/raw/line-webcam.mp3"
   ],
   "metadataApprovedBy": "the author's rule in prompt #16 (approved if the dump shows the encoder tag only), applied with npm run audio:metadata: each file's <name>.metadata.txt says \"encoder tag only: yes\"",
   "metadataApprovedBefore": {
@@ -138,5 +150,6 @@
   },
   "frozen": "Since the author's prompt #17 the voice settings (chosen, modelId, settings, outputFormat, seed) and processing (chain, gainRule, peakCeiling, encode) do not change: rig/frozen.json, test/freeze.test.mjs.",
   "metadataApprovedHeldOut": "H1-H4: approved by Claude applying the author's prompt #16 rule (encoder tag only) to the held-out files of prompt #17, which did not restate it; each <name>.metadata.txt says \"encoder tag only: yes\". The author may take them out. The author accepted that in prompt #18; H5-H8 approved by the same rule.",
-  "confirmedByEar": "the author, prompt #20: the voice (River with the stronger chain) is confirmed by ear"
+  "confirmedByEar": "the author, prompt #20: the voice (River with the stronger chain) is confirmed by ear",
+  "metadataApprovedLines": "Ping's six script lines (prompt #22): approved by the author's metadata rule (encoder tag only), each <name>.metadata.txt says \"encoder tag only: yes\"."
 }

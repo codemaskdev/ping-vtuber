@@ -36,6 +36,7 @@
     "lipsync:v3-compare": "node scripts/lipsync-v3-compare.mjs",
     "measure": "node scripts/measure.mjs",
     "measure:exam": "node scripts/measure-exam.mjs",
+    "footage": "node scripts/footage.mjs",
     "side-by-side": "node scripts/side-by-side.mjs",
     "web:vendor": "node scripts/web-vendor.mjs",
     "web:serve": "node scripts/serve-web.mjs",

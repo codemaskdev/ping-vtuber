@@ -139,3 +139,43 @@ test("headless fallback: without requestVideoFrameCallback the page uses frame c
     server.close();
   }
 });
+
+test("headless recording mode (?record=1): the points and Ping only, one caption, the same privacy", { skip, timeout: 180000 }, async () => {
+  const { default: puppeteer } = await import("puppeteer-core");
+  const { server, log, port } = await startServer(0);
+  const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--no-first-run", "--deny-permission-prompts"] });
+  try {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1920, height: 1080 });
+    await page.evaluateOnNewDocument(stubCamera);
+    const errors = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto(`http://127.0.0.1:${port}/web/index.html?record=1`);
+    await page.waitForFunction(() => window.__pingReady === true, { timeout: 120000 });
+    const atReady = log.length;
+    // The camera starts by itself in this mode.
+    await page.waitForFunction(() => window.__pingFrames >= 8, { timeout: 120000 });
+    const r = await page.evaluate(async () => {
+      const vis = (id) => document.getElementById(id).getClientRects().length > 0;
+      let refused = "allowed";
+      try { await fetch("/web/index.html"); } catch (e) { refused = String(e.message).startsWith("privacy:") ? "refused" : e.message; }
+      return { text: document.body.innerText.trim(), caption: document.getElementById("caption").textContent, visible: ["ping", "points", "caption", "start", "status", "timing"].filter(vis),
+        body: [document.body.offsetWidth, document.body.offsetHeight], background: getComputedStyle(document.body).backgroundColor, videos: document.querySelectorAll("video").length, stub: window.__stubCalls, fetch: refused };
+    });
+    const pts = JSON.parse(fs.readFileSync(path.join(ROOT, "web", "record-points.json"), "utf8"));
+    assert.deepEqual(errors, []);
+    assert.equal(r.caption, `${pts.shown} of 478 points shown`);
+    assert.equal(r.text, r.caption, "no other text on the page");
+    assert.deepEqual(r.visible, ["ping", "points", "caption"]);
+    assert.deepEqual(r.body, [1920, 1080]);
+    assert.equal(r.background, "rgb(0, 0, 0)");
+    assert.equal(r.videos, 0);
+    assert.equal(r.stub, 1);
+    assert.equal(r.fetch, "refused");
+    assert.deepEqual(log.slice(atReady), [], "no request after ready");
+    assert.ok(log.includes("/web/record-points.json"));
+  } finally {
+    await browser.close();
+    server.close();
+  }
+});
