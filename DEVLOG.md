@@ -1227,3 +1227,9 @@ total closure: v2 16 of 20, v3 20 of 20
 - The placeholder stood in one place: README.md, Links ("- Video: VIDEO_URL"). It is now https://youtu.be/i-A23uyPiyE.
   The other two mentions of the word are history, left as they are: PROMPTS.md (prompts #24 and #25, verbatim) and
   this log (prompt #24's entry). The webcam page has no link to the video.
+
+## 2026-10-10 · Prompt #28: clickable links on the site
+
+- GitHub Pages (Jekyll, kramdown) does not turn a bare address into a link, so on the site root the README's two
+  addresses (the webcam page, the video) were plain text; github.com linked them. Both are now in angle brackets
+  (`<https://...>`), a link in both places.

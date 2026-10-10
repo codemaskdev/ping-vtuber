@@ -9,8 +9,8 @@ VTuber apps.
 
 ## Links
 
-- Try Ping with your webcam: https://codemaskdev.github.io/ping-vtuber/web/
-- Video: https://youtu.be/i-A23uyPiyE
+- Try Ping with your webcam: <https://codemaskdev.github.io/ping-vtuber/web/>
+- Video: <https://youtu.be/i-A23uyPiyE>
 - Every prompt, verbatim: [PROMPTS.md](PROMPTS.md)
 - Every number the video uses and where it comes from: [FACTS.md](FACTS.md)
 - What was done, what broke, and the real numbers: [DEVLOG.md](DEVLOG.md)
