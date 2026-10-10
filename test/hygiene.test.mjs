@@ -40,19 +40,24 @@ test("no local paths, usernames or the global git identity in any text file", ()
   for (const f of textFiles) {
     let text = fs.readFileSync(path.join(ROOT, f), "utf8");
     if (f.startsWith("web/vendor/")) text = text.split(emscriptenHome).join("");
-    // prompt #24 (verbatim in PROMPTS.md) quotes the pattern it asks to look for (Users, then "..."): not a path
-    if (f === "PROMPTS.md") text = text.split(`"${["", "Users", "..."].join("/")}"`).join("");
+    // prompts #24 and #25 (verbatim in PROMPTS.md) quote the pattern they ask to look for: not a path
+    if (f === "PROMPTS.md") for (const q of [["", "Users", "..."], ["", "Users", ""]]) text = text.split(`"${q.join("/")}"`).join("");
     for (const n of needles) assert.ok(!text.includes(n), `${f} contains a local path or identity`);
     assert.ok(!new RegExp(`\\b${user}\\b`, "i").test(text), `${f} contains the local username`);
   }
 });
 
+// Up to and including 73feeaa (published as they are: their hashes are in the video) the e-mail is the old noreply
+// address; from the next commit on it is one no GitHub user can own (prompt #26, CLAUDE.md rule 9).
+const LAST_OLD = "73feeaac276e921f874730a1521b63dddcdaced1";
 test("every commit is authored and committed by CodeMask in UTC", () => {
-  const log = gitOr("", "log", "--format=%an|%ae|%aI|%cn|%ce|%cI");
+  const log = gitOr("", "log", "--format=%H|%an|%ae|%aI|%cn|%ce|%cI");
+  const old = new Set(gitOr("", "rev-list", LAST_OLD).split("\n").filter(Boolean));
   for (const line of log.split("\n").filter(Boolean)) {
-    const [an, ae, ad, cn, ce, cd] = line.split("|");
+    const [h, an, ae, ad, cn, ce, cd] = line.split("|");
+    const email = old.has(h) ? "codemask@users.noreply.github.com" : "codemask@codemask.invalid";
     assert.equal(an, "CodeMask"); assert.equal(cn, "CodeMask");
-    assert.equal(ae, "codemask@users.noreply.github.com"); assert.equal(ce, "codemask@users.noreply.github.com");
+    assert.equal(ae, email, h); assert.equal(ce, email, h);
     assert.match(ad, /(Z|\+00:00)$/); assert.match(cd, /(Z|\+00:00)$/);
   }
 });

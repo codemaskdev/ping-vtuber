@@ -1199,6 +1199,38 @@ Target, the same as bug-driver: repository github.com/codemaskdev/ping-vtuber, G
 Report: the audit findings and what you did about each, the request counts under the prefix, the two URLs the description will use (the page and PROMPTS.md), the test result, and the exact commands the author must run to publish (create the repository, push, turn on Pages). Commit as CodeMask with UTC time. STOP.
 ```
 
+## Prompt #25
+
+```text
+The author approves publishing. Publish this repository and the webcam page now, exactly as prepared in commit 73feeaa.
+
+1. Before pushing: confirm the worktree is clean, the branch is main, tests pass, and repeat the short anonymity check on what will be pushed (author and committer of every commit, times +0000, no "/Users/", no keys). If anything fails, stop and report.
+2. Publish:
+   gh repo create codemaskdev/ping-vtuber --public --description "Ping, a VTuber made with AI (CodeMask episode 3)" --homepage https://codemaskdev.github.io/ping-vtuber/web/
+   git remote add origin https://github.com/codemaskdev/ping-vtuber.git
+   git push -u origin main
+   gh api -X POST repos/codemaskdev/ping-vtuber/pages -f "source[branch]=main" -f "source[path]=/"
+   Push only main. Do not push the overnight branch. Check first that gh is signed in as the codemaskdev account and not a personal one; if it is not, stop and report.
+3. Wait until the Pages build is finished, then check the live site, not the local copy:
+   - https://codemaskdev.github.io/ping-vtuber/web/ answers 200, and so do every script, layer, rig file, the three MediaPipe files and the model (list each URL with its status and size);
+   - https://github.com/codemaskdev/ping-vtuber and https://github.com/codemaskdev/ping-vtuber/blob/main/PROMPTS.md answer 200;
+   - open the live page in a headless browser with a stubbed camera and count the requests: before ready, after ready, and to any host other than codemaskdev.github.io (must be 0), over at least 75 seconds so the MediaPipe usage logger gets its chance;
+   - the response headers and the page's CSP as served.
+4. Say what the public repository page reveals: the owner, the contributors list, the commit authors as GitHub shows them.
+
+Report the results as a short table. The README still has the VIDEO_URL placeholder: leave it, the address comes later. STOP.
+```
+
+## Prompt #26
+
+```text
+Decisions of the author:
+1. Publish through the account gh is signed in with, the same way bug-driver was published. The author accepts that link.
+2. Do not rewrite history: the commit hashes are shown in the video and recorded in FACTS.md and in the footage. Publish the existing commits as they are.
+3. From the next commit on, in this repository use an author and committer e-mail that maps to no GitHub user (propose one, check that no account answers to it, and write it into the repository's notes for future sessions). Say in the report how GitHub displays the old commits and the new one.
+Then continue with the publication and the live-site checks from the previous prompt. STOP after the report.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.

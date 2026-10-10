@@ -25,7 +25,11 @@ channel logo. These rules hold for the whole project.
    `[GENERATOR]`. Generator prompts in PROMPTS.md must match `art/GENERATOR_PROMPTS.md` exactly (a test checks this).
 8. **DEVLOG.md**: what was done, what broke, and the real numbers.
 9. **Anonymity.** Commits authored as CodeMask, with UTC dates, never the global git identity:
-   `TZ=UTC git -c user.name=CodeMask -c user.email=codemask@users.noreply.github.com commit …`
+   `TZ=UTC git -c user.name=CodeMask -c user.email=codemask@codemask.invalid commit …`
+   (prompt #26). The e-mail maps to no GitHub user: `.invalid` is a reserved domain (RFC 2606), so no account can
+   ever verify it, and GitHub shows such commits under the name CodeMask with no profile link. Commits up to and
+   including 73feeaa keep codemask@users.noreply.github.com (their hashes are in the video and in FACTS.md: never
+   rewrite them); GitHub links those to the GitHub user `codemask`.
    No local paths, no usernames, no `.DS_Store`, no personal data in any file (a test checks tracked files and
    commit authors).
 10. **All repository text in English.**

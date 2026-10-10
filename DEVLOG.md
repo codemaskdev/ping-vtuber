@@ -1205,3 +1205,19 @@ total closure: v2 16 of 20, v3 20 of 20
   its model, GSAP). LICENSE: MIT, CodeMask. test/hygiene.test.mjs allows one remote, origin at codemaskdev/ping-vtuber.
 - `npm test` (in a worktree without out/): tests 173, pass 172, fail 0, skipped 1 (the P1-P3 pixel check needs the
   clips in out/), duration_ms 248406.015375.
+
+## 2026-10-10 · Prompts #25 and #26: publication
+
+- Before pushing (prompt #25): worktree clean, branch main at 73feeaa, `npm test` 173 of 173, all 37 commits
+  authored and committed by CodeMask <codemask@users.noreply.github.com> at +0000, no home paths, no keys. gh is
+  signed in with a personal account that is an admin of the codemaskdev organisation (an organisation has no login
+  of its own), so the run stopped there and asked.
+- Found then: GitHub links the e-mail codemask@users.noreply.github.com to an existing GitHub user, `codemask`
+  (bug-driver's commits and contributors list show that user).
+- The author's decisions (prompt #26): publish through the signed-in account, as bug-driver was; no history rewrite
+  (the hashes are in the video, in FACTS.md and in the footage); from the next commit on an e-mail no GitHub user
+  can own.
+- The e-mail from this commit on: codemask@codemask.invalid. `.invalid` is reserved (RFC 2606): no mail can reach
+  it, so no GitHub account can verify it. GitHub's user search and commit search (author-email, committer-email)
+  return 0 for it. CLAUDE.md rule 9 has the new command; test/hygiene.test.mjs expects the old address up to and
+  including 73feeaa and the new one after it.
