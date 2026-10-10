@@ -1221,3 +1221,9 @@ total closure: v2 16 of 20, v3 20 of 20
   it, so no GitHub account can verify it. GitHub's user search and commit search (author-email, committer-email)
   return 0 for it. CLAUDE.md rule 9 has the new command; test/hygiene.test.mjs expects the old address up to and
   including 73feeaa and the new one after it.
+
+## 2026-10-10 · Prompt #27: the video's address
+
+- The placeholder stood in one place: README.md, Links ("- Video: VIDEO_URL"). It is now https://youtu.be/i-A23uyPiyE.
+  The other two mentions of the word are history, left as they are: PROMPTS.md (prompts #24 and #25, verbatim) and
+  this log (prompt #24's entry). The webcam page has no link to the video.

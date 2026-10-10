@@ -1231,6 +1231,13 @@ Decisions of the author:
 Then continue with the publication and the live-site checks from the previous prompt. STOP after the report.
 ```
 
+## Prompt #27
+
+```text
+The video is uploaded. Its address is https://youtu.be/i-A23uyPiyE
+Replace the VIDEO_URL placeholder in README.md (and anywhere else it appears in the repository; list the places) with this address. Run the tests, commit as CodeMask with UTC time, push main, wait for the Pages build, and confirm that the live README and the live page show the right link. The video is still private, so the link itself will not open for others until the author publishes it; do not treat that as an error. STOP.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.
