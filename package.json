@@ -40,6 +40,7 @@
     "side-by-side": "node scripts/side-by-side.mjs",
     "web:vendor": "node scripts/web-vendor.mjs",
     "web:serve": "node scripts/serve-web.mjs",
+    "web:requests": "node scripts/web-requests.mjs",
     "face:stream": "node scripts/face-stream.mjs",
     "face:points": "node scripts/face-points.mjs",
     "liveness:strip": "node scripts/liveness-strip.mjs",

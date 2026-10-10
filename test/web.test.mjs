@@ -4,8 +4,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import os from "node:os";
 import { ROOT } from "../lib/spec.mjs";
-import { startServer } from "../scripts/serve-web.mjs";
+import { startServer, PREFIX } from "../scripts/serve-web.mjs";
+import { sameOriginOnly, lockDown } from "../web/worker-privacy.js";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const ready = fs.existsSync(CHROME) && fs.existsSync(path.join(ROOT, "web", "vendor")) && fs.existsSync(path.join(ROOT, "web", "models", "face_landmarker.task"));
@@ -36,8 +38,15 @@ test("static: the page code never draws, stores, records or sends the video", ()
   const main = webJs[0][1];
   assert.equal((main.match(/P\.handOff\(video\)/g) || []).length, 1, "exactly one call hands the video to the detector");
   assert.ok(!/createImageBitmap\(/.test(main), "main.js makes no ImageBitmap itself");
-  assert.match(fs.readFileSync(path.join(ROOT, "web", "index.html"), "utf8"), /<script src="\/web\/privacy.js"><\/script>\s*<script src="\/rig\/adapter.js">/);
+  const html = fs.readFileSync(path.join(ROOT, "web", "index.html"), "utf8");
+  assert.match(html, /<script src="privacy.js"><\/script>\s*<script src="\.\.\/rig\/adapter.js">/);
+  assert.ok(html.indexOf('http-equiv="Content-Security-Policy"') < html.indexOf("<script"), "the content security policy comes before any script");
+  assert.match(html, /connect-src 'self'/);
   assert.ok(!/https?:\/\//.test(webJs.map(([, s]) => s).join("\n")), "no absolute URL, no CDN");
+  // GitHub Pages serves the page from /ping-vtuber/web/ (author's prompt #24): no path from the site root
+  for (const [f, src] of [...webJs, ["web/index.html", html]]) assert.ok(!/["'`(]\/(web|rig|lib|art)\//.test(src), `${f}: a root-absolute path`);
+  // the sentence a visitor reads says what the code does
+  assert.match(html.replace(/\s+/g, " "), /Your camera picture never leaves this page\. It is not shown, drawn, stored or sent anywhere/);
   // The worker locks itself down after the model has loaded and before it says ready, and has no dynamic import.
   const worker = webJs[1][1];
   assert.ok(worker.indexOf("lockDown(self);") > worker.indexOf("createFromOptions") && worker.indexOf("lockDown(self);") < worker.indexOf('postMessage({ type: "ready" })'));
@@ -46,21 +55,47 @@ test("static: the page code never draws, stores, records or sends the video", ()
   for (const name of ["fetch", "importScripts", "XMLHttpRequest", "WebSocket", "EventSource", "convertToBlob"]) assert.ok(guards.includes(`"${name}"`), name);
 });
 
-test("headless: no request after ready, the video never drawn or attached, nothing stored, guards refuse", { skip, timeout: 180000 }, async () => {
+test("worker guard: from the first line, a request to another host is refused; the page's own host is not", async () => {
+  const calls = [];
+  const scope = { location: new URL("https://codemaskdev.github.io/ping-vtuber/web/detector-worker.js"), fetch: async (u) => calls.push(String(u)) };
+  sameOriginOnly(scope);
+  await scope.fetch("../models/face_landmarker.task");
+  await assert.rejects(async () => scope.fetch("https://odml.pa.googleapis.com/v1/log"), /privacy: fetch to odml\.pa\.googleapis\.com refused/);
+  assert.throws(() => scope.fetch(new Request("https://cdn.jsdelivr.net/x")), /privacy: fetch to cdn\.jsdelivr\.net refused/);
+  assert.deepEqual(calls, ["../models/face_landmarker.task"]);
+  assert.deepEqual(scope.__pingWorkerPrivacy.refused, ["fetch to odml.pa.googleapis.com", "fetch to cdn.jsdelivr.net"]);
+  lockDown(scope);
+  assert.throws(() => scope.fetch("../models/face_landmarker.task"), /privacy: fetch to codemaskdev\.github\.io refused/);
+  assert.equal(scope.__pingWorkerPrivacy.refused.length, 3, "one record for both guards");
+});
+
+// Every request Chrome made for the page, from its net log: the page and its worker included, whatever the host.
+function pageRequests(netlogFile, origin) {
+  const text = fs.readFileSync(netlogFile, "utf8");
+  let log;
+  try { log = JSON.parse(text); } catch { log = JSON.parse(text.replace(/,?\s*$/, "") + "]}"); }  // a log cut short at exit
+  const START = log.constants.logEventTypes.URL_REQUEST_START_JOB;
+  return log.events.filter((e) => e.type === START && e.params?.url && (e.params.initiator === origin || e.params.url.startsWith(origin))).map((e) => e.params.url);
+}
+
+test("headless, under /ping-vtuber/: no request after ready, the video never drawn or attached, nothing stored, guards refuse", { skip, timeout: 180000 }, async () => {
   const { default: puppeteer } = await import("puppeteer-core");
-  const { server, log, port } = await startServer(0);
-  const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--no-first-run", "--deny-permission-prompts"] });
+  const { server, log, port, base } = await startServer(0);
+  const origin = `http://127.0.0.1:${port}`;
+  const netlog = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "ping-netlog-")), "net.json");
+  const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--no-first-run", "--deny-permission-prompts", `--log-net-log=${netlog}`] });
+  let r;
   try {
     const page = await browser.newPage();
     await page.evaluateOnNewDocument(stubCamera);
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto(`http://127.0.0.1:${port}/web/index.html`);
+    await page.goto(`${base}/web/`);
     await page.waitForFunction(() => window.__pingReady === true, { timeout: 120000 });
     const atReady = log.length;
     await page.evaluate(() => window.__pingStart());
     await page.waitForFunction(() => window.__pingFrames >= 16, { timeout: 120000 });
-    const r = await page.evaluate(async () => {
+    r = await page.evaluate(async () => {
       // Both counters are read together, before anything awaits, so a result arriving meanwhile cannot split them.
       const P = window.__pingPrivacy, out = { handoffs: P.videoHandoffs, frames: window.__pingFrames, refused: [...P.refused], videos: document.querySelectorAll("video").length, stub: window.__stubCalls, local: localStorage.length, session: sessionStorage.length };
       out.dbs = (await indexedDB.databases()).length;
@@ -99,24 +134,32 @@ test("headless: no request after ready, the video never drawn or attached, nothi
     const after = log.slice(atReady);
     assert.deepEqual(errors, []);
     assert.deepEqual(after, [], `requests after ready: ${after.join(", ")}`);
-    assert.ok(log.includes("/web/detector-worker.js") && log.includes("/web/models/face_landmarker.task"), "the detector worker and the model came from this server");
+    assert.ok(log.includes(`${PREFIX}/web/detector-worker.js`) && log.includes(`${PREFIX}/web/models/face_landmarker.task`), "the detector worker and the model came from this server");
+    assert.deepEqual(log.filter((p) => !p.startsWith(`${PREFIX}/`)), [], "every request stays under the project path");
     assert.equal(r.stub, 1);
     assert.equal(r.videos, 0, "no video element in the page");
     // The first drawn frame comes before any hand-off; every later one is a detector result for one hand-off.
     assert.ok(r.handoffs >= r.frames - 1 && r.handoffs <= r.frames + 1, `handoffs ${r.handoffs}, frames ${r.frames}`);
     assert.deepEqual([r.local, r.session, r.dbs], [0, 0, 0], "nothing stored");
     assert.deepEqual(r.tries, { drawImage: "refused", createImageBitmap: "refused", append: "refused", fetch: "refused", recorder: "refused", capture: "refused" });
-    fs.mkdirSync(path.join(ROOT, "out"), { recursive: true });
-    fs.writeFileSync(path.join(ROOT, "out", "web-headless.json"), JSON.stringify({ requestsBeforeReady: log.slice(0, atReady), requestsAfterReady: after, ...r }, null, 2) + "\n");
+    r = { prefix: PREFIX, requestsBeforeReady: log.slice(0, atReady), requestsAfterReady: after, ...r };
   } finally {
     await browser.close();
     server.close();
   }
+  // Chrome's own net log: what the page and its worker asked for from any host (the local server sees only its own)
+  const urls = pageRequests(netlog, origin);
+  const foreign = urls.filter((u) => !u.startsWith(`${origin}/`));
+  assert.deepEqual(foreign, [], "no request to another host");
+  assert.equal(urls.length, r.requestsBeforeReady.length + r.requestsAfterReady.length, "the net log and the server saw the same requests");
+  r.netLog = { requests: urls.length, otherHosts: foreign.length };
+  fs.mkdirSync(path.join(ROOT, "out"), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, "out", "web-headless.json"), JSON.stringify(r, null, 2) + "\n");
 });
 
 test("headless fallback: without requestVideoFrameCallback the page uses frame count / 30 and says so", { skip, timeout: 180000 }, async () => {
   const { default: puppeteer } = await import("puppeteer-core");
-  const { server, log, port } = await startServer(0);
+  const { server, log, base } = await startServer(0);
   const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--no-first-run", "--deny-permission-prompts"] });
   try {
     const page = await browser.newPage();
@@ -124,7 +167,7 @@ test("headless fallback: without requestVideoFrameCallback the page uses frame c
     await page.evaluateOnNewDocument(() => { delete HTMLVideoElement.prototype.requestVideoFrameCallback; });
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto(`http://127.0.0.1:${port}/web/index.html`);
+    await page.goto(`${base}/web/index.html`);
     await page.waitForFunction(() => window.__pingReady === true, { timeout: 120000 });
     const atReady = log.length;
     await page.evaluate(() => window.__pingStart());
@@ -142,7 +185,7 @@ test("headless fallback: without requestVideoFrameCallback the page uses frame c
 
 test("headless recording mode (?record=1): the points and Ping only, one caption, the same privacy", { skip, timeout: 180000 }, async () => {
   const { default: puppeteer } = await import("puppeteer-core");
-  const { server, log, port } = await startServer(0);
+  const { server, log, base } = await startServer(0);
   const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--no-first-run", "--deny-permission-prompts"] });
   try {
     const page = await browser.newPage();
@@ -150,7 +193,7 @@ test("headless recording mode (?record=1): the points and Ping only, one caption
     await page.evaluateOnNewDocument(stubCamera);
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto(`http://127.0.0.1:${port}/web/index.html?record=1`);
+    await page.goto(`${base}/web/?record=1`);
     await page.waitForFunction(() => window.__pingReady === true, { timeout: 120000 });
     const atReady = log.length;
     // The camera starts by itself in this mode.
@@ -173,7 +216,7 @@ test("headless recording mode (?record=1): the points and Ping only, one caption
     assert.equal(r.stub, 1);
     assert.equal(r.fetch, "refused");
     assert.deepEqual(log.slice(atReady), [], "no request after ready");
-    assert.ok(log.includes("/web/record-points.json"));
+    assert.ok(log.includes(`${PREFIX}/web/record-points.json`));
   } finally {
     await browser.close();
     server.close();

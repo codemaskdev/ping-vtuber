@@ -1166,3 +1166,42 @@ total closure: v2 16 of 20, v3 20 of 20
 - Recording mode: the face oval dropped (the author: the outline is the most recognisable part); lips, eyes and
   eyebrows, 92 of 478 points; the caption follows `web/record-points.json`; the four headless tests pass.
 - `npm test`: tests 172, pass 172, fail 0, skipped 0, duration_ms 69380.377208.
+
+## 2026-10-10 · Prompt #24: ready for publication (nothing pushed, nothing created on GitHub)
+
+- Anonymity audit of the whole history (36 commits on main and overnight, 575 blobs, every version of every file):
+  every author and committer is CodeMask <codemask@users.noreply.github.com>, every author and commit date +0000; no
+  local path, home directory, user or machine name, no e-mail address but the noreply one, Anthropic's co-author
+  address, a fake one in a test and GSAP's author in its licence header; no API key or token; no .DS_Store ever
+  committed; no Cyrillic. Voice ids: ElevenLabs premade or library voices only (River, Callum, Laura, Liam, Miffy
+  Mouse, Justin Time), public in their voice library; no cloned voice. Metadata: the eight raw images (art/raw/, one
+  version each in history) carry OpenAI's C2PA manifest: "OpenAI Media
+  Service API", ChatGPT, gpt-image, actions created / converted / watermarked, the generation time (2026-10-08,
+  18:17 to 18:57 UTC), random instance ids, OpenAI's signing and time-stamp certificates; no account, no person. The
+  layers: PNG structure only. The logo PNG: a background-colour chunk. Every mp3: one ID3 tag, the encoder (Lavf60.16.101
+  as returned by ElevenLabs, Lavf62.12.101 after audio:process). The committed metadata dumps (*.metadata.txt) show
+  repository-relative directories and UTC times only. No finding needs a history rewrite; none was done.
+- The page under a project path: every path in web/index.html and web/main.js is relative (the worker's already were);
+  scripts/serve-web.mjs serves the repository under /ping-vtuber/ (outside it: 404, like a root path on Pages).
+  Entry: web/index.html, so the page is https://codemaskdev.github.io/ping-vtuber/web/.
+- The tracker files are now committed (they were kept out of git by prompt #16; GitHub Pages has no build step):
+  only the three the page loads (vision_bundle.mjs, wasm/vision_wasm_module_internal.js and .wasm: the worker asks
+  for the module build, the other four wasm files were never requested) and the model, sha256 as in web/VENDOR.json,
+  with the Apache 2.0 text (web/vendor/LICENSE-Apache-2.0.txt). npm run web:vendor copies only those three now and
+  keeps the model-card licence record.
+- Found while counting requests: MediaPipe Tasks Vision 1.1.0 has a usage logger that posts to
+  odml.pa.googleapis.com every 60 s through fetch. It was already refused (the worker's lockDown after ready), but a
+  model load slower than 60 s would have let one report out before ready. web/worker-privacy.js sameOriginOnly() now
+  refuses any request to another host from the worker's first line; lockDown records the host it refused. The page
+  has a content security policy (its own files only).
+- Request count under /ping-vtuber/ (npm run web:requests, 75 s with a synthetic camera; the same in npm test):
+  25 requests before ready, all under /ping-vtuber/; 0 after ready; Chrome's net log (page and worker) 25 requests,
+  0 to another host; refused in the worker: "fetch to odml.pa.googleapis.com" once, 60 s after start.
+- The page's sentence now reads "Your camera picture never leaves this page. It is not shown, drawn, stored or sent
+  anywhere: only Ping and the face points are drawn. The page loads its own files from this site, and once it says
+  "ready" it makes no network request at all." (checked by test/web.test.mjs).
+- README: a visitor's part first (what Ping is, the page, VIDEO_URL, the camera, running it locally, FACTS.md,
+  PROMPTS.md, licence and credits: MIT for the code, notes on the generated art, the ElevenLabs voice, MediaPipe and
+  its model, GSAP). LICENSE: MIT, CodeMask. test/hygiene.test.mjs allows one remote, origin at codemaskdev/ping-vtuber.
+- `npm test` (in a worktree without out/): tests 173, pass 172, fail 0, skipped 1 (the P1-P3 pixel check needs the
+  clips in out/), duration_ms 248406.015375.

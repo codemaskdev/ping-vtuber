@@ -1,8 +1,66 @@
 # Ping VTuber
 
-Ping is an original terminal-face character based on the CodeMask channel logo, built on camera for CodeMask
-episode 3: a VTuber made with AI. Character art comes from a text-to-image generator, animation from HyperFrames
-(later steps), and all code is in this repository. No Live2D and no VTuber apps. Rules: `CLAUDE.md`.
+Ping is a small VTuber: a terminal screen with a face, based on the CodeMask channel logo. He blinks, breathes,
+talks with lip sync, shows emotions and follows your face through your webcam. Everything was built with AI tools on
+camera for CodeMask episode 3, "a VTuber made with AI": the character art comes from an image generator, his voice from
+a text-to-speech service, and the code in this repository was written by Claude Code from the prompts in
+[PROMPTS.md](PROMPTS.md) (apart from the third-party files listed under "Licence and credits"). No Live2D and no
+VTuber apps.
+
+## Links
+
+- Try Ping with your webcam: https://codemaskdev.github.io/ping-vtuber/web/
+- Video: VIDEO_URL
+- Every prompt, verbatim: [PROMPTS.md](PROMPTS.md)
+- Every number the video uses and where it comes from: [FACTS.md](FACTS.md)
+- What was done, what broke, and the real numbers: [DEVLOG.md](DEVLOG.md)
+
+## Your camera stays on your computer
+
+The webcam page runs the face tracker (Google's MediaPipe Face Landmarker) inside your browser. The camera picture
+never leaves the page: it is not shown, drawn, stored or sent anywhere, and only numbers (where your eyes, mouth and
+brows are) reach the code that draws Ping. The page loads its own files from this site (25 requests: the page, its
+scripts, Ping's layers, the tracker and its model) and, once it says "ready", makes no network request at all. The
+code enforces this (`web/privacy.js`, `web/worker-privacy.js`, a content security policy in `web/index.html`) and
+`test/web.test.mjs` checks it in Chrome. MediaPipe's own usage logging, which would post to a Google server every
+60 seconds, is refused inside the tracker before it can send anything.
+
+## Run it locally
+
+You need Node 22 or newer and Google Chrome (or another browser with webcam support).
+
+```
+git clone https://github.com/codemaskdev/ping-vtuber.git
+cd ping-vtuber
+npm install
+npm run web:serve        then open http://127.0.0.1:8317/ping-vtuber/web/ and press "Start camera"
+npm test                 every check, including the webcam page in headless Chrome (no real camera is opened)
+```
+
+The page serves itself from this folder: the tracker files are committed in `web/vendor/` and `web/models/`
+(`npm run web:vendor` makes them again from the pinned npm package and checks every sha256 against `web/VENDOR.json`).
+
+## Licence and credits
+
+- **Code**: MIT, see [LICENSE](LICENSE). It covers the code and the text in this repository, not the items below.
+- **Ping's art** (`art/raw/`, `art/layers/`): generated images. The eight source images were made with OpenAI's image
+  model (through Codex CLI and ChatGPT); each still carries OpenAI's C2PA content credentials, which say so. The
+  layers are cut from them by the scripts here, never retouched. Ping is the CodeMask channel's character, based on
+  its logo (`art/reference/`); the MIT licence does not cover the character, the logo or the art. Every prompt and
+  every generation: `art/GENERATOR_PROMPTS.md`, `art/generations.json`, `art/SOURCES.json`.
+- **Ping's voice** (`audio/`): generated with ElevenLabs (the "River" voice, model and settings in
+  `audio/SOURCES.json`), then filtered by `npm run audio:process`. Not covered by the MIT licence.
+- **Face tracking**: MediaPipe Tasks Vision 1.1.0 (`web/vendor/tasks-vision/`, from the npm package
+  `@mediapipe/tasks-vision`) and the Face Landmarker model `face_landmarker.task` (`web/models/`, from Google's
+  MediaPipe model storage), both by Google under the Apache License 2.0 (text in
+  `web/vendor/LICENSE-Apache-2.0.txt`; the model cards that state the licence are linked in `web/VENDOR.json`).
+  Unmodified copies, sha256 in `web/VENDOR.json`.
+- **Animation runtime for the renders**: GSAP 3.14.2 by GreenSock (`rig/preview/vendor/gsap.min.js`, unmodified,
+  used by the HyperFrames preview, not by the webcam page), under its own licence: https://gsap.com/standard-license.
+
+## How it was built
+
+The rest of this file is the build log for developers: each step, its commands and its files. Rules: `CLAUDE.md`.
 
 ## Step 1: Ping's layers
 
@@ -222,7 +280,8 @@ the head, eyes, mouth and brows. Checked by eye, with no numbers; `rig/face.json
 
 ```
 npm run web:vendor      copy the pinned @mediapipe/tasks-vision 1.1.0 files and fetch the model (sha256 checked)
-npm run web:serve       http://127.0.0.1:8317/web/index.html
+npm run web:serve       http://127.0.0.1:8317/ping-vtuber/web/ (served under /ping-vtuber/, like GitHub Pages)
+npm run web:requests    the request count under /ping-vtuber/ over 75 s with a synthetic camera (out/web-requests.json)
 npm run face:stream -- --seed 1     a synthetic face stream through lib/face-to-pose.mjs
 ```
 
@@ -230,7 +289,9 @@ npm run face:stream -- --seed 1     a synthetic face stream through lib/face-to-
   texImage, createImageBitmap, attaching the video, MediaRecorder and captureStream refuse it; after the page is ready
   every network API refuses. `web/worker-privacy.js` does the same inside the detector worker once the model has
   loaded (fetch, XMLHttpRequest, WebSocket, EventSource, WebTransport, importScripts, nested workers,
-  OffscreenCanvas convertToBlob). `test/web.test.mjs` checks this in headless Chrome, from the page and from inside the
+  OffscreenCanvas convertToBlob), and from the worker's first line refuses any request to another host
+  (`sameOriginOnly`: MediaPipe 1.1.0's usage logger posts to odml.pa.googleapis.com every 60 s; prompt #24). A content
+  security policy in `web/index.html` keeps the page itself to its own files. `test/web.test.mjs` checks this in headless Chrome, from the page and from inside the
   worker, and that the server sees no request after ready.
 - MediaPipe Face Landmarker runs in a module worker (`web/detector-worker.js`, CPU delegate); the main thread gets
   numbers only. Its timestamps are the video's own frame times (requestVideoFrameCallback, mediaTime): a frame that
@@ -238,6 +299,8 @@ npm run face:stream -- --seed 1     a synthetic face stream through lib/face-to-
   without it fall back to frame count / 30; the page says which is in use. `lib/face-to-pose.mjs` turns them into a pose with the chosen values in `rig/face.json`.
 - Model: `face_landmarker.task` from
   https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task,
-  sha256 and licence in `web/VENDOR.json`.
+  sha256 and licence in `web/VENDOR.json`. The model and the three tasks-vision files the page loads are committed
+  (prompt #24: GitHub Pages serves the repository as it is); every path in the page is relative, so it works from
+  https://codemaskdev.github.io/ping-vtuber/web/.
 
 Before the page is published: `PUBLISH-CHECKLIST.md` (the real-camera checks and the model licence).

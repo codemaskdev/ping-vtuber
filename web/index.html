@@ -4,9 +4,13 @@
     <meta charset="UTF-8" />
     <title>Ping webcam</title>
     <link rel="icon" href="data:," />
-    <!-- checked by eye by the author on 2026-10-09, no measurements. privacy.js must stay the first script. -->
-    <script src="/web/privacy.js"></script>
-    <script src="/rig/adapter.js"></script>
+    <!-- checked by eye by the author on 2026-10-09, no measurements. privacy.js must stay the first script.
+         Every path is relative: the page is served from /ping-vtuber/web/ on GitHub Pages (author's prompt #24).
+         The policy below lets the page load only its own files (the detector worker has its own guard,
+         worker-privacy.js sameOriginOnly). -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+    <script src="privacy.js"></script>
+    <script src="../rig/adapter.js"></script>
     <style>
       body { margin: 0; background: #0b0d13; color: #e6e6ec; font: 14px monospace; }
       main { display: flex; gap: 16px; padding: 16px; align-items: flex-start; }
@@ -32,9 +36,11 @@
         <p id="status">loading…</p>
         <p id="timing"></p>
         <p id="caption"></p>
-        <p>The camera picture is never shown, drawn, stored or sent. Only Ping and the face points are drawn.</p>
+        <p id="privacy">Your camera picture never leaves this page. It is not shown, drawn, stored or sent anywhere: only
+          Ping and the face points are drawn. The page loads its own files from this site, and once it says "ready" it
+          makes no network request at all.</p>
       </div>
     </main>
-    <script type="module" src="/web/main.js"></script>
+    <script type="module" src="main.js"></script>
   </body>
 </html>

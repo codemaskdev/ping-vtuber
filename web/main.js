@@ -1,24 +1,26 @@
 // The webcam page: Ping drawn from the face, and the landmark points on a second canvas. The video element is created
 // but never attached and never drawn; frames reach the detector only through privacy.js handOff().
 // checked by eye by the author on 2026-10-09, no measurements.
-import { drawList } from "/lib/rig.mjs";
-import { faceToPose } from "/lib/face-to-pose.mjs";
+import { drawList } from "../lib/rig.mjs";
+import { faceToPose } from "../lib/face-to-pose.mjs";
 
 const P = window.__pingPrivacy;
 // Recording mode (?record=1, author's prompt #22): only the points of web/record-points.json, mirrored like Ping,
 // larger dots, one caption; the camera starts by itself once the page is ready. The privacy guards are the same.
 const record = new URLSearchParams(location.search).get("record") === "1";
-const recordPoints = record ? await (await fetch("/web/record-points.json")).json() : null;
-const rig = await (await fetch("/rig/rig.json")).json();
-const faceConfig = await (await fetch("/rig/face.json")).json();
+// Every file relative to this module, so the page works under any path (GitHub Pages serves it from /ping-vtuber/).
+const here = (p) => new URL(p, import.meta.url).href;
+const recordPoints = record ? await (await fetch(here("record-points.json"))).json() : null;
+const rig = await (await fetch(here("../rig/rig.json"))).json();
+const faceConfig = await (await fetch(here("../rig/face.json"))).json();
 const images = {};
 await Promise.all(rig.layers.map(async (l) => {
   const img = new Image();
-  img.src = "/" + l.file;
+  img.src = here("../" + l.file);
   await img.decode();
   images[l.file] = img;
 }));
-const worker = new Worker("/web/detector-worker.js", { type: "module" });
+const worker = new Worker(here("detector-worker.js"), { type: "module" });
 await new Promise((resolve, reject) => {
   worker.onmessage = (e) => (e.data.type === "ready" ? resolve() : null);
   worker.onerror = (e) => reject(new Error(`detector worker: ${e.message}`));

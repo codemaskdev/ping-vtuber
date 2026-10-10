@@ -1,7 +1,10 @@
 // Puts what the webcam page needs into web/ so that nothing comes from a CDN:
-//   web/vendor/tasks-vision/   vision_bundle.mjs and wasm/ copied from node_modules/@mediapipe/tasks-vision (pinned)
+//   web/vendor/tasks-vision/   vision_bundle.mjs and the two wasm files the page loads, copied from
+//                              node_modules/@mediapipe/tasks-vision (pinned); the detector worker asks for the "module"
+//                              build (FilesetResolver.forVisionTasks(…, true)), so the other four wasm files are not used
 //   web/models/face_landmarker.task   downloaded once from MODEL_URL, checked against web/VENDOR.json's sha256
-// Both folders are generated (gitignored); web/VENDOR.json records versions, hashes, source and licence.
+// Both folders are committed (author's prompt #24: GitHub Pages serves the repository as it is, with no build step);
+// web/VENDOR.json records versions, hashes, source and licence, web/vendor/LICENSE-Apache-2.0.txt the licence text.
 //
 //   npm run web:vendor
 import { execFileSync } from "node:child_process";
@@ -21,7 +24,8 @@ const dest = path.join(WEB, "vendor", "tasks-vision");
 fs.rmSync(dest, { recursive: true, force: true });
 fs.mkdirSync(path.join(dest, "wasm"), { recursive: true });
 const files = [];
-for (const f of ["vision_bundle.mjs", ...fs.readdirSync(path.join(PKG, "wasm")).map((x) => `wasm/${x}`)]) {
+const USED = ["vision_bundle.mjs", "wasm/vision_wasm_module_internal.js", "wasm/vision_wasm_module_internal.wasm"];
+for (const f of USED) {
   fs.copyFileSync(path.join(PKG, f), path.join(dest, f));
   files.push({ file: rel(path.join(dest, f)), sha256: sha256(fs.readFileSync(path.join(dest, f))) });
 }
@@ -33,12 +37,14 @@ const modelSha = sha256(fs.readFileSync(model));
 if (prev?.model?.sha256 && prev.model.sha256 !== modelSha) throw new Error(`model sha256 ${modelSha} is not the recorded ${prev.model.sha256}`);
 
 fs.writeFileSync(vendorFile, JSON.stringify({
-  $comment: "Written by scripts/web-vendor.mjs. The page serves these files itself; nothing is loaded from a CDN.",
+  $comment: "Written by scripts/web-vendor.mjs. The page serves these files itself (committed, author's prompt #24); nothing is loaded from a CDN.",
   package: { name: pkg.name, version: pkg.version, license: pkg.license, from: "npm registry, pinned in package.json" },
   files,
   model: {
     file: rel(model), name: "face_landmarker.task", url: MODEL_URL, sha256: modelSha, bytes: fs.statSync(model).size,
-    license: "Apache-2.0 as stated by the MediaPipe solutions documentation for the Face Landmarker model; not checked against the model card in this run",
+    // the licence check against the model cards (prompt #20) is kept as long as the file is the same
+    license: prev?.model?.sha256 === modelSha && prev.model.license ? prev.model.license : "Apache-2.0 as stated by the MediaPipe solutions documentation for the Face Landmarker model; not checked against the model card in this run",
+    ...(prev?.model?.sha256 === modelSha && prev.model.modelCards ? { modelCards: prev.model.modelCards } : {}),
   },
 }, null, 2) + "\n");
 console.log(`${pkg.name}@${pkg.version} (${pkg.license}): ${files.length} files in ${rel(dest)}`);

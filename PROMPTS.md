@@ -1181,6 +1181,24 @@ changed, the new clip lengths, the point count, total size, test
 counts.
 ```
 
+## Prompt #24
+
+```text
+Prepare this repository and the webcam page for publication. Do not push anything and do not create anything on GitHub: prepare, check, and stop with a report.
+
+Target, the same as bug-driver: repository github.com/codemaskdev/ping-vtuber, GitHub Pages from main / root, page at https://codemaskdev.github.io/ping-vtuber/ (check where the page's entry file is and say which URL the webcam page will have).
+
+1. Anonymity audit of the whole history, not only the current tree: author and committer names and e-mails, commit times (must be +0000), any "/Users/..." or home-directory path, machine or user names, .DS_Store, e-mail addresses, API keys or tokens, voice IDs that should not be public, metadata inside images and audio (EXIF, C2PA: say what each file reveals). List every finding with file and commit. Propose the fix; rewrite history only if a finding requires it, and say exactly what the rewrite changes.
+
+2. The page under a project path. It will be served from /ping-vtuber/, not from the site root: check every path (scripts, layers, rig files, the MediaPipe wasm and the model file). Say where the wasm and the model are loaded from: if from this repository, confirm the files are committed and their licences allow redistribution; if from an external host, say which host and how many requests go there. Run the page from a local static server under the /ping-vtuber/ prefix and repeat the request count test: requests before ready, requests after ready. The privacy sentence on the page must match what the code does.
+
+3. What a visitor sees: README in English (what Ping is, the link to the page, the link to the video as a VIDEO_URL placeholder, how to run locally, where FACTS.md and PROMPTS.md are), a licence file for the code, a note on the art (generated images) and on the third-party model. Nothing in Russian anywhere in the repository. The normal page (not ?record=1) must say in plain words that the camera picture never leaves the page.
+
+4. Tests: all must pass.
+
+Report: the audit findings and what you did about each, the request counts under the prefix, the two URLs the description will use (the page and PROMPTS.md), the test result, and the exact commands the author must run to publish (create the repository, push, turn on Pages). Commit as CodeMask with UTC time. STOP.
+```
+
 ## [GENERATOR WRAPPER]
 
 The fixed text scripts/generate.mjs gives Codex around every generator prompt (lib/attempts.mjs). The generator prompt goes in, byte for byte, between the two parts.
